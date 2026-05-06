@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0b1220">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="松村式Stocksurfing">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<title>松村式Stocksurfing - 朝の仕掛け判定</title>
+<style>
+  :root{
+    --bg:#0b1220; --panel:#131c30; --panel2:#1a2540; --line:#263353;
+    --txt:#e6ecff; --sub:#9aa8c7; --accent:#4da3ff; --up:#ff5766; --down:#2ecc71; --warn:#f7b955;
+    --star:#ffcc33;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",sans-serif;-webkit-text-size-adjust:100%}
+  header{position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#0b1220 0%,rgba(11,18,32,.92) 100%);padding:14px 16px;border-bottom:1px solid var(--line)}
+  h1{font-size:17px;margin:0;letter-spacing:.02em}
+  h1 .sub{color:var(--sub);font-weight:400;font-size:12px;margin-left:8px}
+  main{padding:12px 12px 80px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+  .card h2{font-size:14px;margin:0 0 10px;color:var(--sub);letter-spacing:.05em;text-transform:uppercase}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .ind{background:var(--panel2);border-radius:10px;padding:10px}
+  .ind .name{font-size:11px;color:var(--sub)}
+  .ind .val{font-size:16px;font-weight:600;margin-top:2px}
+  .ind .chg{font-size:12px;margin-top:2px}
+  .up{color:var(--up)} .down{color:var(--down)}
+  input[type="number"],input[type="text"],select{width:100%;background:#0e1627;color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:14px}
+  label{font-size:11px;color:var(--sub);display:block;margin-bottom:4px}
+  .row{display:flex;gap:8px;align-items:center}
+  button{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:600;font-size:14px;cursor:pointer}
+  button.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+  button.small{padding:6px 10px;font-size:12px}
+  .score-wrap{text-align:center;padding:6px 0}
+  .score{font-size:42px;font-weight:800;letter-spacing:.02em}
+  .gauge{height:10px;background:#0e1627;border-radius:5px;overflow:hidden;margin:8px 0}
+  .gauge > div{height:100%;background:linear-gradient(90deg,var(--down),#f7b955,var(--up));width:50%;transition:width .4s}
+  .verdict{font-size:14px;color:var(--sub)}
+  .verdict.strong{color:var(--up)} .verdict.weak{color:var(--down)} .verdict.mid{color:var(--warn)}
+  .stock{background:var(--panel2);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .stock .meta{flex:1;min-width:0}
+  .stock .ticker{font-weight:700;font-size:15px}
+  .stock .name2{font-size:11px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .stock .tags{font-size:10px;color:var(--sub);margin-top:2px}
+  .stock .stars{color:var(--star);font-size:14px;letter-spacing:1px;white-space:nowrap}
+  .stock.pick{border:1px solid var(--accent);background:linear-gradient(180deg,#1a2a4d,#1a2540)}
+  details.pickbox{background:#0e1627;border-radius:10px;padding:8px 12px;margin-top:4px}
+  details.pickbox summary{cursor:pointer;color:var(--accent);font-size:12px}
+  .trade-plan{font-size:12px;color:var(--txt);margin-top:6px;line-height:1.6}
+  .trade-plan span{color:var(--sub);margin-right:6px}
+  .tabs{display:flex;gap:4px;margin-bottom:10px}
+  .tab{flex:1;padding:8px;text-align:center;background:var(--panel2);border-radius:8px;font-size:12px;color:var(--sub);cursor:pointer}
+  .tab.active{background:var(--accent);color:#fff}
+  .hide{display:none}
+  .status{font-size:11px;color:var(--sub);margin-top:4px}
+  .editrow{display:grid;grid-template-columns:60px 1fr 90px 30px;gap:6px;align-items:center;margin-bottom:6px}
+  .editrow input,.editrow select{padding:6px 8px;font-size:12px}
+  .del{background:transparent;border:1px solid var(--line);color:var(--up);padding:4px 8px;border-radius:6px;font-size:12px;cursor:pointer}
+  footer{text-align:center;color:var(--sub);font-size:10px;padding:12px}
+  .kv{display:flex;justify-content:space-between;font-size:12px;margin:2px 0}
+  .kv span:first-child{color:var(--sub)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🏄 松村式Stocksurfing <span class="sub">朝の仕掛け判定</span></h1>
+</header>
+
+<main>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="dash">ダッシュ</div>
+    <div class="tab" data-tab="history">📊履歴</div>
+    <div class="tab" data-tab="edit">銘柄編集</div>
+    <div class="tab" data-tab="help">使い方</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section id="tab-dash">
+
+    <!-- MARKET SCORE -->
+    <div class="card">
+      <h2>場の強弱スコア</h2>
+      <div class="score-wrap">
+        <div class="score" id="scoreNum">—</div>
+        <div class="gauge"><div id="gaugeBar"></div></div>
+        <div class="verdict" id="verdict">指標を入力/取得してください</div>
+        <div id="plainVerdict"></div>
+        <div id="gapDisplay"></div>
+        <div id="twistWarn"></div>
+      </div>
+    </div>
+
+    <!-- POST-OPEN JUDGMENT (v2.2) -->
+    <div class="card">
+      <h2>寄り後の最終判定 <span style="color:var(--sub);font-size:10px;font-weight:400;letter-spacing:0">(9:05以降)</span></h2>
+      <div class="row" style="margin-bottom:6px">
+        <button id="fetchPostOpenBtn" class="ghost small">🔄 寄り後を取得</button>
+      </div>
+      <div id="postOpenStatus" class="status"></div>
+      <div id="postOpenResult"></div>
+    </div>
+
+    <!-- INDICATORS -->
+    <div class="card">
+      <h2>前日の主要指標</h2>
+      <div class="row" style="margin-bottom:10px">
+        <button id="fetchBtn">🔄 自動取得</button>
+        <button class="ghost small" id="clearBtn">クリア</button>
+      </div>
+      <div class="status" id="fetchStatus"></div>
+      <div class="grid" id="indGrid"></div>
+    </div>
+
+    <!-- PICKS -->
+    <div class="card">
+      <h2>本日の仕掛け候補</h2>
+      <div id="picks"></div>
+    </div>
+
+    <!-- ALL STOCKS -->
+    <div class="card">
+      <h2>全20銘柄の期待度</h2>
+      <div id="stockList"></div>
+    </div>
+
+    <!-- RULES -->
+    <div class="card">
+      <h2>売買ルール（損小利大）</h2>
+      <div class="kv"><span>損切ライン</span><span>エントリー -2.0%（厳守）</span></div>
+      <div class="kv"><span>利確ライン</span><span>+4.0〜5.0%（分割利確OK）</span></div>
+      <div class="kv"><span>リスクリワード</span><span>1 : 2 以上</span></div>
+      <div class="kv"><span>1銘柄あたり資金</span><span>総資金の20%以下</span></div>
+      <div class="kv"><span>同時保有</span><span>最大3銘柄</span></div>
+      <div class="kv"><span>見送り判断</span><span>スコア±20以内は「様子見」</span></div>
+    </div>
+
+  </section>
+
+  <!-- HISTORY (v2.1) -->
+  <section id="tab-history" class="hide">
+    <div class="card">
+      <h2>📊 過去の予測履歴</h2>
+      <div class="status">毎日のスコア・候補銘柄を自動記録しています。<br>蓄積データは将来の自己進化エンジンの訓練データになります。</div>
+      <div id="historyStats" style="margin-top:12px"></div>
+      <div id="historyList" style="margin-top:12px"></div>
+      <div style="margin-top:12px" class="row">
+        <button id="exportLogs" class="ghost small">📥 ログをエクスポート(JSON)</button>
+        <button id="clearLogs" class="ghost small" style="color:var(--up)">🗑 ログをクリア</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDIT -->
+  <section id="tab-edit" class="hide">
+    <div class="card">
+      <h2>銘柄リスト編集</h2>
+      <div class="status">連動タグ：NY / NQ / SOX / USDJPY / 景気 / 内需 / 金融 / 商社 / 資源 / 日経寄与 / 防衛 / 造船 / 重工 / 宇宙 / AIインフラ / フィジカルAI</div>
+      <div id="editList" style="margin-top:10px"></div>
+      <button id="addRow" class="ghost small" style="margin-top:8px">+ 銘柄を追加</button>
+      <div style="margin-top:12px" class="row">
+        <button id="saveList">💾 保存</button>
+        <button id="resetList" class="ghost small">初期リストに戻す</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HELP -->
+  <section id="tab-help" class="hide">
+    <div class="card">
+      <h2>使い方</h2>
+      <ol style="padding-left:18px;line-height:1.8;font-size:13px">
+        <li>朝（日本市場が開く前）にこの画面を開く</li>
+        <li>「🔄 自動取得」を押して前日指標を読み込む<br><span style="color:var(--sub);font-size:11px">※取得できない項目は手動で入力</span></li>
+        <li>「場の強弱スコア」を確認（+20以上で強気、-20以下で弱気）</li>
+        <li>「本日の仕掛け候補」の★4以上を優先検討</li>
+        <li>エントリー後は必ず損切ライン（-2%）を設定</li>
+        <li>利確目標（+4〜5%）に到達したら半分利確→残りは引き上げ</li>
+      </ol>
+    </div>
+    <div class="card">
+      <h2>スコアの意味</h2>
+      <div class="kv"><span>+40以上</span><span class="up">強い追い風（積極）</span></div>
+      <div class="kv"><span>+20〜+40</span><span>追い風（通常サイズ）</span></div>
+      <div class="kv"><span>-20〜+20</span><span>中立（様子見推奨）</span></div>
+      <div class="kv"><span>-20〜-40</span><span>向かい風（控えめ）</span></div>
+      <div class="kv"><span>-40以下</span><span class="down">強い逆風（見送り）</span></div>
+    </div>
+    <div class="card">
+      <h2>重み付け（内部）v2.2</h2>
+      <div class="kv"><span>日経先物</span><span>×3.0</span></div>
+      <div class="kv"><span>TOPIX</span><span>×2.5 🆕</span></div>
+      <div class="kv"><span>ナスダック100</span><span>×2.0</span></div>
+      <div class="kv"><span>SOX半導体</span><span>×2.0</span></div>
+      <div class="kv"><span>S&P500</span><span>×1.8</span></div>
+      <div class="kv"><span>NYダウ</span><span>×1.5</span></div>
+      <div class="kv"><span>ドル円</span><span>×1.5</span></div>
+      <div class="kv"><span>米10年金利</span><span>×0.8（逆相関） 🆕</span></div>
+      <div class="kv"><span>VIX</span><span>×0.8（逆相関）</span></div>
+      <div class="kv"><span>ユーロ円</span><span>×0.8</span></div>
+      <div class="kv"><span>WTI原油</span><span>×0.6 🆕</span></div>
+      <div class="kv"><span>日経VI</span><span>×1.0（逆相関、yfinance自動取得） 🆕</span></div>
+    </div>
+    <div class="card">
+      <h2>🆕 v2.2 新機能</h2>
+      <p style="font-size:12px;color:var(--sub);line-height:1.7">
+        <b style="color:var(--accent)">起動時自動取得：</b><br>
+        アプリを開いた瞬間に、すべての指標が自動で取得されます。<br><br>
+        <b style="color:var(--accent)">窓開け額予想：</b><br>
+        本日の日経が前日比でどれくらい高く/安く始まりそうかを円額で表示。<br><br>
+        <b style="color:var(--accent)">ねじれ警告：</b><br>
+        指標同士が矛盾している日（リスクオン×VIX上昇など）に⚠️マークで警告。サイズを半分にする目安。<br><br>
+        <b style="color:var(--accent)">寄り後の最終判定：</b><br>
+        9:05以降にボタンを押すと、東証寄り値・半導体寄り値・ドル円寄り値を自動取得し、朝の予想と比較して GO/慎重/見送り を判定します。<br><br>
+        <b style="color:var(--accent)">損切リマインダー：</b><br>
+        各候補銘柄の売買プランに「エントリー価格」入力欄が追加され、入力すると損切ライン（-2%）・利確ライン（+3%/+5%）が円額で計算されます。逆指値設定済みのチェック欄も追加。<br><br>
+        <b style="color:var(--accent)">v2.3：ローカルPython取得：</b><br>
+        起動batがPythonスクリプト(yfinance)を実行して全12指標(日経VI含む)を取得し、ローカルのdata.jsonに保存します。HTMLはそれを読むだけなのでCORS制約から完全解放されます。
+      </p>
+    </div>
+    <div class="card">
+      <h2>📊 履歴機能（v2.1）</h2>
+      <p style="font-size:12px;color:var(--sub);line-height:1.7">
+        指標を入力するたびに、その日のスコアと候補銘柄が自動的に記録されます。
+        記録は履歴タブで確認でき、JSON形式でエクスポートも可能です。<br><br>
+        <b style="color:var(--accent)">将来の予定：</b><br>
+        ・蓄積データを使った自己進化エンジン<br>
+        ・指標の重みを過去パフォーマンスから自動調整<br>
+        ・実際の翌日結果との答え合わせ自動化
+      </p>
+    </div>
+    <div class="card">
+      <h2>免責</h2>
+      <p style="font-size:12px;color:var(--sub);line-height:1.6">
+        このアプリはトレードの判断補助ツールです。最終的な売買判断はご自身の責任で行ってください。
+        指標の自動取得は外部API（Stooq）に依存しており、取得できない場合があります。
+      </p>
+    </div>
+  </section>
+
+  <footer>松村式Stocksurfing v3.0 · クラウド版 · iPhone対応 · データ提供: yfinance + 日経公式</footer>
+</main>
+
+<script>
+/* =========================================================
+   Morning Trader — 朝の仕掛け判定
+   ========================================================= */
+
+// 指標定義（Stooqシンボル / Yahooシンボル / 重み / 方向性）
+// v2.1: VIXの重みを1.5→0.8に変更
+// v2.2: 米10年金利・WTI原油・TOPIX・日経VI を追加
+// v2.2.2: yahooシンボル追加。StooqがN/Dを返す指標(VIX/SOX/TNX/TOPIX/N225F)はYahooにフォールバック
+const INDICATORS = [
+  {key:'N225F', name:'日経先物', stooq:'nkd.f',  yahoo:'NKD=F',  weight:3.0, inverse:false},
+  {key:'TOPX',  name:'TOPIX',    stooq:'^topx',  yahoo:'^TOPX',  weight:2.5, inverse:false},
+  {key:'NDX',   name:'ナスダック100', stooq:'^ndx', yahoo:'^NDX', weight:2.0, inverse:false},
+  {key:'SPX',   name:'S&P500',  stooq:'^spx',   yahoo:'^GSPC',  weight:1.8, inverse:false},
+  {key:'SOX',   name:'SOX半導体',stooq:'^sox',   yahoo:'^SOX',   weight:2.0, inverse:false},
+  {key:'DJI',   name:'NYダウ',   stooq:'^dji',   yahoo:'^DJI',   weight:1.5, inverse:false},
+  {key:'USDJPY',name:'ドル円',   stooq:'usdjpy', yahoo:'USDJPY=X', weight:1.5, inverse:false},
+  {key:'EURJPY',name:'ユーロ円', stooq:'eurjpy', yahoo:'EURJPY=X', weight:0.8, inverse:false},
+  {key:'TNX',   name:'米10年金利',stooq:'^tnx',  yahoo:'^TNX',   weight:0.8, inverse:true},
+  {key:'WTI',   name:'WTI原油',  stooq:'cl.f',   yahoo:'CL=F',   weight:0.6, inverse:false},
+  {key:'VIX',   name:'VIX恐怖指数',stooq:'^vix', yahoo:'^VIX',   weight:0.8, inverse:true},
+  {key:'NKVI',  name:'日経VI',   stooq:null,     yahoo:'^N225VI',weight:1.0, inverse:true, localOnly:true} // v2.3: yfinance経由で自動取得,
+];
+
+// 初期20銘柄（連動タグ付き）v2.0
+const DEFAULT_STOCKS = [
+  // 半導体・AI（5）
+  {code:'8035', name:'東京エレクトロン',  tags:['SOX','NQ']},
+  {code:'6920', name:'レーザーテック',    tags:['SOX','NQ']},
+  {code:'6857', name:'アドバンテスト',    tags:['SOX','NQ']},
+  {code:'6146', name:'ディスコ',          tags:['SOX','NQ']},
+  {code:'6526', name:'ソシオネクスト',    tags:['SOX','NQ']},
+  // AI関連（3）
+  {code:'5803', name:'フジクラ',          tags:['AIインフラ','NQ']},
+  {code:'4063', name:'信越化学',          tags:['SOX','景気']},
+  {code:'9984', name:'ソフトバンクG',     tags:['NQ','日経寄与']},
+  // 防衛・造船（3）🆕
+  {code:'7011', name:'三菱重工業',        tags:['防衛','重工']},
+  {code:'7012', name:'川崎重工業',        tags:['防衛','造船']},
+  {code:'7013', name:'IHI',               tags:['防衛','宇宙']},
+  // 景気敏感・大型（3）
+  {code:'6501', name:'日立製作所',        tags:['NY','景気']},
+  {code:'6758', name:'ソニーG',           tags:['NY','NQ','景気']},
+  {code:'7203', name:'トヨタ自動車',      tags:['NY','USDJPY','景気']},
+  // フィジカルAI（1）🆕
+  {code:'6506', name:'安川電機',          tags:['フィジカルAI','NQ']},
+  // 商社（2）
+  {code:'8058', name:'三菱商事',          tags:['商社','資源']},
+  {code:'8031', name:'三井物産',          tags:['商社','資源']},
+  // 金融（2）
+  {code:'8306', name:'三菱UFJ FG',        tags:['金融','USDJPY']},
+  {code:'8316', name:'三井住友FG',        tags:['金融','USDJPY']},
+  // 海運（1）
+  {code:'9107', name:'川崎汽船',          tags:['資源','景気']},
+];
+
+let indValues = {}; // {key: {price, chgPct}}
+let stocks = loadStocks();
+
+/* ---------- INIT ---------- */
+async function init(){
+  renderIndicatorInputs();
+  renderStocks();
+  renderEditList();
+  bindTabs();
+  bindButtons();
+  bindHistoryButtons(); // v2.1: 履歴タブのボタンバインド
+  bindPostOpenButton(); // v2.2: 寄り後ボタンバインド
+  recalc();
+  renderHistory(); // v2.1: 履歴を初期表示
+  // v2.2: 起動時に自動で全指標を取得(ボタンを押す手間を省く)
+  try{
+    await fetchAll();
+  }catch(e){
+    console.warn('起動時自動取得失敗:', e);
+  }
+  // 9:05以降なら寄り後も自動取得
+  const now = new Date();
+  const jstHour = now.getHours();
+  const jstMin  = now.getMinutes();
+  const minutesPastOpen = (jstHour - 9) * 60 + jstMin - 5;
+  if(minutesPastOpen >= 0 && jstHour < 15){
+    try{ await fetchPostOpen(); }catch(e){}
+  }
+}
+
+function bindPostOpenButton(){
+  const btn = document.getElementById('fetchPostOpenBtn');
+  if(btn) btn.addEventListener('click', fetchPostOpen);
+}
+
+/* ---------- TABS ---------- */
+function bindTabs(){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+      t.classList.add('active');
+      ['dash','history','edit','help'].forEach(id=>{
+        document.getElementById('tab-'+id).classList.add('hide');
+      });
+      document.getElementById('tab-'+t.dataset.tab).classList.remove('hide');
+    });
+  });
+}
+
+/* ---------- BUTTONS ---------- */
+function bindButtons(){
+  document.getElementById('fetchBtn').addEventListener('click',fetchAll);
+  document.getElementById('clearBtn').addEventListener('click',()=>{
+    indValues={}; renderIndicatorInputs(); recalc();
+  });
+  document.getElementById('addRow').addEventListener('click',()=>{
+    stocks.push({code:'',name:'',tags:[]});
+    renderEditList();
+  });
+  document.getElementById('saveList').addEventListener('click',()=>{
+    saveStocks();
+    alert('✅ 銘柄リストを保存しました');
+    renderStocks(); recalc();
+  });
+  document.getElementById('resetList').addEventListener('click',()=>{
+    if(confirm('初期20銘柄に戻しますか？')){
+      stocks = JSON.parse(JSON.stringify(DEFAULT_STOCKS));
+      saveStocks(); renderEditList(); renderStocks(); recalc();
+    }
+  });
+}
+
+/* ---------- INDICATORS ---------- */
+function renderIndicatorInputs(){
+  const g = document.getElementById('indGrid');
+  g.innerHTML = '';
+  INDICATORS.forEach(ind=>{
+    const v = indValues[ind.key] || {};
+    const chgCls = (v.chgPct==null)?'':(v.chgPct>=0?'up':'down');
+    const sign = (v.chgPct==null)?'':(v.chgPct>=0?'+':'');
+    const div = document.createElement('div');
+    div.className = 'ind';
+    div.innerHTML = `
+      <div class="name">${ind.name}${ind.inverse?' ⚠逆':''}</div>
+      <div class="val">
+        <input type="number" step="any" placeholder="前日終値"
+          value="${v.price??''}" data-k="${ind.key}" data-f="price" style="margin-bottom:4px">
+      </div>
+      <div class="chg ${chgCls}">
+        <input type="number" step="any" placeholder="前日比%"
+          value="${v.chgPct??''}" data-k="${ind.key}" data-f="chgPct">
+      </div>
+      ${v.chgPct!=null?`<div class="chg ${chgCls}" style="margin-top:4px">${sign}${(+v.chgPct).toFixed(2)}%</div>`:''}
+    `;
+    g.appendChild(div);
+  });
+  // bind inputs
+  g.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const k = e.target.dataset.k, f = e.target.dataset.f;
+      if(!indValues[k]) indValues[k] = {};
+      indValues[k][f] = e.target.value===''?null:parseFloat(e.target.value);
+      recalc();
+    });
+  });
+}
+
+/* ---------- FETCH (Stooq) v2.2 ---------- */
+// v2.2: 参照データ（スコアには加算しない、表示用のみ）
+let referenceData = {
+  N225_CASH: null,   // 前日東証終値（^nkx）- 窓開け額計算用
+  TSE_OPEN: null,    // 当日東証寄り値 - 寄り後判定用
+  SOX_PROXY: null,   // 半導体プロキシ（東京エレクトロン）寄り値
+  USDJPY_OPEN: null, // ドル円寄り値
+};
+
+async function fetchAll(){
+  const status = document.getElementById('fetchStatus');
+  status.textContent = '🔄 取得中…';
+  
+  // v2.3: ローカル data.json を優先取得 (Pythonフェッチャーが書き出したもの)
+  try {
+    const res = await fetch('data.json?_=' + Date.now());
+    if(res.ok) {
+      const json = await res.json();
+      if(json && json.indicators){
+        let okLocal = 0;
+        for(const ind of INDICATORS){
+          if(json.indicators[ind.key]){
+            indValues[ind.key] = json.indicators[ind.key];
+            okLocal++;
+          }
+        }
+        if(json.referenceData){
+          for(const key of Object.keys(json.referenceData)){
+            referenceData[key] = json.referenceData[key];
+          }
+        }
+        const fetchTime = json.fetchedAt ? new Date(json.fetchedAt).toLocaleString('ja-JP', {hour:'2-digit', minute:'2-digit'}) : '不明';
+        status.textContent = `✅ ローカル取得完了 (${fetchTime}更新)：${okLocal}指標`;
+        renderIndicatorInputs();
+        recalc();
+        return;
+      }
+    }
+  } catch(e) {
+    console.warn('data.json読込失敗、Stooq/Yahoo直接取得に切替', e);
+  }
+  
+  // フォールバック: Stooq/Yahoo直接取得 (v2.2.2の挙動)
+  let ok=0, ng=0;
+  for(const ind of INDICATORS){
+    // 手動入力指標 または ローカル(yfinance)専用指標はフェッチをスキップ
+    if(ind.manual || ind.localOnly){ continue; }
+    if(!ind.stooq && !ind.yahoo){ continue; }
+    let r = null;
+    // 1. Stooqを試す
+    if(ind.stooq){
+      try{ r = await fetchStooq(ind.stooq); }catch(e){}
+    }
+    // 2. Stooqで取れなかったらYahooにフォールバック (v2.2.2)
+    if(!r && ind.yahoo){
+      try{ r = await fetchYahoo(ind.yahoo); }catch(e){}
+    }
+    if(r){
+      indValues[ind.key] = r;
+      ok++;
+    } else { ng++; }
+  }
+  // v2.2: 前日東証終値を取得（参照データ）
+  try{
+    const cash = await fetchStooq('^nkx');
+    if(cash) referenceData.N225_CASH = cash;
+  }catch(e){}
+  
+  const manualCount = INDICATORS.filter(i=>i.manual || i.localOnly).length;
+  status.textContent = `✅ 取得完了：成功 ${ok} / 失敗 ${ng}${manualCount?` / 手動 ${manualCount}（日経VI）`:''}${ng>0?' ※失敗分はCORSプロキシ経由でも取れなかった指標':''}`;
+  renderIndicatorInputs();
+  recalc();
+}
+
+/* ---------- 寄り後の自動取得（v2.2） ---------- */
+// 9:05 JST以降に呼び出して、東証寄り値を取得
+async function fetchPostOpen(){
+  const status = document.getElementById('postOpenStatus');
+  if(status) status.textContent = '🔄 寄り値取得中…';
+  let ok=0, ng=0;
+  // 日経（^nkx）- 東証現値
+  try{
+    const r = await fetchStooq('^nkx');
+    if(r){ referenceData.TSE_OPEN = r; ok++; } else ng++;
+  }catch(e){ ng++; }
+  // 半導体プロキシ：東京エレクトロン（8035.jp）
+  try{
+    const r = await fetchStooq('8035.jp');
+    if(r){ referenceData.SOX_PROXY = r; ok++; } else ng++;
+  }catch(e){ ng++; }
+  // ドル円（現在値）
+  try{
+    const r = await fetchStooq('usdjpy');
+    if(r){ referenceData.USDJPY_OPEN = r; ok++; } else ng++;
+  }catch(e){ ng++; }
+  
+  if(status) status.textContent = `寄り値取得：成功 ${ok} / 失敗 ${ng}${ng?'（失敗分は手動入力）':''}`;
+  renderPostOpenJudgment();
+}
+
+async function fetchStooq(sym){
+  // v2.2.1: StooqはCORSヘッダーを返さないため、複数のCORSプロキシ経由でフォールバック
+  // 1) 直接(高速、CORSが許可されていれば成功)
+  // 2) corsproxy.io 経由
+  // 3) api.allorigins.win 経由
+  const directUrl = `https://stooq.com/q/l/?s=${encodeURIComponent(sym)}&f=sd2t2ohlc&h&e=csv`;
+  const candidates = [
+    directUrl,
+    `https://corsproxy.io/?url=${encodeURIComponent(directUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`,
+    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(directUrl)}`,
+  ];
+  
+  for(const url of candidates){
+    try{
+      const res = await fetch(url);
+      if(!res.ok) continue;
+      const text = await res.text();
+      const lines = text.trim().split(/\r?\n/);
+      if(lines.length<2) continue;
+      const cols = lines[1].split(',');
+      // Symbol, Date, Time, Open, High, Low, Close
+      const open = parseFloat(cols[3]);
+      const close = parseFloat(cols[6]);
+      if(isNaN(close)) continue;
+      const chgPct = isNaN(open)||open===0 ? null : ((close-open)/open)*100;
+      return {price:close, chgPct:chgPct};
+    }catch(e){ /* 次のプロキシを試す */ }
+  }
+  return null;
+}
+
+/* ---------- Yahoo Finance フォールバック (v2.2.2) ---------- */
+async function fetchYahoo(sym){
+  // Yahoo Finance v7 quote API。CORSプロキシ経由で取得
+  const directUrl = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${encodeURIComponent(sym)}`;
+  const candidates = [
+    directUrl,
+    `https://corsproxy.io/?url=${encodeURIComponent(directUrl)}`,
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`,
+    `https://api.codetabs.com/v1/proxy/?quest=${encodeURIComponent(directUrl)}`,
+  ];
+  
+  for(const url of candidates){
+    try{
+      const res = await fetch(url);
+      if(!res.ok) continue;
+      const json = await res.json();
+      const r = json?.quoteResponse?.result?.[0];
+      if(!r) continue;
+      const close = r.regularMarketPrice;
+      const open  = r.regularMarketOpen;
+      if(typeof close !== 'number' || isNaN(close)) continue;
+      // Stooqと同じ算出方法 (intraday: open→close)
+      // ただしYahooはregularMarketChangePercentも提供するので優先利用
+      let chgPct = null;
+      if(typeof r.regularMarketChangePercent === 'number'){
+        chgPct = r.regularMarketChangePercent; // vs 前日終値
+      } else if(typeof open === 'number' && open > 0){
+        chgPct = ((close - open) / open) * 100; // intraday
+      }
+      return {price: close, chgPct: chgPct};
+    }catch(e){ /* 次のプロキシ */ }
+  }
+  return null;
+}
+
+/* ---------- SCORE ---------- */
+function calcScore(){
+  let sum=0, wUsed=0;
+  for(const ind of INDICATORS){
+    const v = indValues[ind.key];
+    if(!v || v.chgPct==null) continue;
+    const dir = ind.inverse?-1:1;
+    // clip chgPct to ±5% for scoring
+    const cp = Math.max(-5,Math.min(5, v.chgPct));
+    // normalize: chgPct * 15 → ±75 scale per indicator before weight
+    sum += cp * 15 * dir * ind.weight;
+    wUsed += ind.weight;
+  }
+  if(wUsed===0) return null;
+  // normalize to -100..+100
+  const score = Math.max(-100,Math.min(100, sum / (wUsed * 0.75)));
+  return score;
+}
+
+/* ---------- ねじれ判定(v2.2) ---------- */
+// 各指標のリスク方向(inverse調整後の符号)を集計し、
+// 多数派と異なる指標が3つ以上あれば「ねじれ」と判定
+function detectTwist(){
+  let posCount=0, negCount=0;
+  const directions = [];
+  for(const ind of INDICATORS){
+    const v = indValues[ind.key];
+    if(!v || v.chgPct==null) continue;
+    if(Math.abs(v.chgPct) < 0.1) continue; // ノイズ除去:±0.1%未満は無視
+    const dir = ind.inverse?-1:1;
+    const riskDir = v.chgPct * dir; // 正=リスクオン、負=リスクオフ
+    directions.push({key:ind.key, name:ind.name, riskDir:riskDir});
+    if(riskDir > 0) posCount++; else negCount++;
+  }
+  const total = posCount + negCount;
+  if(total < 4) return {twisted:false, dissent:0, message:''};
+  
+  const majority = posCount >= negCount ? 'on' : 'off';
+  const dissent = majority==='on' ? negCount : posCount;
+  const dissenters = directions
+    .filter(d => (majority==='on') ? d.riskDir < 0 : d.riskDir > 0)
+    .map(d => d.name);
+  
+  if(dissent >= 3){
+    return {
+      twisted: true,
+      dissent: dissent,
+      majority: majority,
+      message: `⚠️ 指標がねじれています(不一致${dissent}件)：${dissenters.join('・')}`
+    };
+  }
+  return {twisted:false, dissent:dissent, message:''};
+}
+
+/* ---------- 窓開け額計算(v2.2) ---------- */
+// CME日経終値 - 前日東証終値 = 推定窓開け額
+function calcGap(){
+  const cme = indValues.N225F;
+  const cash = referenceData.N225_CASH;
+  if(!cme || cme.price==null || !cash || cash.price==null) return null;
+  const gap = cme.price - cash.price;
+  return {
+    gap: gap,
+    gapPct: (gap / cash.price) * 100,
+    cme: cme.price,
+    cash: cash.price
+  };
+}
+
+/* ---------- 平易な判定文の自動生成(v2.2) ---------- */
+function buildPlainVerdict(score){
+  if(score==null) return '';
+  const strong=[], weak=[];
+  for(const ind of INDICATORS){
+    const v = indValues[ind.key];
+    if(!v || v.chgPct==null) continue;
+    const dir = ind.inverse?-1:1;
+    const riskContrib = v.chgPct * dir; // リスクオン寄与
+    if(Math.abs(riskContrib) < 0.5) continue; // 微小は無視
+    if(riskContrib > 0.8) strong.push(ind.name);
+    else if(riskContrib < -0.8) weak.push(ind.name);
+  }
+  let parts=[];
+  if(strong.length>0) parts.push(`${strong.slice(0,3).join('・')}が追い風`);
+  if(weak.length>0) parts.push(`${weak.slice(0,3).join('・')}が逆風`);
+  if(parts.length===0) return '指標は中立的な動き。決め手に欠ける相場。';
+  // セクター推奨
+  const tagBoost = [];
+  if(strong.includes('SOX半導体') || strong.includes('ナスダック100')) tagBoost.push('半導体・AI関連');
+  if(strong.includes('ドル円')) tagBoost.push('輸出株(自動車・電機)');
+  if(strong.includes('WTI原油')) tagBoost.push('商社・海運');
+  if(strong.includes('TOPIX')) tagBoost.push('内需・大型');
+  let sector = tagBoost.length ? `特に${tagBoost.slice(0,2).join('と')}が有利。` : '';
+  return parts.join('、') + '。' + sector;
+}
+
+function verdictText(s){
+  if(s==null) return {t:'指標を入力/取得してください', c:''};
+  if(s>=40) return {t:'🔥 強い追い風（積極的に仕掛け）', c:'strong'};
+  if(s>=20) return {t:'📈 追い風（通常サイズで）', c:'strong'};
+  if(s>-20) return {t:'⚖️ 中立（様子見推奨）', c:'mid'};
+  if(s>-40) return {t:'📉 向かい風（控えめに）', c:'weak'};
+  return {t:'🌀 強い逆風（本日は見送り）', c:'weak'};
+}
+
+/* ---------- STOCK EXPECTATION ---------- */
+function stockScore(stock){
+  // tag→indicator mapping (v2.2: 新指標で精緻化)
+  const map = {
+    'SOX':'SOX','NQ':'NDX','NY':'DJI','USDJPY':'USDJPY',
+    '景気':'SPX',
+    '内需':'TOPX',          // v2.2: TOPIXに変更(内需はTOPIX連動が強い)
+    '金融':'TNX',           // v2.2: 米10年金利に変更(銀行は金利↑で有利)
+    '商社':'WTI',           // v2.2: WTI原油に変更(商社は資源価格連動)
+    '資源':'WTI',           // v2.2: WTI原油に変更
+    '日経寄与':'N225F',
+    // v2.0 追加タグ
+    '防衛':'N225F',         // 国内政策テーマ・日経先物連動
+    '造船':'N225F',         // 国内政策テーマ・日経先物連動
+    '重工':'SPX',           // 景気敏感・S&P500連動
+    '宇宙':'NDX',           // ハイテク成長・NASDAQ連動
+    'AIインフラ':'NDX',     // AI関連・NASDAQ連動
+    'フィジカルAI':'NDX'    // AI関連・NASDAQ連動
+  };
+  let s=0, n=0;
+  stock.tags.forEach(t=>{
+    const k = map[t]; if(!k) return;
+    const v = indValues[k];
+    if(!v || v.chgPct==null) return;
+    s += v.chgPct;
+    n++;
+  });
+  if(n===0) return null;
+  return s/n; // 平均%
+}
+
+function starsFor(stock, marketScore){
+  const ss = stockScore(stock);
+  if(ss==null || marketScore==null) return 0;
+  // 合成：銘柄個別の連動度% × 10 + 場スコア × 0.3
+  const combined = ss*10 + marketScore*0.3;
+  if(combined>=25) return 5;
+  if(combined>=12) return 4;
+  if(combined>=3)  return 3;
+  if(combined>=-8) return 2;
+  return 1;
+}
+
+/* ---------- RENDER ---------- */
+function recalc(){
+  const s = calcScore();
+  const v = verdictText(s);
+  document.getElementById('scoreNum').textContent = s==null?'—':(s>0?'+':'')+s.toFixed(0);
+  document.getElementById('verdict').textContent = v.t;
+  document.getElementById('verdict').className = 'verdict '+v.c;
+  // gauge
+  const bar = document.getElementById('gaugeBar');
+  const pct = s==null?50:((s+100)/2);
+  bar.style.width = pct+'%';
+  // v2.2: 窓開け額表示
+  const gapEl = document.getElementById('gapDisplay');
+  if(gapEl){
+    const g = calcGap();
+    if(g){
+      const sign = g.gap >= 0 ? '+' : '';
+      const cls = g.gap >= 0 ? 'up' : 'down';
+      gapEl.innerHTML = `<div style="font-size:13px;color:var(--sub);margin-top:8px">本日の日経は前日比 <b class="${cls}" style="font-size:15px">${sign}${Math.round(g.gap)}円(${sign}${g.gapPct.toFixed(2)}%)</b> の窓開け予想</div>`;
+    } else {
+      gapEl.innerHTML = '<div style="font-size:11px;color:var(--sub);margin-top:8px">窓開け額：データ取得中…</div>';
+    }
+  }
+  // v2.2: ねじれ警告
+  const twistEl = document.getElementById('twistWarn');
+  if(twistEl){
+    const t = detectTwist();
+    if(t.twisted){
+      twistEl.innerHTML = `<div style="background:#3a2410;border:1px solid var(--warn);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:12px;color:var(--warn)">${t.message}<br><span style="font-size:11px;color:var(--sub)">こういう日はサイズを半分にするのが安全です。</span></div>`;
+    } else {
+      twistEl.innerHTML = '';
+    }
+  }
+  // v2.2: 平易な判定文
+  const plainEl = document.getElementById('plainVerdict');
+  if(plainEl){
+    const txt = buildPlainVerdict(s);
+    plainEl.innerHTML = txt ? `<div style="font-size:12px;color:var(--txt);margin-top:6px;line-height:1.5">${txt}</div>` : '';
+  }
+  renderStocks();
+  renderPicks(s);
+  // v2.2: 寄り後判定の更新
+  if(typeof renderPostOpenJudgment === 'function'){
+    renderPostOpenJudgment();
+  }
+  // v2.1: スコアが計算できたら自動でログ記録
+  if(s !== null){
+    recordDailyLog();
+  }
+  // v2.1: 履歴タブが存在する場合は更新
+  if(typeof renderHistory === 'function'){
+    renderHistory();
+  }
+}
+
+/* ---------- 寄り後判定レンダリング(v2.2) ---------- */
+function renderPostOpenJudgment(){
+  const box = document.getElementById('postOpenResult');
+  if(!box) return;
+  const morningScore = calcScore();
+  const r = referenceData;
+  // 必要な3指標が揃っているか
+  if(!r.TSE_OPEN || r.TSE_OPEN.chgPct==null){
+    box.innerHTML = '<div style="color:var(--sub);font-size:12px">9:05以降に「寄り後を取得」を押すと最終判定が表示されます</div>';
+    return;
+  }
+  // 朝の予測:窓開け率(%)、寄り値の実際:^nkxのchgPct
+  const gap = calcGap();
+  const expectedPct = gap ? gap.gapPct : 0;
+  const actualPct = r.TSE_OPEN.chgPct ?? 0;
+  const deviation = Math.abs(actualPct - expectedPct);
+  
+  // ドル円の予想 vs 実際(ドル円は朝の指標値そのまま)
+  const usdJpyMorning = indValues.USDJPY?.chgPct ?? 0;
+  const usdJpyOpen = r.USDJPY_OPEN?.chgPct ?? usdJpyMorning;
+  const fxDev = Math.abs(usdJpyOpen - usdJpyMorning);
+  
+  // 半導体プロキシ:東京エレクトロン
+  const soxMorning = indValues.SOX?.chgPct ?? 0;
+  const sxOpen = r.SOX_PROXY?.chgPct ?? soxMorning;
+  const sxDev = Math.abs(sxOpen - soxMorning);
+  
+  const avgDev = (deviation + fxDev + sxDev) / 3;
+  
+  let verdict, cls, advice;
+  if(avgDev < 0.3){
+    verdict = '✅ GO（予想通り）';
+    cls = 'down'; // 緑
+    advice = '朝の予測通りの寄り付き。仕掛け候補★4以上を通常サイズで。';
+  } else if(avgDev < 0.7){
+    verdict = '⚠️ 慎重に';
+    cls = 'warn';
+    advice = '予想と若干の乖離あり。サイズを半分にするか、より絞った銘柄のみ仕掛ける。';
+  } else {
+    verdict = '🛑 見送り推奨';
+    cls = 'up'; // 赤
+    advice = '予想と大きな乖離あり。本日は様子見が無難。';
+  }
+  
+  box.innerHTML = `
+    <div style="background:var(--panel2);border-radius:10px;padding:12px;margin-top:8px">
+      <div style="font-size:18px;font-weight:700;margin-bottom:6px" class="${cls}">${verdict}</div>
+      <div style="font-size:12px;color:var(--txt);margin-bottom:8px">${advice}</div>
+      <div style="font-size:11px;color:var(--sub);line-height:1.6">
+        <div>日経寄り：${r.TSE_OPEN.chgPct>=0?'+':''}${r.TSE_OPEN.chgPct.toFixed(2)}% (予想 ${expectedPct>=0?'+':''}${expectedPct.toFixed(2)}%、乖離 ${deviation.toFixed(2)}%)</div>
+        <div>半導体(8035)：${sxOpen>=0?'+':''}${sxOpen.toFixed(2)}% (予想SOX ${soxMorning>=0?'+':''}${soxMorning.toFixed(2)}%、乖離 ${sxDev.toFixed(2)}%)</div>
+        <div>ドル円：${usdJpyOpen>=0?'+':''}${usdJpyOpen.toFixed(2)}% (朝 ${usdJpyMorning>=0?'+':''}${usdJpyMorning.toFixed(2)}%、乖離 ${fxDev.toFixed(2)}%)</div>
+        <div style="margin-top:4px;font-weight:600">平均乖離：${avgDev.toFixed(2)}%</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderStocks(){
+  const s = calcScore();
+  const list = document.getElementById('stockList');
+  list.innerHTML = '';
+  // sort by star desc
+  const arr = stocks.map(st=>({st,star:starsFor(st,s),ss:stockScore(st)}));
+  arr.sort((a,b)=>(b.star-a.star)||((b.ss??-99)-(a.ss??-99)));
+  arr.forEach(({st,star,ss})=>{
+    const el = document.createElement('div');
+    el.className = 'stock';
+    const chgTxt = ss==null?'':((ss>=0?'+':'')+ss.toFixed(2)+'%');
+    const chgCls = ss==null?'':(ss>=0?'up':'down');
+    el.innerHTML = `
+      <div class="meta">
+        <div class="row" style="gap:6px">
+          <div class="ticker">${st.code}</div>
+          <div class="name2">${st.name}</div>
+        </div>
+        <div class="tags">${st.tags.join(' · ')}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="stars">${'★'.repeat(star)}${'☆'.repeat(5-star)}</div>
+        <div class="chg ${chgCls}" style="font-size:11px">${chgTxt}</div>
+      </div>
+    `;
+    list.appendChild(el);
+  });
+}
+
+function renderPicks(marketScore){
+  const box = document.getElementById('picks');
+  box.innerHTML = '';
+  if(marketScore==null){
+    box.innerHTML = '<div style="color:var(--sub);font-size:13px">指標を入力すると候補が表示されます</div>';
+    return;
+  }
+  if(marketScore<=-20){
+    box.innerHTML = `<div style="color:var(--warn);font-size:13px">⚠️ 場が弱いため、本日は見送りまたは様子見推奨です。<br>どうしても仕掛けるなら下記★4以上の銘柄を小さく試してください。</div>`;
+  }
+  const arr = stocks.map(st=>({st,star:starsFor(st,marketScore),ss:stockScore(st)}))
+    .filter(x=>x.star>=4)
+    .sort((a,b)=>(b.star-a.star)||((b.ss??-99)-(a.ss??-99)))
+    .slice(0,5);
+  if(arr.length===0){
+    box.insertAdjacentHTML('beforeend','<div style="color:var(--sub);font-size:13px;margin-top:6px">★4以上の候補がありません。無理に仕掛けず様子見を推奨します。</div>');
+    return;
+  }
+  arr.forEach(({st,star,ss})=>{
+    const chgTxt = ss==null?'':((ss>=0?'+':'')+ss.toFixed(2)+'%');
+    const el = document.createElement('div');
+    el.className = 'stock pick';
+    el.innerHTML = `
+      <div class="meta" style="width:100%">
+        <div class="row" style="gap:6px">
+          <div class="ticker">${st.code}</div>
+          <div class="name2">${st.name}</div>
+          <div class="stars" style="margin-left:auto">${'★'.repeat(star)}</div>
+        </div>
+        <div class="tags">${st.tags.join(' · ')} ${ss!=null?` / 連動平均 ${chgTxt}`:''}</div>
+        <details class="pickbox">
+          <summary>📋 売買プランを見る</summary>
+          <div class="trade-plan">
+            <div><span>仕掛け：</span>寄り付き後5〜10分の動きを確認してから成行または指値</div>
+            <div><span>損切：</span>エントリー値 <b>-2.0%</b>（必ず逆指値を置く）</div>
+            <div><span>利確①：</span>+3%で半分利確</div>
+            <div><span>利確②：</span>+5%で残り利確 or 終値で引き上げトレール</div>
+            <div><span>撤退条件：</span>日経平均が前日比-1%を超えて下落したら即手仕舞い</div>
+            <div><span>ファンダ確認：</span>決算発表前3営業日は見送り</div>
+            <!-- v2.2: 損切リマインダー -->
+            <div style="margin-top:8px;padding:8px;background:#0e1627;border-radius:6px">
+              <div style="font-size:11px;color:var(--accent);margin-bottom:4px">💰 損切ライン計算</div>
+              <div class="row" style="gap:6px;align-items:center;margin-bottom:4px">
+                <label style="margin:0;font-size:11px">エントリー価格（円）</label>
+                <input type="number" step="any" placeholder="例: 5000" data-st-code="${st.code}" class="entry-price-input" style="padding:4px 8px;font-size:12px;width:100px">
+              </div>
+              <div class="loss-cut-line" data-st-code="${st.code}" style="font-size:11px;color:var(--sub)">エントリー価格を入れると損切ラインが計算されます</div>
+              <label style="display:flex;gap:6px;align-items:center;margin-top:6px;cursor:pointer">
+                <input type="checkbox" class="stop-loss-check" data-st-code="${st.code}" style="width:auto">
+                <span style="font-size:11px;color:var(--warn)">⚠ 逆指値（損切注文）を証券会社で設定済み</span>
+              </label>
+            </div>
+          </div>
+        </details>
+      </div>
+    `;
+    box.appendChild(el);
+  });
+  // v2.2: 損切リマインダーのバインド
+  bindLossCutInputs();
+}
+
+/* ---------- 損切リマインダー(v2.2) ---------- */
+function bindLossCutInputs(){
+  document.querySelectorAll('.entry-price-input').forEach(inp => {
+    inp.addEventListener('input', e => {
+      const code = e.target.dataset.stCode;
+      const price = parseFloat(e.target.value);
+      const target = document.querySelector(`.loss-cut-line[data-st-code="${code}"]`);
+      if(!target) return;
+      if(isNaN(price) || price <= 0){
+        target.innerHTML = 'エントリー価格を入れると損切ラインが計算されます';
+        target.style.color = 'var(--sub)';
+        return;
+      }
+      const stopLoss = price * 0.98;
+      const profit1 = price * 1.03;
+      const profit2 = price * 1.05;
+      target.innerHTML = `
+        <div style="color:var(--up)">🛑 損切ライン(-2%): <b>${stopLoss.toFixed(0)}円</b></div>
+        <div style="color:var(--down)">✅ 利確①(+3%): ${profit1.toFixed(0)}円　利確②(+5%): ${profit2.toFixed(0)}円</div>
+        <div style="color:var(--warn);font-size:10px;margin-top:2px">必ず証券会社で逆指値を ${stopLoss.toFixed(0)}円 にセット！</div>
+      `;
+      target.style.color = '';
+    });
+  });
+}
+
+/* ---------- EDIT LIST ---------- */
+function renderEditList(){
+  const box = document.getElementById('editList');
+  box.innerHTML = '';
+  stocks.forEach((s,i)=>{
+    const row = document.createElement('div');
+    row.className = 'editrow';
+    row.innerHTML = `
+      <input type="text" value="${s.code||''}" placeholder="証券コード" data-i="${i}" data-f="code">
+      <input type="text" value="${s.name||''}" placeholder="銘柄名" data-i="${i}" data-f="name">
+      <input type="text" value="${(s.tags||[]).join(',')}" placeholder="タグ(カンマ区切)" data-i="${i}" data-f="tags">
+      <button class="del" data-i="${i}">×</button>
+    `;
+    box.appendChild(row);
+  });
+  box.querySelectorAll('input').forEach(inp=>{
+    inp.addEventListener('input',e=>{
+      const i=+e.target.dataset.i, f=e.target.dataset.f;
+      if(f==='tags'){
+        stocks[i].tags = e.target.value.split(',').map(x=>x.trim()).filter(Boolean);
+      }else{
+        stocks[i][f] = e.target.value;
+      }
+    });
+  });
+  box.querySelectorAll('.del').forEach(b=>{
+    b.addEventListener('click',e=>{
+      const i=+e.target.dataset.i;
+      if(confirm(`${stocks[i].name||stocks[i].code}を削除しますか？`)){
+        stocks.splice(i,1);
+        renderEditList();
+      }
+    });
+  });
+}
+
+/* ---------- HISTORY RENDER (v2.1) ---------- */
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  const stats = document.getElementById('historyStats');
+  if(!list || !stats) return;
+  
+  const logs = loadLogs();
+  
+  // 統計サマリー
+  if(logs.length === 0){
+    stats.innerHTML = '<div style="color:var(--sub);font-size:13px">まだ記録がありません。指標を入力すると自動記録が始まります。</div>';
+    list.innerHTML = '';
+    return;
+  }
+  
+  // 過去のスコア統計
+  const scores = logs.map(l => l.score).filter(s => s !== null);
+  const avgScore = scores.reduce((a,b)=>a+b, 0) / scores.length;
+  const maxScore = Math.max(...scores);
+  const minScore = Math.min(...scores);
+  const strongDays = scores.filter(s => s >= 20).length;
+  const weakDays = scores.filter(s => s <= -20).length;
+  const neutralDays = scores.length - strongDays - weakDays;
+  
+  stats.innerHTML = `
+    <div class="kv"><span>記録日数</span><span>${logs.length}日</span></div>
+    <div class="kv"><span>平均スコア</span><span>${avgScore>=0?'+':''}${avgScore.toFixed(1)}</span></div>
+    <div class="kv"><span>最高スコア</span><span class="up">+${maxScore.toFixed(0)}</span></div>
+    <div class="kv"><span>最低スコア</span><span class="down">${minScore.toFixed(0)}</span></div>
+    <div class="kv"><span>強気日（+20以上）</span><span class="up">${strongDays}日</span></div>
+    <div class="kv"><span>中立日</span><span>${neutralDays}日</span></div>
+    <div class="kv"><span>弱気日（-20以下）</span><span class="down">${weakDays}日</span></div>
+  `;
+  
+  // 履歴リスト（新しい順、最大20件）
+  const sortedLogs = [...logs].sort((a,b) => b.timestamp - a.timestamp).slice(0, 20);
+  
+  list.innerHTML = '<h3 style="color:var(--sub);font-size:12px;margin:16px 0 8px;letter-spacing:.05em">最近20日の記録</h3>';
+  
+  sortedLogs.forEach(log => {
+    const verdictCls = log.score >= 20 ? 'up' : log.score <= -20 ? 'down' : 'warn';
+    const verdictTxt = log.score >= 40 ? '🔥強い追い風' :
+                       log.score >= 20 ? '📈追い風' :
+                       log.score > -20 ? '⚖️中立' :
+                       log.score > -40 ? '📉向かい風' : '🌀強い逆風';
+    
+    const picksHtml = (log.picks && log.picks.length > 0)
+      ? log.picks.slice(0,5).map(p => `<span style="display:inline-block;background:var(--panel2);padding:2px 6px;border-radius:4px;margin:2px;font-size:11px">${p.code} ${p.name} ${'★'.repeat(p.star)}</span>`).join('')
+      : '<span style="color:var(--sub);font-size:11px">候補なし</span>';
+    
+    const item = document.createElement('div');
+    item.style.cssText = 'background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px';
+    item.innerHTML = `
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:600">${log.date}</div>
+        <div class="${verdictCls}" style="font-size:13px;font-weight:600">
+          ${log.score>=0?'+':''}${log.score.toFixed(0)} ${verdictTxt}
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--sub);margin-bottom:4px">★4以上の候補（${log.picks?log.picks.length:0}件）：</div>
+      <div>${picksHtml}</div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function bindHistoryButtons(){
+  const exportBtn = document.getElementById('exportLogs');
+  const clearBtn = document.getElementById('clearLogs');
+  if(exportBtn){
+    exportBtn.addEventListener('click', () => {
+      const logs = loadLogs();
+      if(logs.length === 0){
+        alert('エクスポートするログがありません');
+        return;
+      }
+      const dataStr = JSON.stringify(logs, null, 2);
+      const blob = new Blob([dataStr], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const today = new Date().toISOString().split('T')[0];
+      a.href = url;
+      a.download = `stocksurfing_logs_${today}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+  }
+  if(clearBtn){
+    clearBtn.addEventListener('click', () => {
+      if(confirm('全ての履歴ログを削除しますか？\n（銘柄リストは残ります）\n\nこの操作は取り消せません。')){
+        try{
+          localStorage.removeItem(STORAGE_KEY_LOGS);
+          alert('✅ ログを削除しました');
+          renderHistory();
+        }catch(e){
+          alert('削除失敗: ' + e.message);
+        }
+      }
+    });
+  }
+}
+
+/* ---------- STORAGE (localStorage有効化) v2.1 ---------- */
+// v2.1: 永続保存を有効化。これにより銘柄編集とログ記録が永続化される。
+// ストレージキー一覧：
+//   mt_stocks_v2     : 銘柄リスト
+//   mt_daily_logs_v2 : 毎日のスコア・指標・候補銘柄ログ
+//   mt_settings_v2   : ユーザー設定（将来用）
+
+const STORAGE_KEY_STOCKS = 'mt_stocks_v2';
+const STORAGE_KEY_LOGS   = 'mt_daily_logs_v2';
+
+function loadStocks(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY_STOCKS);
+    if(saved){
+      const parsed = JSON.parse(saved);
+      if(Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  }catch(e){
+    console.warn('銘柄リストの読み込み失敗:', e);
+  }
+  return JSON.parse(JSON.stringify(DEFAULT_STOCKS));
+}
+
+function saveStocks(){
+  try{
+    localStorage.setItem(STORAGE_KEY_STOCKS, JSON.stringify(stocks));
+  }catch(e){
+    console.warn('銘柄リストの保存失敗:', e);
+  }
+}
+
+/* ---------- DAILY LOG (自動記録) v2.1 ---------- */
+// 毎日のスコア・指標・候補銘柄を自動記録する。
+// これは将来の自己進化エンジンの訓練データとなる。
+
+function loadLogs(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY_LOGS);
+    if(saved) return JSON.parse(saved);
+  }catch(e){
+    console.warn('ログ読み込み失敗:', e);
+  }
+  return [];
+}
+
+function saveLog(logEntry){
+  try{
+    const logs = loadLogs();
+    // 同日のログは上書き（最新のスコアで更新）
+    const today = logEntry.date;
+    const existingIdx = logs.findIndex(l => l.date === today);
+    if(existingIdx >= 0){
+      logs[existingIdx] = logEntry;
+    }else{
+      logs.push(logEntry);
+    }
+    // 古いログは100件までに制限（約3-4ヶ月分）
+    if(logs.length > 100) logs.splice(0, logs.length - 100);
+    localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(logs));
+  }catch(e){
+    console.warn('ログ保存失敗:', e);
+  }
+}
+
+function recordDailyLog(){
+  const score = calcScore();
+  if(score === null) return; // 指標が入力されていない時は記録しない
+  
+  const today = new Date();
+  const dateStr = today.getFullYear() + '-' + 
+    String(today.getMonth()+1).padStart(2,'0') + '-' + 
+    String(today.getDate()).padStart(2,'0');
+  
+  // 候補銘柄（★4以上）を抽出
+  const picks = stocks.map(st => ({
+    code: st.code,
+    name: st.name,
+    tags: st.tags,
+    star: starsFor(st, score),
+    ss: stockScore(st)
+  })).filter(x => x.star >= 4);
+  
+  // 指標値のスナップショット
+  const indicators = {};
+  Object.keys(indValues).forEach(k => {
+    indicators[k] = {
+      price: indValues[k]?.price ?? null,
+      chgPct: indValues[k]?.chgPct ?? null
+    };
+  });
+  
+  const log = {
+    date: dateStr,
+    timestamp: today.getTime(),
+    score: Math.round(score * 10) / 10,
+    indicators: indicators,
+    picks: picks,
+    // v2.2以降で追加：実際の翌日結果
+    nextDayResult: null
+  };
+  
+  saveLog(log);
+}
+
+/* ---------- GO ---------- */
+init();
+
+/* ---------- PWA: Service Worker登録 (v3.0) ---------- */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW reg failed:', e));
+}
+</script>
+</body>
+</html>
