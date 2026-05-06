@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - 通知メール送信スクリプト
-GitHub Actions上で fetch_data.py の後に実行され、
-data.json を読み込んで朝/寄り後の判定を集計し、Gmail SMTP で送信する。
-
-環境変数:
-  GMAIL_USER         : 送信元Gmailアドレス (例: matsumuratantei@gmail.com)
-  GMAIL_APP_PASSWORD : Gmailアプリパスワード (16文字)
-  RECIPIENTS         : 宛先メアド (カンマ区切り)
-  NOTIFICATION_TYPE  : 'morning' or 'postopen' (デフォルト: morning)
+松村式Stocksurfing - 通知メール送信 (v3.1)
+v3で追加: 決算警告セクション・昨日の振り返り
 """
 import os
 import sys
@@ -18,11 +11,11 @@ import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
+JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 銘柄リスト（HTMLのDEFAULT_STOCKSと整合）
 DEFAULT_STOCKS = [
     {'code':'8035', 'name':'東京エレクトロン',  'tags':['SOX','NQ']},
     {'code':'6920', 'name':'レーザーテック',    'tags':['SOX','NQ']},
@@ -45,8 +38,6 @@ DEFAULT_STOCKS = [
     {'code':'8316', 'name':'三井住友FG',        'tags':['金融','USDJPY']},
     {'code':'9107', 'name':'川崎汽船',          'tags':['資源','景気']},
 ]
-
-# 指標重み (HTMLのINDICATORSと整合)
 INDICATORS = [
     {'key':'N225F',  'weight':3.0, 'inverse':False},
     {'key':'TOPX',   'weight':2.5, 'inverse':False},
@@ -61,12 +52,14 @@ INDICATORS = [
     {'key':'VIX',    'weight':0.8, 'inverse':True},
     {'key':'NKVI',   'weight':1.0, 'inverse':True},
 ]
-
 TAG_MAP = {
     'SOX':'SOX','NQ':'NDX','NY':'DJI','USDJPY':'USDJPY',
     '景気':'SPX','内需':'TOPX','金融':'TNX','商社':'WTI','資源':'WTI','日経寄与':'N225F',
     '防衛':'N225F','造船':'N225F','重工':'SPX','宇宙':'NDX','AIインフラ':'NDX','フィジカルAI':'NDX',
 }
+NAME_MAP = {'N225F':'日経先物','TOPX':'TOPIX','NDX':'ナスダック100','SPX':'S&P500',
+            'SOX':'SOX半導体','DJI':'NYダウ','USDJPY':'ドル円','EURJPY':'ユーロ円',
+            'TNX':'米10年金利','WTI':'WTI原油','VIX':'VIX恐怖指数','NKVI':'日経VI'}
 
 def calc_score(indicators):
     s, w = 0, 0
@@ -77,8 +70,7 @@ def calc_score(indicators):
         cp = max(-5, min(5, v['chgPct']))
         s += cp * 15 * d * ind['weight']
         w += ind['weight']
-    if w == 0: return None
-    return max(-100, min(100, s / (w * 0.75)))
+    return None if w == 0 else max(-100, min(100, s / (w * 0.75)))
 
 def stock_score(stock, indicators):
     s, n = 0, 0
@@ -110,14 +102,13 @@ def calc_gap(indicators, reference):
     return {'gap': gap, 'gapPct': gap / cash['price'] * 100}
 
 def detect_twist(indicators):
-    pos, neg, dissenters = 0, 0, []
+    pos, neg = 0, 0
     for ind in INDICATORS:
         v = indicators.get(ind['key'])
         if not v or v.get('chgPct') is None: continue
         if abs(v['chgPct']) < 0.1: continue
         d = -1 if ind['inverse'] else 1
-        risk_dir = v['chgPct'] * d
-        if risk_dir > 0: pos += 1
+        if v['chgPct'] * d > 0: pos += 1
         else: neg += 1
     total = pos + neg
     if total < 4: return None
@@ -132,18 +123,74 @@ def verdict_text(s):
     if s > -40: return '📉 向かい風（控えめに）'
     return '🌀 強い逆風（本日は見送り）'
 
+def get_yesterdays_recap(jst_now):
+    """verification_log.json から昨日の振り返りを取得"""
+    log_path = os.path.join(SCRIPT_DIR, 'verification_log.json')
+    if not os.path.exists(log_path):
+        return None
+    try:
+        with open(log_path, 'r', encoding='utf-8') as f:
+            log = json.load(f)
+    except Exception:
+        return None
+    if not log: return None
+    # 最新の1件 (今朝より前のもの)
+    today_str = jst_now.date().strftime('%Y-%m-%d')
+    prior = [l for l in log if l.get('date') and l['date'] < today_str]
+    if not prior:
+        return None
+    last = prior[-1]
+    return last
+
+def build_recap_html(recap):
+    """昨日の振り返りHTMLブロック"""
+    if not recap: return ''
+    score = recap.get('morningScore')
+    n225 = recap.get('actualIndices', {}).get('N225') or {}
+    metrics = recap.get('metrics', {})
+    direction_correct = metrics.get('n225_direction_correct')
+    avg_pick = metrics.get('avg_pick_return')
+    
+    n225_chg = n225.get('chgPct')
+    direction_icon = '✓' if direction_correct else '✗' if direction_correct is False else '—'
+    parts = [f"昨日({recap.get('date','?')}) の予測: <b>{'+' if score and score > 0 else ''}{score:.0f}</b>"] if score is not None else []
+    if n225_chg is not None:
+        parts.append(f"日経実勢: <b>{n225_chg:+.2f}%</b>")
+    parts.append(f"方向性: {direction_icon}")
+    if avg_pick is not None:
+        parts.append(f"★4候補平均: <b>{avg_pick:+.2f}%</b>")
+    
+    return f'<div style="background:#1a2a4d;color:#e6ecff;padding:10px;border-radius:8px;font-size:12px;margin:12px 0">📒 {" / ".join(parts)}</div>'
+
+def build_earnings_warnings_html(earnings_warnings):
+    """決算警告HTMLブロック"""
+    if not earnings_warnings: return ''
+    items = []
+    for code, info in sorted(earnings_warnings.items(), key=lambda x: x[1].get('businessDaysUntil', 99)):
+        st = next((s for s in DEFAULT_STOCKS if s['code'] == code), None)
+        name = st['name'] if st else info.get('companyName', '?')
+        bd = info.get('businessDaysUntil')
+        date = info.get('date', '?')
+        bd_s = '本日' if bd == 0 else f'{bd}営業日後'
+        items.append(f'<li><b>{code} {name}</b> — 決算予定 {date} ({bd_s})</li>')
+    return f'''
+<div style="background:#3a2410;border:1px solid #f7b955;border-radius:8px;padding:12px;margin:12px 0">
+  <div style="color:#f7b955;font-weight:bold;margin-bottom:6px">⚠️ 決算発表が3営業日以内の銘柄（仕掛け非推奨）</div>
+  <ul style="margin:4px 0 0 16px;padding:0;color:#e6ecff;font-size:13px">{"".join(items)}</ul>
+</div>'''
+
 def build_morning_email(data, jst_now):
-    """朝7:30の通知メール内容を生成"""
     indicators = data.get('indicators', {})
     reference = data.get('referenceData', {})
+    earnings_warnings = data.get('earningsWarnings', {})
     score = calc_score(indicators)
     verdict = verdict_text(score)
     gap = calc_gap(indicators, reference)
     twist = detect_twist(indicators)
     
-    # 候補銘柄
     picks = []
     for stock in DEFAULT_STOCKS:
+        if stock['code'] in earnings_warnings: continue  # 決算警告対象は候補から外す
         star = stars_for(stock, score, indicators)
         ss = stock_score(stock, indicators)
         if star >= 4:
@@ -154,7 +201,6 @@ def build_morning_email(data, jst_now):
     score_str = f"{'+' if score and score > 0 else ''}{score:.0f}" if score is not None else "—"
     subject = f"📈 [{jst_now.strftime('%m/%d')}] 場の判定 {score_str} / {verdict.split('（')[0]}"
     
-    # HTML本文
     gap_html = ''
     if gap:
         sign = '+' if gap['gap'] >= 0 else ''
@@ -165,63 +211,62 @@ def build_morning_email(data, jst_now):
     if twist:
         twist_html = f'<p style="background:#3a2410;padding:8px;border-radius:6px;color:#f7b955">⚠️ <b>指標がねじれています</b>（不一致{twist}件）。サイズを半分にするのが安全です。</p>'
     
+    earnings_html = build_earnings_warnings_html(earnings_warnings)
+    recap = get_yesterdays_recap(jst_now)
+    recap_html = build_recap_html(recap)
+    
     picks_html = ''
     if picks:
-        picks_html = '<h3>🎯 仕掛け候補（★4以上）</h3><ul style="list-style:none;padding-left:0">'
+        picks_html = '<h3>🎯 仕掛け候補（★4以上、決算3営業日以内除外）</h3><ul style="list-style:none;padding-left:0">'
         for p in picks:
             ss_s = f' (連動 {"+" if p["ss"] and p["ss"]>=0 else ""}{p["ss"]:.2f}%)' if p['ss'] is not None else ''
             picks_html += f'<li style="padding:6px;margin:4px 0;background:#1a2540;color:#e6ecff;border-radius:6px">{"★"*p["star"]} <b>{p["stock"]["code"]} {p["stock"]["name"]}</b>{ss_s}</li>'
         picks_html += '</ul>'
     else:
-        picks_html = '<p style="color:#9aa8c7">★4以上の候補がありません。様子見推奨。</p>'
+        picks_html = '<p style="color:#9aa8c7">★4以上の候補なし。様子見推奨。</p>'
     
     indicators_table = '<h3>📊 指標一覧</h3><table style="border-collapse:collapse;width:100%"><tr style="background:#263353;color:#fff"><th style="padding:6px;text-align:left">指標</th><th style="padding:6px;text-align:right">前日終値</th><th style="padding:6px;text-align:right">前日比%</th></tr>'
-    name_map = {
-        'N225F':'日経先物','TOPX':'TOPIX','NDX':'ナスダック100','SPX':'S&P500',
-        'SOX':'SOX半導体','DJI':'NYダウ','USDJPY':'ドル円','EURJPY':'ユーロ円',
-        'TNX':'米10年金利','WTI':'WTI原油','VIX':'VIX恐怖指数','NKVI':'日経VI',
-    }
     for ind in INDICATORS:
         v = indicators.get(ind['key'])
         if not v: 
-            indicators_table += f'<tr><td style="padding:6px;border-bottom:1px solid #ddd">{name_map.get(ind["key"], ind["key"])}</td><td style="padding:6px;text-align:right;color:#999">—</td><td style="padding:6px;text-align:right;color:#999">—</td></tr>'
+            indicators_table += f'<tr><td style="padding:6px;border-bottom:1px solid #ddd">{NAME_MAP.get(ind["key"],ind["key"])}</td><td style="padding:6px;text-align:right;color:#999">—</td><td style="padding:6px;text-align:right;color:#999">—</td></tr>'
             continue
         chg = v.get('chgPct')
         chg_s = f"{'+' if chg and chg >= 0 else ''}{chg:.2f}%" if chg is not None else '—'
         chg_color = '#ff5766' if chg and chg >= 0 else '#2ecc71'
         if ind['inverse']:
-            chg_color = '#2ecc71' if chg and chg >= 0 else '#ff5766'  # VIX等は逆
-        indicators_table += f'<tr><td style="padding:6px;border-bottom:1px solid #ddd">{name_map.get(ind["key"], ind["key"])}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd">{v.get("price","—")}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd;color:{chg_color}">{chg_s}</td></tr>'
+            chg_color = '#2ecc71' if chg and chg >= 0 else '#ff5766'
+        indicators_table += f'<tr><td style="padding:6px;border-bottom:1px solid #ddd">{NAME_MAP.get(ind["key"],ind["key"])}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd">{v.get("price","—")}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd;color:{chg_color}">{chg_s}</td></tr>'
     indicators_table += '</table>'
     
-    pages_url = os.environ.get('PAGES_URL', 'https://matsumuratantei-Stocksurfing.github.io/Stocksurfing/')
+    pages_url = os.environ.get('PAGES_URL', 'https://matsumuratantei-stocksurfing.github.io/Stocksurfing/')
     body = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;max-width:600px;margin:0 auto;padding:16px;color:#333">
 <h1 style="color:#0b1220;border-bottom:3px solid #4da3ff;padding-bottom:8px">🏄 松村式Stocksurfing</h1>
 <p style="color:#666">朝の場の判定 / {jst_now.strftime('%Y年%m月%d日 %H:%M')}</p>
+{recap_html}
 <div style="background:#0b1220;color:#fff;padding:20px;border-radius:12px;text-align:center;margin:16px 0">
   <div style="font-size:48px;font-weight:bold">{score_str}</div>
   <div style="font-size:18px;margin-top:8px">{verdict}</div>
 </div>
 {gap_html}
 {twist_html}
+{earnings_html}
 {picks_html}
 {indicators_table}
 <p style="margin-top:24px;text-align:center"><a href="{pages_url}" style="background:#4da3ff;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold">📱 アプリで詳細を見る</a></p>
-<p style="font-size:11px;color:#999;margin-top:24px;border-top:1px solid #ddd;padding-top:12px">このメールは GitHub Actions により自動送信されています。データ提供: yfinance / Nikkei公式。最終的な売買判断はご自身の責任で。</p>
+<p style="font-size:11px;color:#999;margin-top:24px;border-top:1px solid #ddd;padding-top:12px">v3.1 答え合わせエンジン搭載 / データ提供: yfinance / Nikkei公式 / J-Quants Premium</p>
 </body></html>"""
     return subject, body
 
 def build_postopen_email(data, jst_now):
-    """寄り後9:20の通知メール (簡易版) - 寄り値情報付き"""
     indicators = data.get('indicators', {})
     score = calc_score(indicators)
     verdict = verdict_text(score)
     score_str = f"{'+' if score and score > 0 else ''}{score:.0f}" if score is not None else "—"
     subject = f"⏰ [{jst_now.strftime('%m/%d')}] 寄り後判定 {score_str} / {verdict.split('（')[0]}"
-    
-    pages_url = os.environ.get('PAGES_URL', 'https://matsumuratantei-Stocksurfing.github.io/Stocksurfing/')
+    pages_url = os.environ.get('PAGES_URL', 'https://matsumuratantei-stocksurfing.github.io/Stocksurfing/')
     body = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
 <body style="font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic',sans-serif;max-width:600px;margin:0 auto;padding:16px;color:#333">
@@ -234,7 +279,7 @@ def build_postopen_email(data, jst_now):
 <p style="text-align:center;margin-top:24px">
   <a href="{pages_url}" style="background:#4da3ff;color:#fff;padding:14px 28px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:16px">📱 寄り後の最終判定をアプリで見る</a>
 </p>
-<p style="margin-top:16px;font-size:13px;color:#666">寄り値（日経・SOX代理・ドル円）に基づく <b>GO / 慎重 / 見送り</b> の最終判定はアプリ画面で確認してください。</p>
+<p style="margin-top:16px;font-size:13px;color:#666">寄り値（日経・SOX代理・ドル円）に基づく最終判定はアプリ画面で確認してください。</p>
 </body></html>"""
     return subject, body
 
@@ -244,7 +289,6 @@ def send_mail(subject, html_body, recipients, gmail_user, gmail_password):
     msg['To'] = ', '.join(recipients)
     msg['Subject'] = subject
     msg.attach(MIMEText(html_body, 'html', 'utf-8'))
-    
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
         server.login(gmail_user, gmail_password)
@@ -255,31 +299,24 @@ def main():
     gmail_password = os.environ.get('GMAIL_APP_PASSWORD')
     recipients_str = os.environ.get('RECIPIENTS', gmail_user or '')
     notification_type = os.environ.get('NOTIFICATION_TYPE', 'morning')
-    
     if not gmail_user or not gmail_password:
         print("[ERROR] GMAIL_USER / GMAIL_APP_PASSWORD が未設定")
         sys.exit(1)
-    
     recipients = [r.strip() for r in recipients_str.split(',') if r.strip()]
     if not recipients:
         print("[ERROR] 宛先が未設定")
         sys.exit(1)
-    
     data_path = os.path.join(SCRIPT_DIR, 'data.json')
     if not os.path.exists(data_path):
-        print(f"[ERROR] data.json が見つかりません: {data_path}")
+        print(f"[ERROR] data.json が見つかりません")
         sys.exit(1)
     with open(data_path, 'r', encoding='utf-8') as f:
         data = json.load(f)
-    
-    from datetime import timezone, timedelta
-    jst_now = datetime.now(timezone(timedelta(hours=9)))
-    
+    jst_now = datetime.now(JST)
     if notification_type == 'postopen':
         subject, body = build_postopen_email(data, jst_now)
     else:
         subject, body = build_morning_email(data, jst_now)
-    
     print(f"[INFO] 送信中: {subject}")
     print(f"[INFO] 宛先: {recipients}")
     send_mail(subject, body, recipients, gmail_user, gmail_password)
