@@ -28,12 +28,25 @@ jobs:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python verify_predictions.py
       
-      - name: Commit verification_log.json
+      - name: Commit verification_log.json (with retry)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add verification_log.json
-          if ! git diff --staged --quiet; then
-            git commit -m "Auto-update verification_log [nightly]"
-            git push
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
           fi
+          git commit -m "Auto-update verification_log [nightly]"
+          # 最大3回リトライ (race condition対策)
+          for i in 1 2 3; do
+            if git push; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed (attempt $i). Pulling with rebase..."
+            git pull --rebase --autostash || true
+            sleep 2
+          done
+          echo "Push failed after 3 attempts"
+          exit 1
