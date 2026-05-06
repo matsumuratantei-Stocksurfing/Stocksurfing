@@ -72,3 +72,15 @@
 ## ライセンス・免責
 
 このアプリはトレード判断補助ツールです。最終的な売買判断はご自身の責任で行ってください。
+
+## v3.1 追加機能
+
+- **答え合わせエンジン (verify.yml)**: 毎晩23:00 JST に自動実行。当日の予測vs実勢を比較し `verification_log.json` に蓄積
+- **決算カレンダー警告**: J-Quants Premium /fins/announcement で20銘柄の決算3営業日前を自動警告
+- **ポジション管理タブ**: アプリ内で保有銘柄を記録・含み損益自動計算
+
+## v3.1 追加 Secret
+
+| Secret名 | 値 |
+|---|---|
+| `JQUANTS_API_KEY` | J-Quants Premium API Key |
