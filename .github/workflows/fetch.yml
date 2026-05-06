@@ -1,0 +1,71 @@
+name: Fetch market data and notify
+
+on:
+  schedule:
+    # 朝7:30 JST = 22:30 UTC (前日)
+    - cron: '30 22 * * *'
+    # 寄り後9:20 JST = 0:20 UTC (当日)
+    - cron: '20 0 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      notification_type:
+        description: 'Morning (7:30) or Post-open (9:20)'
+        required: true
+        default: 'morning'
+        type: choice
+        options: [morning, postopen]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-and-notify:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Determine notification type
+        id: notif
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ inputs.notification_type }}" >> $GITHUB_OUTPUT
+          else
+            HOUR_UTC=$(date -u +%H)
+            if [ "$HOUR_UTC" = "22" ]; then
+              echo "type=morning" >> $GITHUB_OUTPUT
+            else
+              echo "type=postopen" >> $GITHUB_OUTPUT
+            fi
+          fi
+      
+      - name: Fetch market data
+        run: python fetch_data.py
+      
+      - name: Send notification email
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          RECIPIENTS: ${{ secrets.RECIPIENTS }}
+          NOTIFICATION_TYPE: ${{ steps.notif.outputs.type }}
+          PAGES_URL: ${{ vars.PAGES_URL }}
+        run: python send_email.py
+      
+      - name: Commit data.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data.json
+          if ! git diff --staged --quiet; then
+            git commit -m "Auto-update data.json [${{ steps.notif.outputs.type }}]"
+            git push
+          fi
