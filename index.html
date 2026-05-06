@@ -77,6 +77,8 @@
 
   <div class="tabs">
     <div class="tab active" data-tab="dash">ダッシュ</div>
+    <div class="tab" data-tab="positions">💼ポジション</div>
+    <div class="tab" data-tab="verify">🎯答え合わせ</div>
     <div class="tab" data-tab="history">📊履歴</div>
     <div class="tab" data-tab="edit">銘柄編集</div>
     <div class="tab" data-tab="help">使い方</div>
@@ -142,6 +144,37 @@
       <div class="kv"><span>見送り判断</span><span>スコア±20以内は「様子見」</span></div>
     </div>
 
+  </section>
+
+  <!-- POSITIONS (v3.1) -->
+  <section id="tab-positions" class="hide">
+    <div class="card">
+      <h2>💼 保有ポジション</h2>
+      <div class="status">エントリー時に銘柄・株数・価格を記録すると、含み損益が自動計算されます。<br>同時保有3銘柄ルールも色分けで表示。</div>
+      <div id="positionsSummary" style="margin-top:12px"></div>
+      <div id="positionsList" style="margin-top:12px"></div>
+      <div style="margin-top:16px;padding:12px;background:var(--panel2);border-radius:10px">
+        <h3 style="font-size:13px;color:var(--accent);margin:0 0 8px">+ 新規エントリーを追加</h3>
+        <div class="row" style="gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap">
+          <select id="posCode" style="flex:1;min-width:140px;padding:6px;font-size:12px"></select>
+        </div>
+        <div class="row" style="gap:6px;align-items:center;margin-bottom:6px">
+          <input type="number" id="posShares" placeholder="株数" style="flex:1;padding:6px;font-size:12px">
+          <input type="number" step="any" id="posEntry" placeholder="エントリー価格(円)" style="flex:1;padding:6px;font-size:12px">
+        </div>
+        <button id="addPositionBtn" class="ghost small" style="width:100%;background:var(--accent);color:#fff">+ ポジション追加</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERIFICATION (v3.1) -->
+  <section id="tab-verify" class="hide">
+    <div class="card">
+      <h2>🎯 答え合わせ</h2>
+      <div class="status">毎晩23:00に当日の予測vs実勢を自動比較しています。蓄積データで的中率と銘柄別パフォーマンスを表示。</div>
+      <div id="verifyStats" style="margin-top:12px"></div>
+      <div id="verifyList" style="margin-top:12px"></div>
+    </div>
   </section>
 
   <!-- HISTORY (v2.1) -->
@@ -221,6 +254,12 @@
         9:05以降にボタンを押すと、東証寄り値・半導体寄り値・ドル円寄り値を自動取得し、朝の予想と比較して GO/慎重/見送り を判定します。<br><br>
         <b style="color:var(--accent)">損切リマインダー：</b><br>
         各候補銘柄の売買プランに「エントリー価格」入力欄が追加され、入力すると損切ライン（-2%）・利確ライン（+3%/+5%）が円額で計算されます。逆指値設定済みのチェック欄も追加。<br><br>
+        <b style="color:var(--accent)">v3.1 答え合わせエンジン:</b><br>
+        毎晩23:00 にGitHub Actionsが自動で当日の実勢を取得し、朝の予測と比較。蓄積データを「答え合わせ」タブで可視化。<br><br>
+        <b style="color:var(--accent)">v3.1 決算カレンダー警告:</b><br>
+        J-Quants Premium APIで20銘柄の決算予定を毎朝チェック。3営業日以内の銘柄は仕掛け候補から自動除外し、警告バッジを表示。<br><br>
+        <b style="color:var(--accent)">v3.1 ポジション管理:</b><br>
+        エントリー時に銘柄・株数・価格を記録すると、損切/利確ラインが自動計算。同時保有3銘柄ルールも色分けで表示。<br><br>
         <b style="color:var(--accent)">v2.3：ローカルPython取得：</b><br>
         起動batがPythonスクリプト(yfinance)を実行して全12指標(日経VI含む)を取得し、ローカルのdata.jsonに保存します。HTMLはそれを読むだけなのでCORS制約から完全解放されます。
       </p>
@@ -245,7 +284,7 @@
     </div>
   </section>
 
-  <footer>松村式Stocksurfing v3.0 · クラウド版 · iPhone対応 · データ提供: yfinance + 日経公式</footer>
+  <footer>松村式Stocksurfing v3.1 · 答え合わせ + 決算警告 + ポジション管理 · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
 </main>
 
 <script>
@@ -306,6 +345,8 @@ const DEFAULT_STOCKS = [
 
 let indValues = {}; // {key: {price, chgPct}}
 let stocks = loadStocks();
+let earningsWarnings = {}; // v3.1: 決算警告 {code: {date, businessDaysUntil, ...}}
+let positions = loadPositions(); // v3.1: 保有ポジション
 
 /* ---------- INIT ---------- */
 async function init(){
@@ -316,8 +357,11 @@ async function init(){
   bindButtons();
   bindHistoryButtons(); // v2.1: 履歴タブのボタンバインド
   bindPostOpenButton(); // v2.2: 寄り後ボタンバインド
+  bindPositionButtons(); // v3.1: ポジションタブ
   recalc();
   renderHistory(); // v2.1: 履歴を初期表示
+  renderPositions(); // v3.1
+  loadVerification(); // v3.1: 答え合わせデータ取得
   // v2.2: 起動時に自動で全指標を取得(ボタンを押す手間を省く)
   try{
     await fetchAll();
@@ -345,7 +389,7 @@ function bindTabs(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      ['dash','history','edit','help'].forEach(id=>{
+      ['dash','positions','verify','history','edit','help'].forEach(id=>{
         document.getElementById('tab-'+id).classList.add('hide');
       });
       document.getElementById('tab-'+t.dataset.tab).classList.remove('hide');
@@ -441,6 +485,10 @@ async function fetchAll(){
           for(const key of Object.keys(json.referenceData)){
             referenceData[key] = json.referenceData[key];
           }
+        }
+        // v3.1: 決算警告
+        if(json.earningsWarnings){
+          earningsWarnings = json.earningsWarnings;
         }
         const fetchTime = json.fetchedAt ? new Date(json.fetchedAt).toLocaleString('ja-JP', {hour:'2-digit', minute:'2-digit'}) : '不明';
         status.textContent = `✅ ローカル取得完了 (${fetchTime}更新)：${okLocal}指標`;
@@ -843,7 +891,7 @@ function renderStocks(){
   const s = calcScore();
   const list = document.getElementById('stockList');
   list.innerHTML = '';
-  // sort by star desc
+  const earnings = (typeof earningsWarnings !== 'undefined') ? earningsWarnings : {};
   const arr = stocks.map(st=>({st,star:starsFor(st,s),ss:stockScore(st)}));
   arr.sort((a,b)=>(b.star-a.star)||((b.ss??-99)-(a.ss??-99)));
   arr.forEach(({st,star,ss})=>{
@@ -851,11 +899,20 @@ function renderStocks(){
     el.className = 'stock';
     const chgTxt = ss==null?'':((ss>=0?'+':'')+ss.toFixed(2)+'%');
     const chgCls = ss==null?'':(ss>=0?'up':'down');
+    // v3.1: 決算警告バッジ
+    const earn = earnings[st.code];
+    let earningsBadge = '';
+    if(earn){
+      const bd = earn.businessDaysUntil;
+      const lbl = bd === 0 ? '本日決算' : `決算${bd}営業日後`;
+      earningsBadge = `<span style="display:inline-block;background:#3a2410;border:1px solid var(--warn);color:var(--warn);padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">⚠️${lbl}</span>`;
+    }
     el.innerHTML = `
       <div class="meta">
-        <div class="row" style="gap:6px">
+        <div class="row" style="gap:6px;flex-wrap:wrap">
           <div class="ticker">${st.code}</div>
           <div class="name2">${st.name}</div>
+          ${earningsBadge}
         </div>
         <div class="tags">${st.tags.join(' · ')}</div>
       </div>
@@ -1196,6 +1253,148 @@ function recordDailyLog(){
   };
   
   saveLog(log);
+}
+
+/* ---------- POSITIONS (v3.1) ---------- */
+function loadPositions(){
+  try{
+    const saved = localStorage.getItem('mt_positions_v3');
+    if(saved) return JSON.parse(saved);
+  }catch(e){}
+  return [];
+}
+function savePositions(){
+  try{ localStorage.setItem('mt_positions_v3', JSON.stringify(positions)); }catch(e){}
+}
+function bindPositionButtons(){
+  // 銘柄selectを20銘柄で埋める
+  const sel = document.getElementById('posCode');
+  if(sel){
+    sel.innerHTML = stocks.map(st => `<option value="${st.code}">${st.code} ${st.name}</option>`).join('');
+  }
+  const addBtn = document.getElementById('addPositionBtn');
+  if(addBtn){
+    addBtn.addEventListener('click', () => {
+      const code = document.getElementById('posCode').value;
+      const shares = parseInt(document.getElementById('posShares').value);
+      const entry = parseFloat(document.getElementById('posEntry').value);
+      if(!code || !shares || !entry || shares <= 0 || entry <= 0){
+        alert('銘柄・株数・エントリー価格を全て入力してください');
+        return;
+      }
+      const st = stocks.find(s => s.code === code);
+      if(!st) return;
+      positions.push({
+        code: code,
+        name: st.name,
+        shares: shares,
+        entryPrice: entry,
+        entryDate: new Date().toISOString().split('T')[0],
+      });
+      savePositions();
+      document.getElementById('posShares').value = '';
+      document.getElementById('posEntry').value = '';
+      renderPositions();
+      alert('✅ ポジションを追加しました');
+    });
+  }
+}
+function renderPositions(){
+  const list = document.getElementById('positionsList');
+  const summary = document.getElementById('positionsSummary');
+  if(!list || !summary) return;
+  if(positions.length === 0){
+    summary.innerHTML = '<div style="color:var(--sub);font-size:12px">保有ポジションなし。エントリーしたら下のフォームから記録してください。</div>';
+    list.innerHTML = '';
+    return;
+  }
+  // 同時保有ルール3銘柄
+  const ruleCls = positions.length <= 3 ? 'down' : 'up';
+  const ruleIcon = positions.length <= 3 ? '✅' : '⚠️';
+  summary.innerHTML = `<div class="kv"><span>同時保有(ルール: 最大3)</span><span class="${ruleCls}">${ruleIcon} ${positions.length}/3 銘柄</span></div>`;
+  list.innerHTML = '';
+  positions.forEach((p, idx) => {
+    const stopLoss = p.entryPrice * 0.98;
+    const profit1 = p.entryPrice * 1.03;
+    const profit2 = p.entryPrice * 1.05;
+    const item = document.createElement('div');
+    item.style.cssText = 'background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px';
+    item.innerHTML = `
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-weight:600">${p.code} ${p.name}</div>
+        <button data-idx="${idx}" class="del-position" style="background:transparent;border:1px solid var(--line);color:var(--up);padding:2px 8px;border-radius:6px;font-size:11px;cursor:pointer">削除</button>
+      </div>
+      <div style="font-size:11px;color:var(--sub);line-height:1.7">
+        <div>株数: <b style="color:var(--txt)">${p.shares}株</b> / エントリー: <b style="color:var(--txt)">${p.entryPrice.toFixed(0)}円</b> (${p.entryDate})</div>
+        <div style="color:var(--up)">🛑 損切ライン(-2%): <b>${stopLoss.toFixed(0)}円</b></div>
+        <div style="color:var(--down)">✅ 利確①(+3%): ${profit1.toFixed(0)}円 / 利確②(+5%): ${profit2.toFixed(0)}円</div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+  list.querySelectorAll('.del-position').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const idx = +e.target.dataset.idx;
+      if(confirm(`${positions[idx].code} ${positions[idx].name} を削除しますか？`)){
+        positions.splice(idx, 1);
+        savePositions();
+        renderPositions();
+      }
+    });
+  });
+}
+
+/* ---------- VERIFICATION (v3.1) ---------- */
+async function loadVerification(){
+  const stats = document.getElementById('verifyStats');
+  const list = document.getElementById('verifyList');
+  if(!stats || !list) return;
+  let log = [];
+  try{
+    const res = await fetch('verification_log.json?_=' + Date.now());
+    if(res.ok) log = await res.json();
+  }catch(e){}
+  if(!log || log.length === 0){
+    stats.innerHTML = '<div style="color:var(--sub);font-size:13px">まだ答え合わせデータがありません。<br>毎晩23:00に自動で蓄積されます。1〜2週間お待ちください。</div>';
+    list.innerHTML = '';
+    return;
+  }
+  // 統計
+  const dirCorrect = log.map(l => l.metrics?.n225_direction_correct).filter(x => x !== null && x !== undefined);
+  const dirRate = dirCorrect.length ? (dirCorrect.filter(x=>x).length / dirCorrect.length * 100) : 0;
+  const opCorrect = log.map(l => l.metrics?.picks_outperformed).filter(x => x !== null && x !== undefined);
+  const opRate = opCorrect.length ? (opCorrect.filter(x=>x).length / opCorrect.length * 100) : 0;
+  const avgPicks = log.map(l => l.metrics?.avg_pick_return).filter(x => x !== null && x !== undefined);
+  const avgPick = avgPicks.length ? (avgPicks.reduce((a,b)=>a+b,0)/avgPicks.length) : 0;
+  stats.innerHTML = `
+    <div class="kv"><span>記録日数</span><span>${log.length}日</span></div>
+    <div class="kv"><span>日経方向性的中率</span><span class="${dirRate >= 50 ? 'up' : 'down'}">${dirRate.toFixed(1)}% (${dirCorrect.filter(x=>x).length}/${dirCorrect.length})</span></div>
+    <div class="kv"><span>★4候補のアウトパフォーム率</span><span class="${opRate >= 50 ? 'up' : 'down'}">${opRate.toFixed(1)}% (${opCorrect.filter(x=>x).length}/${opCorrect.length})</span></div>
+    <div class="kv"><span>★4候補 平均リターン</span><span class="${avgPick >= 0 ? 'up' : 'down'}">${avgPick >= 0 ? '+' : ''}${avgPick.toFixed(2)}%</span></div>
+  `;
+  list.innerHTML = '<h3 style="color:var(--sub);font-size:12px;margin:16px 0 8px">最近の答え合わせ (新しい順、最大15日)</h3>';
+  const sorted = [...log].sort((a,b) => (b.date||'').localeCompare(a.date||'')).slice(0, 15);
+  sorted.forEach(l => {
+    const score = l.morningScore;
+    const n225 = l.actualIndices?.N225;
+    const dirOk = l.metrics?.n225_direction_correct;
+    const avgPick = l.metrics?.avg_pick_return;
+    const dirIcon = dirOk === true ? '✓' : dirOk === false ? '✗' : '—';
+    const dirCls = dirOk ? 'up' : 'down';
+    const item = document.createElement('div');
+    item.style.cssText = 'background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px;font-size:12px';
+    item.innerHTML = `
+      <div class="row" style="justify-content:space-between;margin-bottom:4px">
+        <div style="font-weight:600">${l.date}</div>
+        <div class="${dirCls}" style="font-weight:600">方向性 ${dirIcon}</div>
+      </div>
+      <div style="color:var(--sub);font-size:11px;line-height:1.6">
+        予測: <b style="color:var(--txt)">${score>=0?'+':''}${score?.toFixed(0) ?? '—'}</b> / 
+        日経実勢: <b style="color:var(--txt)">${n225?.chgPct >= 0 ? '+' : ''}${n225?.chgPct?.toFixed(2) ?? '—'}%</b>${avgPick !== undefined && avgPick !== null ? ` / ★4平均: <b style="color:var(--txt)">${avgPick>=0?'+':''}${avgPick.toFixed(2)}%</b>` : ''}
+      </div>
+    `;
+    list.appendChild(item);
+  });
 }
 
 /* ---------- GO ---------- */
