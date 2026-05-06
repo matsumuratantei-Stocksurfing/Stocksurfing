@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - データ取得スクリプト (Phase 2 / v3.0)
-GitHub Actions上で実行され、yfinance + 日経公式スクレイピングで全12指標を取得
-data.json をリポジトリにコミットすることでHTMLから読み込まれる
+松村式Stocksurfing - データ取得スクリプト (v3.1)
+yfinance + Nikkei公式 + J-Quants(決算カレンダー) を統合
 """
 import json
 import sys
@@ -14,6 +13,10 @@ from datetime import datetime, timezone, timedelta
 import yfinance as yf
 import requests
 from bs4 import BeautifulSoup
+
+# 同一ディレクトリのjquants_clientをimport
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from jquants_client import jq_get, get_announcements
 
 JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,12 +34,18 @@ SYMBOL_OPTIONS = {
     'TNX':    ['^TNX'],
     'WTI':    ['CL=F'],
     'VIX':    ['^VIX'],
-    'NKVI':   ['^N225VI', '^JNIV'],   # yfinance失敗時はNikkei公式へフォールバック
+    'NKVI':   ['^N225VI', '^JNIV'],
 }
 REFERENCE_OPTIONS = {
     'N225_CASH': ['^N225'],
     'SOX_PROXY': ['8035.T'],
 }
+
+# v3.1で追跡する20銘柄(HTMLのDEFAULT_STOCKSと同期)
+TRACKED_STOCKS = [
+    '8035','6920','6857','6146','6526','5803','4063','9984','7011','7012',
+    '7013','6501','6758','7203','6506','8058','8031','8306','8316','9107',
+]
 
 def fetch_yfinance_one(symbol):
     try:
@@ -63,11 +72,8 @@ def fetch_with_options(symbols):
             return r, sym
     return None, None
 
-# ---------- 日経VI(現物指数) ----------
-
+# ---------- 日経VI(現物) ----------
 def scrape_nkvi_nikkei_official():
-    """日経公式 indexes.nikkei.co.jp/nkave/index?idx=nk225vi
-    BeautifulSoupで構造化データを正確抽出"""
     url = 'https://indexes.nikkei.co.jp/nkave/index?idx=nk225vi'
     try:
         r = requests.get(url, headers={
@@ -77,41 +83,27 @@ def scrape_nkvi_nikkei_official():
         }, timeout=15)
         r.encoding = r.apparent_encoding
         if r.status_code != 200:
-            print(f"      [Nikkei公式] HTTP {r.status_code}")
             return None
-        
         soup = BeautifulSoup(r.text, 'html.parser')
-        
-        # 1) ページのテキスト全体を取得して、構造的に最も信頼できるパターンで抽出
         text = soup.get_text('\n', strip=True)
-        
-        # パターンA: "現値" の直後の数値 + "前日比" 直後のパーセンテージ
-        # 構造: 現値\n39.79\n...前日比\n+11.21（+39.22%）
         price_match = re.search(r'現値\s*[\n\s]*([0-9]+\.[0-9]+)', text)
-        # 「前日比 ... (XX.XX%)」または「前日比\n...\n(+XX.XX%)」のパターン
         chg_pct_match = re.search(
             r'前日比[\s\S]{0,300}?[（(]\s*([+\-▲]?\s*[0-9]+\.[0-9]+)\s*%[)）]',
             text
         )
-        
-        # パターンB: 絶対変化値からchgPct計算 (バックアップ)
         abs_change_match = re.search(
             r'前日比[\s\S]{0,200}?([+\-▲]?\s*[0-9]+\.[0-9]+)\s*[（(]',
             text
         )
-        
         if price_match:
             price = float(price_match.group(1))
             if not (5 < price < 100):
-                print(f"      [Nikkei公式] 価格レンジ外: {price}")
                 return None
-            
             chg_pct = None
             if chg_pct_match:
                 s = chg_pct_match.group(1).replace('▲', '-').replace('+', '').strip()
                 try:
                     chg_pct = float(s)
-                    # 整合チェック: 絶対変化値が分かれば、計算と一致するか確認
                     if abs_change_match:
                         abs_s = abs_change_match.group(1).replace('▲', '-').replace('+', '').strip()
                         try:
@@ -119,50 +111,96 @@ def scrape_nkvi_nikkei_official():
                             if price - abs_change > 0:
                                 expected_pct = abs_change / (price - abs_change) * 100
                                 if abs(expected_pct - chg_pct) > 1.0:
-                                    # 値が整合しない場合、計算値を信頼
-                                    print(f"      [Nikkei公式] chgPct整合エラー (page={chg_pct}, calc={expected_pct:.2f})。計算値採用")
                                     chg_pct = expected_pct
                         except ValueError:
                             pass
                 except ValueError:
                     pass
-            
-            return {
-                'price': round(price, 4),
-                'chgPct': round(chg_pct, 4) if chg_pct is not None else None,
-                'source': 'Nikkei公式',
-                'url': url,
-            }
-        else:
-            print(f"      [Nikkei公式] 現値が見つからない")
-            return None
-    except Exception as e:
-        print(f"      [Nikkei公式] {type(e).__name__}: {e}")
+            return {'price': round(price, 4), 'chgPct': round(chg_pct, 4) if chg_pct is not None else None}
+        return None
+    except Exception:
         return None
 
 def fetch_nkvi_multisource():
-    """日経VI(現物指数)を取得"""
     print(f"    [日経VI 取得開始]")
-    # 1. yfinance (delistedの場合は失敗)
     r = fetch_yfinance_one('^N225VI')
     if r and r['price'] > 0:
-        print(f"      ✓ yfinance: 成功 (price={r['price']}, chg={r['chgPct']:+.2f}%)")
-        return r, 'yfinance'
-    print(f"      ✗ yfinance: 失敗 (delisted等)")
-    
-    # 2. 日経公式 (BeautifulSoup)
+        print(f"      ✓ yfinance: 成功")
+        return r
     r = scrape_nkvi_nikkei_official()
     if r and r.get('price'):
-        chg_s = f"{r['chgPct']:+.2f}%" if r.get('chgPct') is not None else "N/A"
-        print(f"      ✓ Nikkei公式: 成功 (price={r['price']}, chg={chg_s})")
-        return r, 'Nikkei公式'
+        print(f"      ✓ Nikkei公式: 成功 (price={r['price']}, chg={r.get('chgPct')})")
+        return r
+    print(f"      ✗ 日経VI 取得失敗")
+    return None
+
+# ---------- 決算カレンダー(v3.2) ----------
+def is_business_day(d):
+    """土日のみ非営業日とみなす(祝日は無視)"""
+    return d.weekday() < 5
+
+def business_days_until(target_date_str, base_date):
+    """base_dateから target までの営業日数 (0以上)"""
+    try:
+        target = datetime.strptime(target_date_str, '%Y-%m-%d').date()
+    except ValueError:
+        return None
+    if target < base_date:
+        return None
+    days = 0
+    cur = base_date
+    while cur < target:
+        cur = cur + timedelta(days=1)
+        if is_business_day(cur):
+            days += 1
+    return days
+
+def fetch_earnings_calendar():
+    """J-Quants から決算発表予定を取得し、20銘柄分の3営業日以内警告をまとめる"""
+    print()
+    print("[決算カレンダー取得 (J-Quants)]")
+    today = datetime.now(JST).date()
     
-    print(f"      ✗ 全ソース失敗")
-    return None, None
+    data = get_announcements()
+    if not data:
+        print(f"  ✗ J-Quants 接続失敗 or データなし")
+        return {}
+    
+    # J-Quants /fins/announcement のレスポンス: {"announcement": [{...}, ...]}
+    announcements = data.get('announcement', [])
+    print(f"  全発表予定: {len(announcements)} 件取得")
+    
+    warnings = {}
+    for ann in announcements:
+        code_raw = ann.get('Code', '')
+        # J-Quantsは5桁コード(末尾0)を返すので、4桁にする
+        code = code_raw[:4] if len(code_raw) >= 4 else code_raw
+        if code not in TRACKED_STOCKS:
+            continue
+        date_str = ann.get('Date', '')
+        bdays = business_days_until(date_str, today)
+        if bdays is None or bdays > 3:
+            continue
+        # 既存より近い日があれば上書きしない
+        existing = warnings.get(code)
+        if existing and existing.get('businessDaysUntil', 99) <= bdays:
+            continue
+        warnings[code] = {
+            'date': date_str,
+            'businessDaysUntil': bdays,
+            'fiscalYear': ann.get('FiscalYear', ''),
+            'fiscalPeriod': ann.get('FiscalPeriod', ''),
+            'companyName': ann.get('CompanyName', ''),
+        }
+        print(f"  ⚠️ {code} ({ann.get('CompanyName','')}) — 決算予定 {date_str} ({bdays}営業日後)")
+    
+    if not warnings:
+        print(f"  ✓ 20銘柄すべて決算3営業日以内なし")
+    return warnings
 
 def main():
     print("=" * 50)
-    print("  松村式Stocksurfing データ取得 (Phase 2 / v3.0)")
+    print("  松村式Stocksurfing データ取得 (v3.1)")
     print(f"  実行時刻: {datetime.now(JST).isoformat()}")
     print("=" * 50)
     print()
@@ -178,11 +216,11 @@ def main():
             print(f"    ✓ OK -> {used:12s} price={result['price']:>12.2f} {chg_s}")
             indicators[key] = result
         else:
-            print(f"    ✗ FAIL -> 全候補失敗")
+            print(f"    ✗ FAIL")
             if key == 'NKVI':
-                result, source_name = fetch_nkvi_multisource()
+                result = fetch_nkvi_multisource()
                 if result:
-                    indicators[key] = {k: v for k, v in result.items() if k in ('price', 'chgPct')}
+                    indicators[key] = result
     
     reference = {}
     print()
@@ -195,10 +233,14 @@ def main():
         else:
             print(f"  {key:10s} FAIL")
     
+    # v3.2: 決算カレンダー
+    earnings_warnings = fetch_earnings_calendar()
+    
     output = {
         'fetchedAt': datetime.now(JST).isoformat(),
         'indicators': indicators,
         'referenceData': reference,
+        'earningsWarnings': earnings_warnings,
         'success': len(indicators),
         'total': len(SYMBOL_OPTIONS),
     }
@@ -209,7 +251,7 @@ def main():
     
     print()
     print("=" * 50)
-    print(f"  取得完了: {len(indicators)}/{len(SYMBOL_OPTIONS)} 成功")
+    print(f"  取得完了: {len(indicators)}/{len(SYMBOL_OPTIONS)} 指標 + 決算警告 {len(earnings_warnings)} 件")
     print("=" * 50)
 
 if __name__ == '__main__':
