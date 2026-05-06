@@ -2,10 +2,8 @@ name: Fetch market data and notify
 
 on:
   schedule:
-    # 朝7:30 JST = 22:30 UTC (前日)
-    - cron: '30 22 * * *'
-    # 寄り後9:20 JST = 0:20 UTC (当日)
-    - cron: '20 0 * * 1-5'
+    - cron: '30 22 * * *'   # 7:30 JST
+    - cron: '20 0 * * 1-5'  # 9:20 JST (平日)
   workflow_dispatch:
     inputs:
       notification_type:
@@ -21,7 +19,6 @@ permissions:
 jobs:
   fetch-and-notify:
     runs-on: ubuntu-latest
-    
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -49,6 +46,8 @@ jobs:
           fi
       
       - name: Fetch market data
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python fetch_data.py
       
       - name: Send notification email
