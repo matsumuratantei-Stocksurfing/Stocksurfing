@@ -1,59 +1,59 @@
 {
-  "fetchedAt": "2026-05-07T18:47:24.689221+09:00",
+  "fetchedAt": "2026-05-08T09:20:43.913841+09:00",
   "indicators": {
     "N225F": {
-      "price": 63140.0,
-      "chgPct": 1.6093
+      "price": 62475.0,
+      "chgPct": 0.5391
     },
     "TOPX": {
-      "price": 407.2,
-      "chgPct": 3.1931
+      "price": 405.1,
+      "chgPct": -0.5157
     },
     "NDX": {
-      "price": 28599.1699,
-      "chgPct": 2.085
+      "price": 28563.9473,
+      "chgPct": -0.1232
     },
     "SPX": {
-      "price": 7365.1201,
-      "chgPct": 1.4588
+      "price": 7337.1099,
+      "chgPct": -0.3803
     },
     "SOX": {
-      "price": 11472.75,
-      "chgPct": 4.4822
+      "price": 11160.9932,
+      "chgPct": -2.7174
     },
     "DJI": {
-      "price": 49910.5898,
-      "chgPct": 1.2421
+      "price": 49596.9688,
+      "chgPct": -0.6284
     },
     "USDJPY": {
-      "price": 156.346,
-      "chgPct": -0.8441
+      "price": 156.88,
+      "chgPct": 0.2377
     },
     "EURJPY": {
-      "price": 184.122,
-      "chgPct": -0.334
+      "price": 183.981,
+      "chgPct": 0.0707
     },
     "TNX": {
-      "price": 4.356,
-      "chgPct": -1.3587
+      "price": 4.392,
+      "chgPct": 0.8264
     },
     "WTI": {
-      "price": 92.4,
-      "chgPct": -2.8187
+      "price": 96.67,
+      "chgPct": 1.6723
     },
     "VIX": {
-      "price": 17.49,
-      "chgPct": 0.575
+      "price": 17.08,
+      "chgPct": -1.7826
     }
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 62833.8398,
-      "chgPct": 5.5798
+      "price": 62470.6406,
+      "chgPct": 4.9695
     },
     "SOX_PROXY": {
-      "price": 51720.0,
-      "chgPct": 8.9989
+      "price": 51590.0,
+      "chgPct": -0.2514
     }
   },
   "earningsWarnings": {},
