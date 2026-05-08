@@ -519,5 +519,128 @@
       "avg_all_return": -0.2482,
       "picks_outperformed": null
     }
+  },
+  {
+    "date": "2026-05-09",
+    "verifiedAt": "2026-05-09T03:23:01.614506+09:00",
+    "morningScore": -4.8,
+    "morningFetchedAt": "2026-05-08T15:22:21.950571+09:00",
+    "predictedPicks": [],
+    "actualIndices": {
+      "N225": {
+        "open": 60241.30859375,
+        "close": 62833.83984375,
+        "chgPct": 4.3035772471067695
+      },
+      "TOPX": null
+    },
+    "actualStocks": {
+      "8035": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6920": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6857": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6146": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6526": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "5803": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "4063": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9984": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7011": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7012": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7013": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6501": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6758": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7203": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6506": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8058": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8031": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8306": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8316": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9107": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      }
+    },
+    "metrics": {
+      "n225_direction_correct": false,
+      "avg_pick_return": null,
+      "avg_all_return": NaN,
+      "picks_outperformed": null
+    }
   }
 ]
