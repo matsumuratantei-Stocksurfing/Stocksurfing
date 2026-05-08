@@ -276,6 +276,22 @@
       </p>
     </div>
     <div class="card">
+      <h2>🆕 v3.2 改善ポイント</h2>
+      <p style="font-size:12px;color:var(--sub);line-height:1.7">
+        <b style="color:var(--accent)">方向性付き寄り後判定：</b><br>
+        従来の「予想と乖離があったら見送り」を改善。朝のスコア方向と寄り値の方向が一致しているかで判定するように変更。
+        <b>予想を上回る強気サプライズ（例: 朝+0.9%予想 → 実勢+4.3%）は「想定以上の好発進」としてGO強化</b>。
+        歴史的な上昇日にスルーする問題を解消。<br><br>
+        <b style="color:var(--accent)">ETF候補の追加（10本）：</b><br>
+        ・<b>半導体ETF 5本</b>（213A / 221A / 200A / 282A / 2243）：半導体一強の日にセクター丸ごと取りに行ける<br>
+        ・<b>レバ2倍ETF 2本</b>（1570 / 1579）：強い追い風日に通常株の倍速で利益を狙う<br>
+        ・<b>インバース2倍 1本</b>（1357）：下げ局面の検証用（取りに行く取りに行かないは別判断）<br>
+        ・<b>テーマETF 2本</b>（513A 防衛テック / 1619 建設・資材）：個別株の決算リスクを避けつつテーマに乗る<br><br>
+        <b style="color:var(--accent)">レバレッジETFのスコア計算：</b><br>
+        1570/1579 は連動指数の動きを×2、1357 は×-2 で評価。強気スコア+30の日は1570が★5に、弱気スコア-30の日は1357が★5になる。
+      </p>
+    </div>
+    <div class="card">
       <h2>免責</h2>
       <p style="font-size:12px;color:var(--sub);line-height:1.6">
         このアプリはトレードの判断補助ツールです。最終的な売買判断はご自身の責任で行ってください。
@@ -284,7 +300,7 @@
     </div>
   </section>
 
-  <footer>松村式Stocksurfing v3.1 · 答え合わせ + 決算警告 + ポジション管理 · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
+  <footer>松村式Stocksurfing v3.2 · 方向性付き寄り後判定 + ETF候補 · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
 </main>
 
 <script>
@@ -341,6 +357,21 @@ const DEFAULT_STOCKS = [
   {code:'8316', name:'三井住友FG',        tags:['金融','USDJPY']},
   // 海運（1）
   {code:'9107', name:'川崎汽船',          tags:['資源','景気']},
+  // ── ETF（v3.2 追加）──────────────────────────────
+  // 半導体ETF（5本：相場テーマ集中時のセクター丸ごと取りに）
+  {code:'213A', name:'上場日経半導体（アモーヴァ）',  tags:['SOX','半導体ETF'], etf:true},
+  {code:'221A', name:'MAXIS日経半導体（三菱UFJ）',    tags:['SOX','半導体ETF'], etf:true},
+  {code:'200A', name:'NEXT FUNDS 日経半導体（野村）',  tags:['SOX','半導体ETF'], etf:true},
+  {code:'282A', name:'GX 半導体トップ10-日本株式',     tags:['SOX','半導体ETF'], etf:true},
+  {code:'2243', name:'GX 半導体（米SOX連動・円換算）', tags:['SOX','NQ','米半導体ETF'], etf:true},
+  // 日経レバレッジ2倍（強気相場で大化け）
+  {code:'1570', name:'NF 日経平均レバレッジ2倍',       tags:['日経寄与','N225F','レバ2倍'], etf:true, leverage:2},
+  {code:'1579', name:'日経平均ブル2倍上場投信',         tags:['日経寄与','N225F','レバ2倍'], etf:true, leverage:2},
+  // 日経インバース2倍（下げ相場検証用・予測vs実勢の整合性確認用）
+  {code:'1357', name:'NF 日経Wインバース',              tags:['日経寄与','N225F','インバース'], etf:true, leverage:-2},
+  // テーマETF（防衛・建設インフラ）
+  {code:'513A', name:'GX 防衛テック-日本株式',          tags:['防衛','重工','日経寄与'], etf:true},
+  {code:'1619', name:'NF 建設・資材（TOPIX-17）',       tags:['内需','景気','建設インフラ'], etf:true},
 ];
 
 let indValues = {}; // {key: {price, chgPct}}
@@ -733,22 +764,26 @@ function verdictText(s){
 
 /* ---------- STOCK EXPECTATION ---------- */
 function stockScore(stock){
-  // tag→indicator mapping (v2.2: 新指標で精緻化)
+  // tag→indicator mapping (v3.2: ETF対応・新タグ追加)
   const map = {
     'SOX':'SOX','NQ':'NDX','NY':'DJI','USDJPY':'USDJPY',
     '景気':'SPX',
-    '内需':'TOPX',          // v2.2: TOPIXに変更(内需はTOPIX連動が強い)
-    '金融':'TNX',           // v2.2: 米10年金利に変更(銀行は金利↑で有利)
-    '商社':'WTI',           // v2.2: WTI原油に変更(商社は資源価格連動)
-    '資源':'WTI',           // v2.2: WTI原油に変更
+    '内需':'TOPX',          // 内需はTOPIX連動が強い
+    '金融':'TNX',           // 銀行は米10年金利↑で有利
+    '商社':'WTI',           // 商社は資源価格連動
+    '資源':'WTI',
     '日経寄与':'N225F',
-    // v2.0 追加タグ
     '防衛':'N225F',         // 国内政策テーマ・日経先物連動
-    '造船':'N225F',         // 国内政策テーマ・日経先物連動
+    '造船':'N225F',
     '重工':'SPX',           // 景気敏感・S&P500連動
-    '宇宙':'NDX',           // ハイテク成長・NASDAQ連動
-    'AIインフラ':'NDX',     // AI関連・NASDAQ連動
-    'フィジカルAI':'NDX'    // AI関連・NASDAQ連動
+    '宇宙':'NDX',           // ハイテク成長
+    'AIインフラ':'NDX',
+    'フィジカルAI':'NDX',
+    // v3.2 ETF系タグ（参考・スコア計算には主要タグを使う）
+    '半導体ETF':'SOX',
+    '米半導体ETF':'SOX',
+    '建設インフラ':'TOPX'
+    // 'レバ2倍','インバース','N225F' は leverage で別途処理
   };
   let s=0, n=0;
   stock.tags.forEach(t=>{
@@ -759,7 +794,9 @@ function stockScore(stock){
     n++;
   });
   if(n===0) return null;
-  return s/n; // 平均%
+  // v3.2: レバレッジETF対応（1570/1579は ×2、1357は ×-2）
+  const lev = stock.leverage ?? 1;
+  return (s/n) * lev;
 }
 
 function starsFor(stock, marketScore){
@@ -829,7 +866,9 @@ function recalc(){
   }
 }
 
-/* ---------- 寄り後判定レンダリング(v2.2) ---------- */
+/* ---------- 寄り後判定レンダリング(v3.2: 方向性付き乖離) ---------- */
+// 朝のスコアの方向と寄り値の方向の整合性を見る。
+// 「予測より強い方向に動いた=サプライズ買い」は見送りではなくGO強化。
 function renderPostOpenJudgment(){
   const box = document.getElementById('postOpenResult');
   if(!box) return;
@@ -844,44 +883,106 @@ function renderPostOpenJudgment(){
   const gap = calcGap();
   const expectedPct = gap ? gap.gapPct : 0;
   const actualPct = r.TSE_OPEN.chgPct ?? 0;
-  const deviation = Math.abs(actualPct - expectedPct);
-  
-  // ドル円の予想 vs 実際(ドル円は朝の指標値そのまま)
+  const surprise = actualPct - expectedPct; // +は予測超え（強気サプライズ）、-は予測未達
+
+  // ドル円の予想 vs 実際
   const usdJpyMorning = indValues.USDJPY?.chgPct ?? 0;
   const usdJpyOpen = r.USDJPY_OPEN?.chgPct ?? usdJpyMorning;
-  const fxDev = Math.abs(usdJpyOpen - usdJpyMorning);
-  
+  const fxDev = usdJpyOpen - usdJpyMorning;
+
   // 半導体プロキシ:東京エレクトロン
   const soxMorning = indValues.SOX?.chgPct ?? 0;
   const sxOpen = r.SOX_PROXY?.chgPct ?? soxMorning;
-  const sxDev = Math.abs(sxOpen - soxMorning);
-  
-  const avgDev = (deviation + fxDev + sxDev) / 3;
-  
-  let verdict, cls, advice;
-  if(avgDev < 0.3){
-    verdict = '✅ GO（予想通り）';
-    cls = 'down'; // 緑
-    advice = '朝の予測通りの寄り付き。仕掛け候補★4以上を通常サイズで。';
-  } else if(avgDev < 0.7){
-    verdict = '⚠️ 慎重に';
-    cls = 'warn';
-    advice = '予想と若干の乖離あり。サイズを半分にするか、より絞った銘柄のみ仕掛ける。';
-  } else {
-    verdict = '🛑 見送り推奨';
-    cls = 'up'; // 赤
-    advice = '予想と大きな乖離あり。本日は様子見が無難。';
+  const sxDev = sxOpen - soxMorning;
+
+  // 方向性判定
+  const score = morningScore ?? 0;
+  const scoreSign = score > 5 ? 1 : (score < -5 ? -1 : 0);
+  const openSign = actualPct > 0.3 ? 1 : (actualPct < -0.3 ? -1 : 0);
+
+  let verdict, cls, advice, etfHint = '';
+
+  // ── 1) 強気スコア（追い風）×強い上昇寄り：同方向 ──
+  if(scoreSign > 0 && openSign > 0){
+    if(actualPct >= expectedPct + 1.0){
+      verdict = '🚀 強気GO（想定以上の好発進）';
+      cls = 'down';
+      advice = `朝の予測（+${expectedPct.toFixed(2)}%）を大きく上回る寄り付き。買い殺到のサプライズ。半導体ETF（213A/221A/282A/200A/2243）やレバETF（1570/1579）も含め、★4以上を通常〜やや厚めのサイズで仕掛けOK。利確+4〜5%、損切-2%。利が乗れば一部スイング持ち越しも検討。`;
+    } else if(actualPct >= expectedPct - 0.3){
+      verdict = '✅ GO（予想通りの追い風）';
+      cls = 'down';
+      advice = '朝の予測通りの寄り付き。仕掛け候補★4以上を通常サイズで。利確+4〜5%、損切-2%。';
+    } else {
+      verdict = '⚠️ 慎重GO（上昇は確認だが予測より弱い）';
+      cls = 'warn';
+      advice = '上昇方向は確認したが予測ほどの強さなし。サイズ半分、または上昇率の高い銘柄に絞って短期で仕掛け。';
+    }
   }
-  
+  // ── 2) 強気スコア×寄り下げ：ねじれ顕在化 ──
+  else if(scoreSign > 0 && openSign < 0){
+    verdict = '🛑 見送り推奨（逆方向ねじれ）';
+    cls = 'up';
+    advice = '朝は追い風予測だったが寄りで逆行。米国の好材料が織り込み済み、または国内悪材料発生の可能性。本日は様子見が無難。';
+  }
+  // ── 3) 弱気スコア×強い下落寄り：同方向（ベアETF検証） ──
+  else if(scoreSign < 0 && openSign < 0){
+    if(actualPct <= -1.0){
+      verdict = '🐻 ベア検証GO（逆風想定通り）';
+      cls = 'warn';
+      advice = '朝の予測通りの強い下げ。下げ相場を取りに行く方針なら 1357（日経Wインバース）を少額で。下げを取らない方針なら見送り＝正解。検証用に予測vs実勢を記録。';
+    } else {
+      verdict = '🛑 見送り推奨（弱含み）';
+      cls = 'up';
+      advice = '弱含みの寄り付き。下げを取らない方針なら本日は様子見、これが正解。';
+    }
+  }
+  // ── 4) 弱気スコア×寄り上げ：想定外の上げ（ねじれ） ──
+  else if(scoreSign < 0 && openSign > 0){
+    if(actualPct >= 1.0){
+      verdict = '🤔 様子見→限定GO検討';
+      cls = 'warn';
+      advice = '朝の予測は逆風だったが寄りで強く上げ。買い戻し or 想定外材料発生の可能性。エントリーは慎重に、サイズ半分以下で短期狙い。無理は禁物。';
+    } else {
+      verdict = '⚠️ 慎重に（予測と矛盾）';
+      cls = 'warn';
+      advice = '弱気予測だが小幅上昇。方向感不明確、見送りが無難。';
+    }
+  }
+  // ── 5) 中立スコア ──
+  else {
+    if(Math.abs(actualPct) < 0.5){
+      verdict = '🟡 様子見';
+      cls = 'warn';
+      advice = '中立予測で寄りも方向感なし。本日は無理せず様子見が無難。';
+    } else if(actualPct >= 0.5){
+      verdict = '⚠️ 慎重GO';
+      cls = 'warn';
+      advice = '中立予測だが寄りは上げ。サイズ半分で短期狙い、欲張らない。';
+    } else {
+      verdict = '🛑 見送り推奨';
+      cls = 'up';
+      advice = '中立予測で寄り下げ。本日は様子見。';
+    }
+  }
+
+  // 半導体寄りが強烈に強い日 → 半導体ETFヒント追加
+  if(scoreSign >= 0 && sxOpen >= 2.0){
+    etfHint = `<div style="margin-top:6px;padding:6px 8px;background:#0e1627;border-radius:6px;color:var(--accent);font-size:11px">💡 半導体一強の日：個別が高値掴み気味なら 282A（半導体トップ10）/ 2243（米SOX連動）でセクター丸ごと取りに行く選択肢も有効。</div>`;
+  }
+
+  // サプライズ符号付き表示（+はサプライズ買い、-はサプライズ売り）
+  const fmtSurprise = (v)=>{ const s = v>=0?'+':''; return `${s}${v.toFixed(2)}%`; };
+
   box.innerHTML = `
     <div style="background:var(--panel2);border-radius:10px;padding:12px;margin-top:8px">
       <div style="font-size:18px;font-weight:700;margin-bottom:6px" class="${cls}">${verdict}</div>
-      <div style="font-size:12px;color:var(--txt);margin-bottom:8px">${advice}</div>
-      <div style="font-size:11px;color:var(--sub);line-height:1.6">
-        <div>日経寄り：${r.TSE_OPEN.chgPct>=0?'+':''}${r.TSE_OPEN.chgPct.toFixed(2)}% (予想 ${expectedPct>=0?'+':''}${expectedPct.toFixed(2)}%、乖離 ${deviation.toFixed(2)}%)</div>
-        <div>半導体(8035)：${sxOpen>=0?'+':''}${sxOpen.toFixed(2)}% (予想SOX ${soxMorning>=0?'+':''}${soxMorning.toFixed(2)}%、乖離 ${sxDev.toFixed(2)}%)</div>
-        <div>ドル円：${usdJpyOpen>=0?'+':''}${usdJpyOpen.toFixed(2)}% (朝 ${usdJpyMorning>=0?'+':''}${usdJpyMorning.toFixed(2)}%、乖離 ${fxDev.toFixed(2)}%)</div>
-        <div style="margin-top:4px;font-weight:600">平均乖離：${avgDev.toFixed(2)}%</div>
+      <div style="font-size:12px;color:var(--txt);margin-bottom:8px;line-height:1.5">${advice}</div>
+      ${etfHint}
+      <div style="font-size:11px;color:var(--sub);line-height:1.6;margin-top:8px">
+        <div>朝スコア：${score>=0?'+':''}${score.toFixed(0)} ／ 寄り方向：${openSign>0?'上':openSign<0?'下':'中立'}</div>
+        <div>日経寄り：${actualPct>=0?'+':''}${actualPct.toFixed(2)}% (予想 ${expectedPct>=0?'+':''}${expectedPct.toFixed(2)}%、サプライズ ${fmtSurprise(surprise)})</div>
+        <div>半導体(8035)：${sxOpen>=0?'+':''}${sxOpen.toFixed(2)}% (予想SOX ${soxMorning>=0?'+':''}${soxMorning.toFixed(2)}%、サプライズ ${fmtSurprise(sxDev)})</div>
+        <div>ドル円：${usdJpyOpen>=0?'+':''}${usdJpyOpen.toFixed(2)}% (朝 ${usdJpyMorning>=0?'+':''}${usdJpyMorning.toFixed(2)}%、サプライズ ${fmtSurprise(fxDev)})</div>
       </div>
     </div>
   `;
@@ -907,11 +1008,14 @@ function renderStocks(){
       const lbl = bd === 0 ? '本日決算' : `決算${bd}営業日後`;
       earningsBadge = `<span style="display:inline-block;background:#3a2410;border:1px solid var(--warn);color:var(--warn);padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">⚠️${lbl}</span>`;
     }
+    // v3.2: ETFバッジ（ETF / レバ2倍 / インバース）
+    const etfBadge = buildEtfBadge(st);
     el.innerHTML = `
       <div class="meta">
         <div class="row" style="gap:6px;flex-wrap:wrap">
           <div class="ticker">${st.code}</div>
           <div class="name2">${st.name}</div>
+          ${etfBadge}
           ${earningsBadge}
         </div>
         <div class="tags">${st.tags.join(' · ')}</div>
@@ -923,6 +1027,18 @@ function renderStocks(){
     `;
     list.appendChild(el);
   });
+}
+
+// v3.2: ETF種別バッジ生成
+function buildEtfBadge(st){
+  if(!st.etf) return '';
+  if(st.leverage === 2){
+    return '<span style="display:inline-block;background:#3a1a3a;border:1px solid #c060c0;color:#ff9bff;padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">レバ2倍ETF</span>';
+  }
+  if(st.leverage === -2){
+    return '<span style="display:inline-block;background:#1a3a1a;border:1px solid #60c060;color:#9bff9b;padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">インバース2倍</span>';
+  }
+  return '<span style="display:inline-block;background:#1a2a3a;border:1px solid var(--accent);color:var(--accent);padding:2px 6px;border-radius:4px;font-size:10px;margin-left:6px">ETF</span>';
 }
 
 function renderPicks(marketScore){
@@ -947,11 +1063,13 @@ function renderPicks(marketScore){
     const chgTxt = ss==null?'':((ss>=0?'+':'')+ss.toFixed(2)+'%');
     const el = document.createElement('div');
     el.className = 'stock pick';
+    const etfBadge = buildEtfBadge(st);
     el.innerHTML = `
       <div class="meta" style="width:100%">
-        <div class="row" style="gap:6px">
+        <div class="row" style="gap:6px;flex-wrap:wrap">
           <div class="ticker">${st.code}</div>
           <div class="name2">${st.name}</div>
+          ${etfBadge}
           <div class="stars" style="margin-left:auto">${'★'.repeat(star)}</div>
         </div>
         <div class="tags">${st.tags.join(' · ')} ${ss!=null?` / 連動平均 ${chgTxt}`:''}</div>
@@ -1166,7 +1284,25 @@ function loadStocks(){
     const saved = localStorage.getItem(STORAGE_KEY_STOCKS);
     if(saved){
       const parsed = JSON.parse(saved);
-      if(Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if(Array.isArray(parsed) && parsed.length > 0){
+        // v3.2: 新規追加されたDEFAULT銘柄(ETFなど)を自動マージ
+        const existingCodes = new Set(parsed.map(s=>s.code));
+        DEFAULT_STOCKS.forEach(d=>{
+          if(!existingCodes.has(d.code)){
+            parsed.push(JSON.parse(JSON.stringify(d)));
+          }
+        });
+        // ETF/leverage属性が欠落している場合は DEFAULT から補完
+        const defMap = new Map(DEFAULT_STOCKS.map(d=>[d.code,d]));
+        parsed.forEach(s=>{
+          const d = defMap.get(s.code);
+          if(d){
+            if(d.etf !== undefined && s.etf === undefined) s.etf = d.etf;
+            if(d.leverage !== undefined && s.leverage === undefined) s.leverage = d.leverage;
+          }
+        });
+        return parsed;
+      }
     }
   }catch(e){
     console.warn('銘柄リストの読み込み失敗:', e);
