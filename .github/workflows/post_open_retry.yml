@@ -1,0 +1,60 @@
+name: Post-open retry (9:10 / 9:30 JST)
+
+# fetch.yml の 9:20 JST 実行がクラウド側遅延で間に合わなかった場合に備え、
+# 9:10 と 9:30 にも fetch_postopen.py のみを走らせて postopen.json を更新する。
+# data.json は触らないので fetch.yml と競合しても被害は最小。
+
+on:
+  schedule:
+    - cron: '10 0 * * 1-5'  # 9:10 JST (平日)
+    - cron: '30 0 * * 1-5'  # 9:30 JST (平日)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-postopen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch post-open prices
+        run: python fetch_postopen.py
+        continue-on-error: true
+
+      - name: Commit postopen.json (with retry)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ ! -f postopen.json ]; then
+            echo "postopen.json not produced - skipping commit"
+            exit 0
+          fi
+          git add postopen.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Auto-update postopen.json [retry]"
+          for i in 1 2 3; do
+            if git push; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            echo "Push failed (attempt $i). Pulling with rebase..."
+            git pull --rebase --autostash || true
+            sleep 2
+          done
+          echo "Push failed after 3 attempts"
+          exit 1
+
