@@ -564,29 +564,48 @@ async function fetchAll(){
   recalc();
 }
 
-/* ---------- 寄り後の自動取得（v2.2） ---------- */
-// 9:05 JST以降に呼び出して、東証寄り値を取得
+/* ---------- 寄り後の自動取得（v3.1.1 / 2026-05-17 クラウド配信版） ---------- */
+// 旧 v2.2 系は Stooq + CORSプロキシ4段の直叩きだったが、無料プロキシが全部落ちると
+// 「失敗 3」で詰まる弱点があった。v3.1.1 から GitHub Actions 側で yfinance により
+// postopen.json を生成・配信する方式に切り替え。クライアントは fetch するだけ。
 async function fetchPostOpen(){
   const status = document.getElementById('postOpenStatus');
   if(status) status.textContent = '🔄 寄り値取得中…';
-  let ok=0, ng=0;
-  // 日経（^nkx）- 東証現値
   try{
-    const r = await fetchStooq('^nkx');
-    if(r){ referenceData.TSE_OPEN = r; ok++; } else ng++;
-  }catch(e){ ng++; }
-  // 半導体プロキシ：東京エレクトロン（8035.jp）
-  try{
-    const r = await fetchStooq('8035.jp');
-    if(r){ referenceData.SOX_PROXY = r; ok++; } else ng++;
-  }catch(e){ ng++; }
-  // ドル円（現在値）
-  try{
-    const r = await fetchStooq('usdjpy');
-    if(r){ referenceData.USDJPY_OPEN = r; ok++; } else ng++;
-  }catch(e){ ng++; }
-  
-  if(status) status.textContent = `寄り値取得：成功 ${ok} / 失敗 ${ng}${ng?'（失敗分は手動入力）':''}`;
+    // キャッシュ回避クエリ付きで postopen.json を取得
+    const res = await fetch('postopen.json?t=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error('postopen.json HTTP ' + res.status);
+    const j = await res.json();
+    const data = j && j.data ? j.data : {};
+
+    let ok=0, ng=0;
+    function adopt(key){
+      const v = data[key] && data[key].value;
+      if(v && typeof v.price === 'number'){
+        referenceData[key] = { price:v.price, chgPct: (typeof v.chgPct==='number'? v.chgPct : null) };
+        ok++;
+      }else{
+        ng++;
+      }
+    }
+    adopt('TSE_OPEN');
+    adopt('SOX_PROXY');
+    adopt('USDJPY_OPEN');
+
+    const ts = j.updated_jst || j.updated_at || '';
+    if(status){
+      if(ok === 3){
+        status.textContent = `✅ 寄り値取得 成功 (${ts})`;
+      }else if(ok > 0){
+        status.textContent = `⚠ 寄り値取得：成功 ${ok} / 失敗 ${ng} (${ts}) ※失敗分は手動入力`;
+      }else{
+        status.textContent = `❌ 寄り値未取得：9:10〜9:30 のクラウド更新待ちです (${ts}) ※手動入力可`;
+      }
+    }
+  }catch(e){
+    // postopen.json がまだ存在しない・配信遅延などの場合
+    if(status) status.textContent = '⏳ 寄り値はクラウド側で 9:10〜9:30 に更新されます。少し待ってからもう一度押すか、手動入力してください。';
+  }
   renderPostOpenJudgment();
 }
 
