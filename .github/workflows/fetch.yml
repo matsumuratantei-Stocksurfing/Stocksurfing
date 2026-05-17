@@ -2,8 +2,9 @@ name: Fetch market data and notify
 
 on:
   schedule:
-    - cron: '30 22 * * *'   # 7:30 JST
-    - cron: '20 0 * * 1-5'  # 9:20 JST (平日)
+    # cron は UTC 基準。JST月〜金朝7:30 = UTC 日〜木 22:30 なので曜日指定は 0-4
+    - cron: '30 22 * * 0-4'  # 7:30 JST 平日 (月〜金)
+    - cron: '20 0 * * 1-5'   # 9:20 JST 平日 (月〜金)
   workflow_dispatch:
     inputs:
       notification_type:
@@ -22,15 +23,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      
+
       - name: Install dependencies
         run: pip install -r requirements.txt
-      
+
       - name: Determine notification type
         id: notif
         run: |
@@ -44,12 +45,17 @@ jobs:
               echo "type=postopen" >> $GITHUB_OUTPUT
             fi
           fi
-      
+
       - name: Fetch market data
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python fetch_data.py
-      
+
+      - name: Fetch post-open prices (postopen only)
+        if: steps.notif.outputs.type == 'postopen'
+        run: python fetch_postopen.py
+        continue-on-error: true
+
       - name: Send notification email
         env:
           GMAIL_USER: ${{ secrets.GMAIL_USER }}
@@ -58,17 +64,18 @@ jobs:
           NOTIFICATION_TYPE: ${{ steps.notif.outputs.type }}
           PAGES_URL: ${{ vars.PAGES_URL }}
         run: python send_email.py
-      
-      - name: Commit data.json (with retry)
+
+      - name: Commit data.json / postopen.json (with retry)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data.json
+          if [ -f postopen.json ]; then git add postopen.json; fi
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Auto-update data.json [${{ steps.notif.outputs.type }}]"
+          git commit -m "Auto-update data.json/postopen.json [${{ steps.notif.outputs.type }}]"
           for i in 1 2 3; do
             if git push; then
               echo "Push succeeded on attempt $i"
