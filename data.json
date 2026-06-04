@@ -1,9 +1,9 @@
 {
-  "fetchedAt": "2026-06-04T19:50:26.104937+09:00",
+  "fetchedAt": "2026-06-04T20:38:54.919615+09:00",
   "indicators": {
     "N225F": {
-      "price": 67220.0,
-      "chgPct": -1.5019
+      "price": 67360.0,
+      "chgPct": -1.2968
     },
     "TOPX": {
       "price": 418.6,
@@ -26,20 +26,20 @@
       "chgPct": -1.2098
     },
     "USDJPY": {
-      "price": 159.88,
-      "chgPct": -0.055
+      "price": 159.818,
+      "chgPct": -0.0938
     },
     "EURJPY": {
-      "price": 185.945,
-      "chgPct": 0.0194
+      "price": 186.01,
+      "chgPct": 0.0543
     },
     "TNX": {
       "price": 4.491,
       "chgPct": 0.8081
     },
     "WTI": {
-      "price": 95.15,
-      "chgPct": -0.9061
+      "price": 93.82,
+      "chgPct": -2.2912
     },
     "VIX": {
       "price": 16.6,
