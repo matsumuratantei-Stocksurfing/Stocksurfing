@@ -1,9 +1,9 @@
 {
-  "fetchedAt": "2026-06-06T07:30:44.146951+09:00",
+  "fetchedAt": "2026-06-07T07:30:44.685380+09:00",
   "indicators": {
     "N225F": {
-      "price": 63820.0,
-      "chgPct": -5.8285
+      "price": 64015.0,
+      "chgPct": -5.5408
     },
     "TOPX": {
       "price": 418.6,
@@ -38,8 +38,8 @@
       "chgPct": 1.3178
     },
     "WTI": {
-      "price": 90.25,
-      "chgPct": -2.9987
+      "price": 90.54,
+      "chgPct": -2.687
     },
     "VIX": {
       "price": 21.51,
@@ -48,8 +48,8 @@
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 67470.6875,
-      "chgPct": -1.3617
+      "price": 66588.1172,
+      "chgPct": -1.3081
     },
     "SOX_PROXY": {
       "price": 59450.0,
