@@ -4464,9 +4464,9 @@
   },
   {
     "date": "2026-06-10",
-    "verifiedAt": "2026-06-10T01:25:33.461606+09:00",
-    "morningScore": 20.6,
-    "morningFetchedAt": "2026-06-09T13:35:34.831236+09:00",
+    "verifiedAt": "2026-06-10T23:01:28.199291+09:00",
+    "morningScore": 1.7,
+    "morningFetchedAt": "2026-06-10T13:49:15.783407+09:00",
     "predictedPicks": [
       {
         "code": "8035",
@@ -4494,136 +4494,126 @@
         "star": 5
       },
       {
-        "code": "5803",
-        "name": "フジクラ",
-        "star": 4
-      },
-      {
         "code": "4063",
         "name": "信越化学",
         "star": 5
-      },
-      {
-        "code": "6506",
-        "name": "安川電機",
-        "star": 4
       }
     ],
     "actualIndices": {
       "N225": {
-        "open": 65947.5625,
-        "close": 64024.6015625,
-        "chgPct": -2.915893877806325
+        "open": 64952.37890625,
+        "close": 64179.26953125,
+        "chgPct": -1.190271069387434
       },
       "TOPX": null
     },
     "actualStocks": {
       "8035": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 61110.0,
+        "close": 61830.0,
+        "chgPct": 3.1875834445927906
       },
       "6920": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 39970.0,
+        "close": 40650.0,
+        "chgPct": 0.4199604743083004
       },
       "6857": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 25490.0,
+        "close": 25235.0,
+        "chgPct": -4.158754272692746
       },
       "6146": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 70020.0,
+        "close": 70060.0,
+        "chgPct": -2.041387024608501
       },
       "6526": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2370.0,
+        "close": 2302.5,
+        "chgPct": -5.731832139201638
       },
       "5803": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4320.0,
+        "close": 4194.0,
+        "chgPct": -6.779284285396754
       },
       "4063": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 6790.0,
+        "close": 6695.0,
+        "chgPct": -2.0626097132826215
       },
       "9984": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 6714.0,
+        "close": 6461.0,
+        "chgPct": -8.328603859250851
       },
       "7011": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 3669.0,
+        "close": 3578.0,
+        "chgPct": -1.4053458252962248
       },
       "7012": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2845.0,
+        "close": 2859.5,
+        "chgPct": 2.307692307692308
       },
       "7013": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2470.0,
+        "close": 2439.5,
+        "chgPct": -0.7324516785350966
       },
       "6501": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4906.0,
+        "close": 4784.0,
+        "chgPct": -2.0073740270380993
       },
       "6758": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 3436.0,
+        "close": 3385.0,
+        "chgPct": -1.6845774034272436
       },
       "7203": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2837.0,
+        "close": 2814.0,
+        "chgPct": -0.5653710247349824
       },
       "6506": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 6195.0,
+        "close": 5988.0,
+        "chgPct": -6.364347146207976
       },
       "8058": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4750.0,
+        "close": 4615.0,
+        "chgPct": -3.954214360041623
       },
       "8031": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4975.0,
+        "close": 4849.0,
+        "chgPct": -1.662948691948895
       },
       "8306": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 3230.0,
+        "close": 3183.0,
+        "chgPct": 0.09433962264150944
       },
       "8316": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 6258.0,
+        "close": 6227.0,
+        "chgPct": 0.7279197670656745
       },
       "9107": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2733.0,
+        "close": 2596.0,
+        "chgPct": -6.484149855907781
       }
     },
     "metrics": {
       "n225_direction_correct": false,
-      "avg_pick_return": NaN,
-      "avg_all_return": NaN,
-      "picks_outperformed": false
+      "avg_pick_return": -1.7312,
+      "avg_all_return": -2.3613,
+      "picks_outperformed": true
     }
   }
 ]
