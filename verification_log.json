@@ -4615,5 +4615,159 @@
       "avg_all_return": -2.3613,
       "picks_outperformed": true
     }
+  },
+  {
+    "date": "2026-06-11",
+    "verifiedAt": "2026-06-11T01:54:09.523512+09:00",
+    "morningScore": 1.7,
+    "morningFetchedAt": "2026-06-10T13:49:15.783407+09:00",
+    "predictedPicks": [
+      {
+        "code": "8035",
+        "name": "東京エレクトロン",
+        "star": 5
+      },
+      {
+        "code": "6920",
+        "name": "レーザーテック",
+        "star": 5
+      },
+      {
+        "code": "6857",
+        "name": "アドバンテスト",
+        "star": 5
+      },
+      {
+        "code": "6146",
+        "name": "ディスコ",
+        "star": 5
+      },
+      {
+        "code": "6526",
+        "name": "ソシオネクスト",
+        "star": 5
+      },
+      {
+        "code": "4063",
+        "name": "信越化学",
+        "star": 5
+      }
+    ],
+    "actualIndices": {
+      "N225": {
+        "open": 64625.26171875,
+        "close": 65416.62890625,
+        "chgPct": 1.2245477487488414
+      },
+      "TOPX": null
+    },
+    "actualStocks": {
+      "8035": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6920": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6857": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6146": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6526": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "5803": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "4063": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9984": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7011": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7012": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7013": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6501": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6758": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7203": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6506": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8058": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8031": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8306": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8316": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9107": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      }
+    },
+    "metrics": {
+      "n225_direction_correct": true,
+      "avg_pick_return": NaN,
+      "avg_all_return": NaN,
+      "picks_outperformed": false
+    }
   }
 ]
