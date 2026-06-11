@@ -4759,5 +4759,149 @@
       "avg_all_return": -0.6341,
       "picks_outperformed": false
     }
+  },
+  {
+    "date": "2026-06-12",
+    "verifiedAt": "2026-06-12T02:32:43.119272+09:00",
+    "morningScore": -5.0,
+    "morningFetchedAt": "2026-06-11T13:59:10.878754+09:00",
+    "predictedPicks": [
+      {
+        "code": "9984",
+        "name": "ソフトバンクG",
+        "star": 4
+      },
+      {
+        "code": "7011",
+        "name": "三菱重工業",
+        "star": 4
+      },
+      {
+        "code": "7012",
+        "name": "川崎重工業",
+        "star": 4
+      },
+      {
+        "code": "7013",
+        "name": "IHI",
+        "star": 4
+      }
+    ],
+    "actualIndices": {
+      "N225": {
+        "open": 64952.37890625,
+        "close": 64179.26953125,
+        "chgPct": -1.190271069387434
+      },
+      "TOPX": null
+    },
+    "actualStocks": {
+      "8035": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6920": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6857": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6146": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6526": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "5803": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "4063": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9984": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7011": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7012": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7013": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6501": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6758": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7203": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6506": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8058": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8031": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8306": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8316": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9107": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      }
+    },
+    "metrics": {
+      "n225_direction_correct": true,
+      "avg_pick_return": NaN,
+      "avg_all_return": NaN,
+      "picks_outperformed": false
+    }
   }
 ]
