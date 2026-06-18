@@ -5762,5 +5762,134 @@
       "avg_all_return": 1.1966,
       "picks_outperformed": false
     }
+  },
+  {
+    "date": "2026-06-19",
+    "verifiedAt": "2026-06-19T01:51:19.217861+09:00",
+    "morningScore": -0.8,
+    "morningFetchedAt": "2026-06-18T14:02:36.268325+09:00",
+    "predictedPicks": [
+      {
+        "code": "7012",
+        "name": "川崎重工業",
+        "star": 4
+      }
+    ],
+    "actualIndices": {
+      "N225": {
+        "open": 69005.8828125,
+        "close": 69902.25,
+        "chgPct": 1.2989721324710428
+      },
+      "TOPX": null
+    },
+    "actualStocks": {
+      "8035": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6920": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6857": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6146": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6526": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "5803": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "4063": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9984": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7011": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7012": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7013": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6501": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6758": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "7203": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "6506": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8058": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8031": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8306": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "8316": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      },
+      "9107": {
+        "open": NaN,
+        "close": NaN,
+        "chgPct": NaN
+      }
+    },
+    "metrics": {
+      "n225_direction_correct": false,
+      "avg_pick_return": NaN,
+      "avg_all_return": NaN,
+      "picks_outperformed": false
+    }
   }
 ]
