@@ -5765,131 +5765,171 @@
   },
   {
     "date": "2026-06-19",
-    "verifiedAt": "2026-06-19T01:51:19.217861+09:00",
-    "morningScore": -0.8,
-    "morningFetchedAt": "2026-06-18T14:02:36.268325+09:00",
+    "verifiedAt": "2026-06-19T23:01:22.296624+09:00",
+    "morningScore": 16.0,
+    "morningFetchedAt": "2026-06-19T14:25:03.174156+09:00",
     "predictedPicks": [
       {
-        "code": "7012",
-        "name": "川崎重工業",
+        "code": "8035",
+        "name": "東京エレクトロン",
+        "star": 5
+      },
+      {
+        "code": "6920",
+        "name": "レーザーテック",
+        "star": 5
+      },
+      {
+        "code": "6857",
+        "name": "アドバンテスト",
+        "star": 5
+      },
+      {
+        "code": "6146",
+        "name": "ディスコ",
+        "star": 5
+      },
+      {
+        "code": "6526",
+        "name": "ソシオネクスト",
+        "star": 5
+      },
+      {
+        "code": "5803",
+        "name": "フジクラ",
+        "star": 5
+      },
+      {
+        "code": "4063",
+        "name": "信越化学",
+        "star": 5
+      },
+      {
+        "code": "6758",
+        "name": "ソニーG",
         "star": 4
+      },
+      {
+        "code": "6506",
+        "name": "安川電機",
+        "star": 5
       }
     ],
     "actualIndices": {
       "N225": {
-        "open": 69005.8828125,
-        "close": 69902.25,
-        "chgPct": 1.2989721324710428
+        "open": 71551.03125,
+        "close": 71250.0625,
+        "chgPct": -0.42063509741517524
       },
       "TOPX": null
     },
     "actualStocks": {
       "8035": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 77580.0,
+        "close": 75360.0,
+        "chgPct": -0.9463722397476341
       },
       "6920": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 57500.0,
+        "close": 55100.0,
+        "chgPct": -2.3914968999114263
       },
       "6857": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 31210.0,
+        "close": 31740.0,
+        "chgPct": 4.752475247524752
       },
       "6146": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 87540.0,
+        "close": 84900.0,
+        "chgPct": -0.10589481115425345
       },
       "6526": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2682.0,
+        "close": 2630.0,
+        "chgPct": 0.9984639016897081
       },
       "5803": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 5161.0,
+        "close": 5161.0,
+        "chgPct": 15.691548980049316
       },
       "4063": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 7500.0,
+        "close": 7310.0,
+        "chgPct": -1.9975868078830943
       },
       "9984": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 7339.0,
+        "close": 7111.0,
+        "chgPct": -1.0849909584086799
       },
       "7011": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4029.0,
+        "close": 3917.0,
+        "chgPct": -1.2852822580645162
       },
       "7012": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 3165.0,
+        "close": 3191.0,
+        "chgPct": 0.9810126582278481
       },
       "7013": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2916.0,
+        "close": 2817.0,
+        "chgPct": -1.7096999302163292
       },
       "6501": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4805.0,
+        "close": 4764.0,
+        "chgPct": -0.75
       },
       "6758": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 3180.0,
+        "close": 3140.0,
+        "chgPct": -3.3846153846153846
       },
       "7203": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2785.0,
+        "close": 2776.5,
+        "chgPct": -0.6085555754429927
       },
       "6506": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 7304.0,
+        "close": 7128.0,
+        "chgPct": -1.7234247897421757
       },
       "8058": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4510.0,
+        "close": 4540.0,
+        "chgPct": -0.6564551422319475
       },
       "8031": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 4700.0,
+        "close": 4716.0,
+        "chgPct": -0.06357279084551812
       },
       "8306": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 3370.0,
+        "close": 3278.0,
+        "chgPct": -2.8452874925903973
       },
       "8316": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 6702.0,
+        "close": 6482.0,
+        "chgPct": -3.6563614744351964
       },
       "9107": {
-        "open": NaN,
-        "close": NaN,
-        "chgPct": NaN
+        "open": 2503.0,
+        "close": 2476.0,
+        "chgPct": -1.4723438121766812
       }
     },
     "metrics": {
       "n225_direction_correct": false,
-      "avg_pick_return": NaN,
-      "avg_all_return": NaN,
-      "picks_outperformed": false
+      "avg_pick_return": 1.2103,
+      "avg_all_return": -0.1129,
+      "picks_outperformed": true
     }
   }
 ]
