@@ -1,13 +1,13 @@
 {
-  "evaluatedAt": "2026-06-22T13:39:49.299306+09:00",
-  "days": 32,
+  "evaluatedAt": "2026-06-22T17:08:18.523996+09:00",
+  "days": 33,
   "minDays": 40,
   "margin": 0.05,
   "baselineVersion": "baseline-2026-06-22",
-  "baselineInSample": 0.625,
-  "baselineOos": 0.625,
-  "candidateInSample": 0.625,
-  "candidateOos": 0.625,
+  "baselineInSample": 0.6364,
+  "baselineOos": 0.6364,
+  "candidateInSample": 0.6364,
+  "candidateOos": 0.6364,
   "candidateWeights": {
     "N225F": 3.0,
     "TOPX": 1.25,
@@ -23,5 +23,5 @@
     "NKVI": 1.0
   },
   "promoted": false,
-  "reason": "データ不足 (あと8日でゲート判定開始)"
+  "reason": "データ不足 (あと7日でゲート判定開始)"
 }
