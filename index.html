@@ -1600,6 +1600,17 @@ async function loadVerification(){
 // VWAP乖離・ボリンジャー2σ/3σ・RSI を算出し、エントリー適否を判定する。
 let intradayLoadedOnce = false;
 
+function fetchWithTimeout(url, ms){
+  // ハングするプロキシで全体が止まらないよう、各リクエストにタイムアウトを設ける
+  return new Promise((resolve, reject) => {
+    const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+    const timer = setTimeout(() => { if(ctrl) ctrl.abort(); reject(new Error('timeout')); }, ms);
+    fetch(url, {cache:'no-store', signal: ctrl ? ctrl.signal : undefined})
+      .then(r => { clearTimeout(timer); resolve(r); })
+      .catch(e => { clearTimeout(timer); reject(e); });
+  });
+}
+
 async function fetchIntradayBars(code){
   const sym = encodeURIComponent(code) + '.T';
   const target = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d`;
@@ -1610,7 +1621,7 @@ async function fetchIntradayBars(code){
   ];
   for(const u of urls){
     try{
-      const res = await fetch(u, {cache:'no-store'});
+      const res = await fetchWithTimeout(u, 7000);
       if(!res.ok) continue;
       const j = await res.json();
       const r = j && j.chart && j.chart.result && j.chart.result[0];
@@ -1683,19 +1694,26 @@ async function loadIntraday(){
   const targets = (stocks||DEFAULT_STOCKS).filter(s=>!s.etf && s.code);
   list.innerHTML = '<div style="color:var(--sub);font-size:13px">取得中… 銘柄が多いので20〜40秒ほどかかります</div>';
   if(upd) upd.textContent = '';
-  const results = [];
-  for(const st of targets){
-    const bars = await fetchIntradayBars(st.code);
-    if(!bars){ results.push({st:st, ok:false}); continue; }
-    const closes = bars.map(b=>b.c);
-    const price = closes[closes.length-1];
-    const vwap = calcVWAP(bars);
-    const boll = calcBoll(closes,20);
-    const rsi = calcRSI(closes,14);
-    const open = bars[0].c;
-    const fromOpen = open ? (price-open)/open*100 : 0;
-    results.push({st:st, ok:true, price:price, fromOpen:fromOpen, verdict:classifyEntry(price,vwap,boll,rsi)});
+  const results = new Array(targets.length);
+  let idx = 0;
+  async function worker(){
+    while(idx < targets.length){
+      const my = idx++;
+      const st = targets[my];
+      const bars = await fetchIntradayBars(st.code);
+      if(!bars){ results[my] = {st:st, ok:false}; continue; }
+      const closes = bars.map(b=>b.c);
+      const price = closes[closes.length-1];
+      const vwap = calcVWAP(bars);
+      const boll = calcBoll(closes,20);
+      const rsi = calcRSI(closes,14);
+      const open = bars[0].c;
+      const fromOpen = open ? (price-open)/open*100 : 0;
+      results[my] = {st:st, ok:true, price:price, fromOpen:fromOpen, verdict:classifyEntry(price,vwap,boll,rsi)};
+    }
   }
+  const CONC = Math.min(5, targets.length);
+  await Promise.all(Array.from({length:CONC}, ()=>worker()));
   const order = {'up':0,'sub':1,'down':2};
   results.sort((a,b)=> ((a.verdict&&order[a.verdict.cls])||1) - ((b.verdict&&order[b.verdict.cls])||1));
   let html='', okCount=0;
