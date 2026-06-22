@@ -1,0 +1,128 @@
+{
+  "generatedAt": "2026-06-22T16:04:22.241116+09:00",
+  "date": "2026-06-22",
+  "success": 0,
+  "total": 24,
+  "items": [
+    {
+      "code": "285A",
+      "name": "キオクシア",
+      "ok": false
+    },
+    {
+      "code": "8035",
+      "name": "東京エレクトロン",
+      "ok": false
+    },
+    {
+      "code": "6857",
+      "name": "アドバンテスト",
+      "ok": false
+    },
+    {
+      "code": "6920",
+      "name": "レーザーテック",
+      "ok": false
+    },
+    {
+      "code": "6146",
+      "name": "ディスコ",
+      "ok": false
+    },
+    {
+      "code": "4062",
+      "name": "イビデン",
+      "ok": false
+    },
+    {
+      "code": "6981",
+      "name": "村田製作所",
+      "ok": false
+    },
+    {
+      "code": "5803",
+      "name": "フジクラ",
+      "ok": false
+    },
+    {
+      "code": "5801",
+      "name": "古河電工",
+      "ok": false
+    },
+    {
+      "code": "4063",
+      "name": "信越化学",
+      "ok": false
+    },
+    {
+      "code": "5016",
+      "name": "JX金属",
+      "ok": false
+    },
+    {
+      "code": "9984",
+      "name": "ソフトバンクG",
+      "ok": false
+    },
+    {
+      "code": "7011",
+      "name": "三菱重工業",
+      "ok": false
+    },
+    {
+      "code": "7012",
+      "name": "川崎重工業",
+      "ok": false
+    },
+    {
+      "code": "7013",
+      "name": "IHI",
+      "ok": false
+    },
+    {
+      "code": "6501",
+      "name": "日立製作所",
+      "ok": false
+    },
+    {
+      "code": "6758",
+      "name": "ソニーG",
+      "ok": false
+    },
+    {
+      "code": "7203",
+      "name": "トヨタ自動車",
+      "ok": false
+    },
+    {
+      "code": "6506",
+      "name": "安川電機",
+      "ok": false
+    },
+    {
+      "code": "8058",
+      "name": "三菱商事",
+      "ok": false
+    },
+    {
+      "code": "8031",
+      "name": "三井物産",
+      "ok": false
+    },
+    {
+      "code": "8306",
+      "name": "三菱UFJ FG",
+      "ok": false
+    },
+    {
+      "code": "8316",
+      "name": "三井住友FG",
+      "ok": false
+    },
+    {
+      "code": "9107",
+      "name": "川崎汽船",
+      "ok": false
+    }
+  ]
+}
