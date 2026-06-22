@@ -79,6 +79,7 @@
     <div class="tab active" data-tab="dash">ダッシュ</div>
     <div class="tab" data-tab="positions">💼ポジション</div>
     <div class="tab" data-tab="verify">🎯答え合わせ</div>
+    <div class="tab" data-tab="intraday">📈場中</div>
     <div class="tab" data-tab="history">📊履歴</div>
     <div class="tab" data-tab="edit">銘柄編集</div>
     <div class="tab" data-tab="help">使い方</div>
@@ -174,6 +175,19 @@
       <div class="status">毎晩23:00に当日の予測vs実勢を自動比較しています。蓄積データで的中率と銘柄別パフォーマンスを表示。</div>
       <div id="verifyStats" style="margin-top:12px"></div>
       <div id="verifyList" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- INTRADAY ENTRY TIMING (v3.3) -->
+  <section id="tab-intraday" class="hide">
+    <div class="card">
+      <h2>📈 場中エントリー判定 <span style="color:var(--sub);font-size:10px;font-weight:400;letter-spacing:0">(5分足/約15-20分ディレイ)</span></h2>
+      <div class="status">各銘柄の5分足から VWAP乖離・ボリンジャー2σ/3σ・RSI を計算し、「押し目（買い場）／買われすぎ（利確・見送り）／飛び乗り注意」を判定します。寄りで上げてしまった銘柄は自動で“追いかけ注意”に分類されます。</div>
+      <div class="row" style="margin:10px 0">
+        <button id="fetchIntradayBtn" class="ghost small">🔄 場中を更新</button>
+        <span id="intradayUpdated" style="color:var(--sub);font-size:11px;margin-left:8px"></span>
+      </div>
+      <div id="intradayList"></div>
     </div>
   </section>
 
@@ -327,27 +341,31 @@ const INDICATORS = [
   {key:'NKVI',  name:'日経VI',   stooq:null,     yahoo:'^N225VI',weight:1.0, inverse:true, localOnly:true} // v2.3: yfinance経由で自動取得,
 ];
 
-// 初期20銘柄（連動タグ付き）v2.0
+// 監視銘柄 v3.3（出来高上位×テーマのハイブリッド・24銘柄）
+// 2026-06 売買代金上位のAI半導体サプライチェーンを取り込み、テーマ分散も維持
 const DEFAULT_STOCKS = [
-  // 半導体・AI（5）
+  // 半導体・AI（高売買代金の主力／7）
+  {code:'285A', name:'キオクシア',        tags:['SOX','NQ']},
   {code:'8035', name:'東京エレクトロン',  tags:['SOX','NQ']},
-  {code:'6920', name:'レーザーテック',    tags:['SOX','NQ']},
   {code:'6857', name:'アドバンテスト',    tags:['SOX','NQ']},
+  {code:'6920', name:'レーザーテック',    tags:['SOX','NQ']},
   {code:'6146', name:'ディスコ',          tags:['SOX','NQ']},
-  {code:'6526', name:'ソシオネクスト',    tags:['SOX','NQ']},
-  // AI関連（3）
+  {code:'4062', name:'イビデン',          tags:['SOX','NQ']},
+  {code:'6981', name:'村田製作所',        tags:['SOX','景気']},
+  // AIインフラ・素材（5）
   {code:'5803', name:'フジクラ',          tags:['AIインフラ','NQ']},
+  {code:'5801', name:'古河電工',          tags:['AIインフラ','NQ']},
   {code:'4063', name:'信越化学',          tags:['SOX','景気']},
+  {code:'5016', name:'JX金属',            tags:['SOX','資源']},
   {code:'9984', name:'ソフトバンクG',     tags:['NQ','日経寄与']},
-  // 防衛・造船（3）🆕
+  // 防衛・造船（3）
   {code:'7011', name:'三菱重工業',        tags:['防衛','重工']},
   {code:'7012', name:'川崎重工業',        tags:['防衛','造船']},
   {code:'7013', name:'IHI',               tags:['防衛','宇宙']},
-  // 景気敏感・大型（3）
+  // 景気敏感・大型（4）
   {code:'6501', name:'日立製作所',        tags:['NY','景気']},
   {code:'6758', name:'ソニーG',           tags:['NY','NQ','景気']},
   {code:'7203', name:'トヨタ自動車',      tags:['NY','USDJPY','景気']},
-  // フィジカルAI（1）🆕
   {code:'6506', name:'安川電機',          tags:['フィジカルAI','NQ']},
   // 商社（2）
   {code:'8058', name:'三菱商事',          tags:['商社','資源']},
@@ -367,8 +385,10 @@ const DEFAULT_STOCKS = [
   // 日経レバレッジ2倍（強気相場で大化け）
   {code:'1570', name:'NF 日経平均レバレッジ2倍',       tags:['日経寄与','N225F','レバ2倍'], etf:true, leverage:2},
   {code:'1579', name:'日経平均ブル2倍上場投信',         tags:['日経寄与','N225F','レバ2倍'], etf:true, leverage:2},
-  // 日経インバース2倍（下げ相場検証用・予測vs実勢の整合性確認用）
+  // 日経インバース（下げ相場用・予測vs実勢の整合性確認用）
   {code:'1357', name:'NF 日経Wインバース',              tags:['日経寄与','N225F','インバース'], etf:true, leverage:-2},
+  {code:'1580', name:'日経平均ベア上場投信',            tags:['日経寄与','N225F','インバース'], etf:true, leverage:-1},
+  {code:'1360', name:'日経平均ベア2倍上場投信',         tags:['日経寄与','N225F','インバース'], etf:true, leverage:-2},
   // テーマETF（防衛・建設インフラ）
   {code:'513A', name:'GX 防衛テック-日本株式',          tags:['防衛','重工','日経寄与'], etf:true},
   {code:'1619', name:'NF 建設・資材（TOPIX-17）',       tags:['内需','景気','建設インフラ'], etf:true},
@@ -439,10 +459,12 @@ function bindTabs(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      ['dash','positions','verify','history','edit','help'].forEach(id=>{
+      ['dash','positions','verify','intraday','history','edit','help'].forEach(id=>{
         document.getElementById('tab-'+id).classList.add('hide');
       });
       document.getElementById('tab-'+t.dataset.tab).classList.remove('hide');
+      // 場中タブを開いたら自動で取得（まだ未取得の時のみ）
+      if(t.dataset.tab === 'intraday' && !intradayLoadedOnce){ loadIntraday(); }
     });
   });
 }
@@ -450,6 +472,8 @@ function bindTabs(){
 /* ---------- BUTTONS ---------- */
 function bindButtons(){
   document.getElementById('fetchBtn').addEventListener('click',fetchAll);
+  const ib = document.getElementById('fetchIntradayBtn');
+  if(ib) ib.addEventListener('click', loadIntraday);
   document.getElementById('clearBtn').addEventListener('click',()=>{
     indValues={}; renderIndicatorInputs(); recalc();
   });
@@ -1569,6 +1593,138 @@ async function loadVerification(){
     `;
     list.appendChild(item);
   });
+}
+
+/* ---------- INTRADAY ENTRY TIMING (v3.3) ---------- */
+// 妻が場中に見られるよう、PWAを開く/更新するたびにYahoo 5分足から
+// VWAP乖離・ボリンジャー2σ/3σ・RSI を算出し、エントリー適否を判定する。
+let intradayLoadedOnce = false;
+
+async function fetchIntradayBars(code){
+  const sym = encodeURIComponent(code) + '.T';
+  const target = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d`;
+  const urls = [
+    target,
+    'https://api.allorigins.win/raw?url=' + encodeURIComponent(target),
+    'https://corsproxy.io/?url=' + encodeURIComponent(target),
+  ];
+  for(const u of urls){
+    try{
+      const res = await fetch(u, {cache:'no-store'});
+      if(!res.ok) continue;
+      const j = await res.json();
+      const r = j && j.chart && j.chart.result && j.chart.result[0];
+      if(!r || !r.timestamp || !r.indicators) continue;
+      const q = r.indicators.quote[0];
+      const bars = [];
+      for(let i=0;i<r.timestamp.length;i++){
+        const c=q.close[i], h=q.high[i], l=q.low[i], v=q.volume[i];
+        if(c==null||h==null||l==null) continue;
+        bars.push({c:c, h:h, l:l, v:v||0});
+      }
+      if(bars.length>=3) return bars;
+    }catch(e){ /* 次のソースへ */ }
+  }
+  return null;
+}
+
+function calcVWAP(bars){
+  let pv=0, vv=0;
+  bars.forEach(b=>{ const tp=(b.h+b.l+b.c)/3; pv+=tp*b.v; vv+=b.v; });
+  return vv>0 ? pv/vv : null;
+}
+function calcRSI(closes, period){
+  period = period||14;
+  if(closes.length<period+1) return null;
+  let gain=0, loss=0;
+  for(let i=closes.length-period;i<closes.length;i++){
+    const d=closes[i]-closes[i-1];
+    if(d>=0) gain+=d; else loss-=d;
+  }
+  if(gain+loss===0) return 50;
+  const rs = gain/(loss||1e-9);
+  return 100 - 100/(1+rs);
+}
+function calcBoll(closes, period){
+  period = period||20;
+  if(closes.length<period) return null;
+  const slice = closes.slice(-period);
+  const mean = slice.reduce((a,b)=>a+b,0)/period;
+  const variance = slice.reduce((a,b)=>a+(b-mean)*(b-mean),0)/period;
+  return {mean:mean, sd:Math.sqrt(variance)};
+}
+
+// エントリー適否判定（妻の悩み「寄りで上げて横横→飛び乗れない」に対応）
+function classifyEntry(price, vwap, boll, rsi){
+  if(vwap==null||boll==null||rsi==null) return {label:'データ不足', cls:'sub', note:''};
+  const dev = (price - vwap)/vwap*100;
+  const sd = boll.sd, mean = boll.mean;
+  const upper2=mean+2*sd, upper3=mean+3*sd, lower2=mean-2*sd, lower3=mean-3*sd;
+  if(price>=upper3 || (rsi>=78 && price>=upper2))
+    return {label:'買われすぎ⚠ 見送り/利確', cls:'down', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)} / 3σ圏`};
+  if(price>=upper2 || (dev>2.5 && rsi>=70))
+    return {label:'飛び乗り注意（高値圏）', cls:'down', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
+  if(price<=lower3 || (rsi<=22 && price<=lower2))
+    return {label:'売られすぎ（反発狙い・逆張り注意）', cls:'up', note:`VWAP${dev.toFixed(1)}% / RSI${rsi.toFixed(0)} / 下3σ`};
+  if(Math.abs(dev)<=0.8 && rsi>=40 && rsi<=62)
+    return {label:'押し目（買い場候補）', cls:'up', note:`VWAP±${Math.abs(dev).toFixed(1)}% / RSI${rsi.toFixed(0)}`};
+  if(dev>0 && dev<=1.5 && rsi<68)
+    return {label:'やや上・許容範囲', cls:'sub', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
+  if(dev<0)
+    return {label:'VWAP下（様子見/反発待ち）', cls:'sub', note:`VWAP${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
+  return {label:'中立', cls:'sub', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
+}
+
+async function loadIntraday(){
+  const list = document.getElementById('intradayList');
+  const upd = document.getElementById('intradayUpdated');
+  if(!list) return;
+  intradayLoadedOnce = true;
+  const targets = (stocks||DEFAULT_STOCKS).filter(s=>!s.etf && s.code);
+  list.innerHTML = '<div style="color:var(--sub);font-size:13px">取得中… 銘柄が多いので20〜40秒ほどかかります</div>';
+  if(upd) upd.textContent = '';
+  const results = [];
+  for(const st of targets){
+    const bars = await fetchIntradayBars(st.code);
+    if(!bars){ results.push({st:st, ok:false}); continue; }
+    const closes = bars.map(b=>b.c);
+    const price = closes[closes.length-1];
+    const vwap = calcVWAP(bars);
+    const boll = calcBoll(closes,20);
+    const rsi = calcRSI(closes,14);
+    const open = bars[0].c;
+    const fromOpen = open ? (price-open)/open*100 : 0;
+    results.push({st:st, ok:true, price:price, fromOpen:fromOpen, verdict:classifyEntry(price,vwap,boll,rsi)});
+  }
+  const order = {'up':0,'sub':1,'down':2};
+  results.sort((a,b)=> ((a.verdict&&order[a.verdict.cls])||1) - ((b.verdict&&order[b.verdict.cls])||1));
+  let html='', okCount=0;
+  results.forEach(r=>{
+    if(!r.ok){
+      html += `<div style="background:var(--panel2);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:var(--sub)">${r.st.code} ${r.st.name}：データ取得失敗（時間をおいて再更新）</div>`;
+      return;
+    }
+    okCount++;
+    const v=r.verdict;
+    const color = v.cls==='up'?'var(--up)':v.cls==='down'?'var(--down)':'var(--sub)';
+    html += `<div style="background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px">
+      <div class="row" style="justify-content:space-between">
+        <div style="font-weight:700;font-size:14px">${r.st.code} ${r.st.name}</div>
+        <div style="font-weight:700;color:${color};font-size:13px">${v.label}</div>
+      </div>
+      <div style="color:var(--sub);font-size:11px;margin-top:4px">
+        現値 ${r.price.toLocaleString()} ・ 寄りから ${r.fromOpen>=0?'+':''}${r.fromOpen.toFixed(2)}% ・ ${v.note}
+      </div>
+    </div>`;
+  });
+  list.innerHTML = html || '<div style="color:var(--sub)">表示できる銘柄がありません</div>';
+  if(okCount===0){
+    list.innerHTML = '<div style="color:var(--down);font-size:13px">場中データを取得できませんでした。市場が閉まっている時間帯か、データ元が一時的に応答していない可能性があります。場中（9:00〜15:30）に「🔄場中を更新」を押してお試しください。</div>';
+  }
+  if(upd){
+    const now=new Date();
+    upd.textContent = `更新 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}（成功 ${okCount}/${targets.length}）`;
+  }
 }
 
 /* ---------- GO ---------- */

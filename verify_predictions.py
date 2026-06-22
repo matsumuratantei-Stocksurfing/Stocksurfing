@@ -46,13 +46,17 @@ def _clean(obj):
 
 # 銘柄定義 (HTML/send_email と同期)
 DEFAULT_STOCKS = [
+    {'code':'285A', 'name':'キオクシア',        'tags':['SOX','NQ']},
     {'code':'8035', 'name':'東京エレクトロン',  'tags':['SOX','NQ']},
-    {'code':'6920', 'name':'レーザーテック',    'tags':['SOX','NQ']},
     {'code':'6857', 'name':'アドバンテスト',    'tags':['SOX','NQ']},
+    {'code':'6920', 'name':'レーザーテック',    'tags':['SOX','NQ']},
     {'code':'6146', 'name':'ディスコ',          'tags':['SOX','NQ']},
-    {'code':'6526', 'name':'ソシオネクスト',    'tags':['SOX','NQ']},
+    {'code':'4062', 'name':'イビデン',          'tags':['SOX','NQ']},
+    {'code':'6981', 'name':'村田製作所',        'tags':['SOX','景気']},
     {'code':'5803', 'name':'フジクラ',          'tags':['AIインフラ','NQ']},
+    {'code':'5801', 'name':'古河電工',          'tags':['AIインフラ','NQ']},
     {'code':'4063', 'name':'信越化学',          'tags':['SOX','景気']},
+    {'code':'5016', 'name':'JX金属',            'tags':['SOX','資源']},
     {'code':'9984', 'name':'ソフトバンクG',     'tags':['NQ','日経寄与']},
     {'code':'7011', 'name':'三菱重工業',        'tags':['防衛','重工']},
     {'code':'7012', 'name':'川崎重工業',        'tags':['防衛','造船']},
