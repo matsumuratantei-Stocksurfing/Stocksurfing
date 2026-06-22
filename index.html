@@ -181,10 +181,18 @@
   <!-- INTRADAY ENTRY TIMING (v3.3) -->
   <section id="tab-intraday" class="hide">
     <div class="card">
-      <h2>📈 場中エントリー判定 <span style="color:var(--sub);font-size:10px;font-weight:400;letter-spacing:0">(5分足/約15-20分ディレイ)</span></h2>
-      <div class="status">各銘柄の5分足から VWAP乖離・ボリンジャー2σ/3σ・RSI を計算し、「押し目（買い場）／買われすぎ（利確・見送り）／飛び乗り注意」を判定します。寄りで上げてしまった銘柄は自動で“追いかけ注意”に分類されます。</div>
+      <h2>📈 後場の入り判定 <span style="color:var(--sub);font-size:10px;font-weight:400;letter-spacing:0">(J-Quants前場4本値・正午確定)</span></h2>
+      <div class="status">正午すぎに、各銘柄の<b>前場の値動き</b>から「後場は追わない／押し目買い候補／反発待ち」を判定します。寄りで上げ切った銘柄は自動で“追いかけ注意”に分類。データはJ-Quants（確実）。<br>※リアルタイムの細かいタッチ確認は、moomoo / HYPER SBI 2 のチャート（VWAP・ボリンジャー標準装備）をお使いください。</div>
       <div class="row" style="margin:10px 0">
-        <button id="fetchIntradayBtn" class="ghost small">🔄 場中を更新</button>
+        <button id="fetchAmBtn" class="ghost small">🔄 後場判定を更新</button>
+        <span id="amUpdated" style="color:var(--sub);font-size:11px;margin-left:8px"></span>
+      </div>
+      <div id="amList"></div>
+
+      <hr style="border:none;border-top:1px solid var(--line);margin:18px 0 12px">
+      <div class="status" style="font-size:11px">⚡ 参考：リアルタイム5分足のVWAP乖離・ボリンジャー2σ/3σ・RSI。無料データ元（プロキシ経由）が不安定なため、取得できないことがあります。確実なのは上の「後場の入り判定」です。</div>
+      <div class="row" style="margin:8px 0">
+        <button id="fetchIntradayBtn" class="ghost small">⚡ リアルタイム参考を試す</button>
         <span id="intradayUpdated" style="color:var(--sub);font-size:11px;margin-left:8px"></span>
       </div>
       <div id="intradayList"></div>
@@ -463,8 +471,8 @@ function bindTabs(){
         document.getElementById('tab-'+id).classList.add('hide');
       });
       document.getElementById('tab-'+t.dataset.tab).classList.remove('hide');
-      // 場中タブを開いたら自動で取得（まだ未取得の時のみ）
-      if(t.dataset.tab === 'intraday' && !intradayLoadedOnce){ loadIntraday(); }
+      // 場中タブを開いたら、確実なJ-Quants後場判定(am.json)を自動取得
+      if(t.dataset.tab === 'intraday'){ loadAm(); }
     });
   });
 }
@@ -474,6 +482,8 @@ function bindButtons(){
   document.getElementById('fetchBtn').addEventListener('click',fetchAll);
   const ib = document.getElementById('fetchIntradayBtn');
   if(ib) ib.addEventListener('click', loadIntraday);
+  const ab = document.getElementById('fetchAmBtn');
+  if(ab) ab.addEventListener('click', loadAm);
   document.getElementById('clearBtn').addEventListener('click',()=>{
     indValues={}; renderIndicatorInputs(); recalc();
   });
@@ -1593,6 +1603,42 @@ async function loadVerification(){
     `;
     list.appendChild(item);
   });
+}
+
+/* ---------- 後場の入り判定 (J-Quants前場4本値, v3.3) ---------- */
+// サーバ側(fetch_am.py)が正午すぎに am.json を生成。PWAはそれを読むだけ＝確実。
+async function loadAm(){
+  const list = document.getElementById('amList');
+  const upd = document.getElementById('amUpdated');
+  if(!list) return;
+  list.innerHTML = '<div style="color:var(--sub);font-size:13px">読込中…</div>';
+  let data = null;
+  try{
+    const res = await fetch('am.json?_=' + Date.now(), {cache:'no-store'});
+    if(res.ok) data = await res.json();
+  }catch(e){}
+  if(!data || !data.items || !data.items.length){
+    list.innerHTML = '<div style="color:var(--sub);font-size:13px">まだ後場判定データがありません。<br>平日12:05頃にJ-Quantsの前場4本値から自動生成されます。前場が終わった後にご覧ください。</div>';
+    if(upd) upd.textContent = '';
+    return;
+  }
+  let html = '';
+  data.items.forEach(it => {
+    if(!it.ok){
+      html += `<div style="background:var(--panel2);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:var(--sub)">${it.code} ${it.name}：前場データなし</div>`;
+      return;
+    }
+    const color = it.cls==='up' ? 'var(--up)' : it.cls==='down' ? 'var(--down)' : 'var(--sub)';
+    html += `<div style="background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px">
+      <div class="row" style="justify-content:space-between">
+        <div style="font-weight:700;font-size:14px">${it.code} ${it.name}</div>
+        <div style="font-weight:700;color:${color};font-size:13px">${it.label}</div>
+      </div>
+      <div style="color:var(--sub);font-size:11px;margin-top:4px">${it.note||''}</div>
+    </div>`;
+  });
+  list.innerHTML = html;
+  if(upd) upd.textContent = `${data.date||''} 前場確定 / 成功 ${data.success}/${data.total}`;
 }
 
 /* ---------- INTRADAY ENTRY TIMING (v3.3) ---------- */

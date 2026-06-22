@@ -78,6 +78,17 @@ def get_daily_quote(code, date=None):
         params['date'] = date
     return jq_get('/prices/daily_quotes', params)
 
+def get_prices_am(code=None, date=None):
+    """前場(午前場)の4本値を取得 (Premium限定・正午頃に当日分が利用可能)。
+    v1: /prices/prices_am。レスポンス例: {'prices_am':[{'Date','Code',
+        'MorningOpen','MorningHigh','MorningLow','MorningClose','MorningVolume',...}]}"""
+    params = {}
+    if code:
+        params['code'] = code
+    if date:
+        params['date'] = date
+    return jq_get('/prices/prices_am', params or None)
+
 def get_announcements():
     """直近の決算発表予定を取得"""
     return jq_get('/fins/announcement')
