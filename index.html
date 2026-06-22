@@ -1611,6 +1611,33 @@ function fetchWithTimeout(url, ms){
   });
 }
 
+async function fetchOneSource(u){
+  // fetch + 本文読み取り(json)までを行い、5分足配列を返す（失敗時 null）
+  const res = await fetchWithTimeout(u, 7000);
+  if(!res || !res.ok) return null;
+  const txt = await res.text();
+  let j;
+  try{ j = JSON.parse(txt); }catch(_){ return null; } // 一部プロキシはJSONを文字列で包むため text→parse
+  const r = j && j.chart && j.chart.result && j.chart.result[0];
+  if(!r || !r.timestamp || !r.indicators) return null;
+  const q = r.indicators.quote[0];
+  const bars = [];
+  for(let i=0;i<r.timestamp.length;i++){
+    const c=q.close[i], h=q.high[i], l=q.low[i], v=q.volume[i];
+    if(c==null||h==null||l==null) continue;
+    bars.push({c:c, h:h, l:l, v:v||0});
+  }
+  return bars.length>=3 ? bars : null;
+}
+
+function withDeadline(promise, ms){
+  // fetch・本文読み取り・解析すべてを含めて ms で必ず打ち切る（“取得中”固まり防止）
+  return Promise.race([
+    promise,
+    new Promise((_, rej) => setTimeout(() => rej(new Error('deadline')), ms))
+  ]);
+}
+
 async function fetchIntradayBars(code){
   const sym = encodeURIComponent(code) + '.T';
   const target = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d`;
@@ -1621,20 +1648,9 @@ async function fetchIntradayBars(code){
   ];
   for(const u of urls){
     try{
-      const res = await fetchWithTimeout(u, 7000);
-      if(!res.ok) continue;
-      const j = await res.json();
-      const r = j && j.chart && j.chart.result && j.chart.result[0];
-      if(!r || !r.timestamp || !r.indicators) continue;
-      const q = r.indicators.quote[0];
-      const bars = [];
-      for(let i=0;i<r.timestamp.length;i++){
-        const c=q.close[i], h=q.high[i], l=q.low[i], v=q.volume[i];
-        if(c==null||h==null||l==null) continue;
-        bars.push({c:c, h:h, l:l, v:v||0});
-      }
-      if(bars.length>=3) return bars;
-    }catch(e){ /* 次のソースへ */ }
+      const bars = await withDeadline(fetchOneSource(u), 8000);
+      if(bars) return bars;
+    }catch(e){ /* タイムアウト/失敗 → 次のソースへ */ }
   }
   return null;
 }
