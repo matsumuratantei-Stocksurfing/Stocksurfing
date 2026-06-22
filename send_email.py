@@ -61,6 +61,30 @@ NAME_MAP = {'N225F':'日経先物','TOPX':'TOPIX','NDX':'ナスダック100','SP
             'SOX':'SOX半導体','DJI':'NYダウ','USDJPY':'ドル円','EURJPY':'ユーロ円',
             'TNX':'米10年金利','WTI':'WTI原油','VIX':'VIX恐怖指数','NKVI':'日経VI'}
 
+def _load_weights():
+    """weights.json があれば INDICATORS の重みを上書き (自己学習エンジン連携)。
+    朝メールのスコアを HTML/答え合わせと完全に同期させるため、3ファイルで共通の重み源を使う。"""
+    path = os.path.join(SCRIPT_DIR, 'weights.json')
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            wj = json.load(f)
+    except Exception:
+        return None
+    wmap = wj.get('weights', {})
+    for ind in INDICATORS:
+        if ind['key'] in wmap:
+            try:
+                v = float(wmap[ind['key']])
+            except (TypeError, ValueError):
+                continue
+            if v >= 0:
+                ind['weight'] = v
+    return wj.get('version')
+
+WEIGHTS_VERSION = _load_weights()
+
 def calc_score(indicators):
     s, w = 0, 0
     for ind in INDICATORS:

@@ -380,7 +380,26 @@ let earningsWarnings = {}; // v3.1: 決算警告 {code: {date, businessDaysUntil
 let positions = loadPositions(); // v3.1: 保有ポジション
 
 /* ---------- INIT ---------- */
+// v3.2: 自己学習エンジンが出力した weights.json があれば重みを上書きする。
+// 取得失敗・未配信でも既定の手調整重みで動くフェイルセーフ設計。
+let LEARNED_WEIGHTS_VERSION = null;
+async function applyLearnedWeights(){
+  try{
+    const res = await fetch('weights.json?_=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) return;
+    const wj = await res.json();
+    const wmap = wj && wj.weights;
+    if(!wmap) return;
+    INDICATORS.forEach(ind=>{
+      const v = wmap[ind.key];
+      if(typeof v === 'number' && isFinite(v) && v >= 0) ind.weight = v;
+    });
+    LEARNED_WEIGHTS_VERSION = wj.version || null;
+  }catch(e){ /* 既定重みのまま継続 */ }
+}
+
 async function init(){
+  await applyLearnedWeights(); // 重みを最優先で反映してからスコア計算
   renderIndicatorInputs();
   renderStocks();
   renderEditList();

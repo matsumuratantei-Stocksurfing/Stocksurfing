@@ -1,0 +1,23 @@
+{
+  "version": "baseline-2026-06-22",
+  "mode": "baseline",
+  "updatedAt": "2026-06-22T13:38:48.658121+09:00",
+  "basedOnDays": 0,
+  "oosHitRate": null,
+  "baselineOosHitRate": null,
+  "weights": {
+    "N225F": 3.0,
+    "TOPX": 2.5,
+    "NDX": 2.0,
+    "SPX": 1.8,
+    "SOX": 2.0,
+    "DJI": 1.5,
+    "USDJPY": 1.5,
+    "EURJPY": 0.8,
+    "TNX": 0.8,
+    "WTI": 0.6,
+    "VIX": 0.8,
+    "NKVI": 1.0
+  },
+  "note": "手調整の初期重み。optimize_weights.py が汎化性能で現行を明確に上回ったときのみ自動更新(promoted)される。"
+}

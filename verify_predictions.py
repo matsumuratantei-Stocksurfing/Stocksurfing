@@ -9,6 +9,7 @@ verification_log.json に追記する。
 import json
 import sys
 import os
+import math
 from datetime import datetime, timezone, timedelta
 
 import yfinance as yf
@@ -18,6 +19,30 @@ from jquants_client import get_daily_quote
 
 JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+
+def _num(x):
+    """NaN/Inf を None に正規化する (JSONの厳密規格は NaN を許さない)。"""
+    if x is None:
+        return None
+    try:
+        xf = float(x)
+    except (TypeError, ValueError):
+        return None
+    if math.isnan(xf) or math.isinf(xf):
+        return None
+    return xf
+
+
+def _clean(obj):
+    """dict/list を再帰的に走査し NaN/Inf を None に置換する。"""
+    if isinstance(obj, dict):
+        return {k: _clean(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_clean(v) for v in obj]
+    if isinstance(obj, float):
+        return _num(obj)
+    return obj
 
 # 銘柄定義 (HTML/send_email と同期)
 DEFAULT_STOCKS = [
@@ -63,6 +88,27 @@ TAG_MAP = {
     '防衛':'N225F','造船':'N225F','重工':'SPX','宇宙':'NDX','AIインフラ':'NDX','フィジカルAI':'NDX',
 }
 
+def _load_weights():
+    """weights.json があれば INDICATORS の重みを上書きする (自己学習エンジン連携)。
+    存在しない/壊れている場合はベタ書きのデフォルト重みのまま動く。"""
+    path = os.path.join(SCRIPT_DIR, 'weights.json')
+    if not os.path.exists(path):
+        return None
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            wj = json.load(f)
+    except Exception:
+        return None
+    wmap = wj.get('weights', {})
+    for ind in INDICATORS:
+        if ind['key'] in wmap:
+            v = _num(wmap[ind['key']])
+            if v is not None and v >= 0:
+                ind['weight'] = v
+    return wj.get('version')
+
+WEIGHTS_VERSION = _load_weights()
+
 def calc_score(indicators):
     s, w = 0, 0
     for ind in INDICATORS:
@@ -95,24 +141,25 @@ def stars_for(stock, market_score, indicators):
     if combined >= -8: return 2
     return 1
 
-def fetch_close_jquants(code):
-    """J-Quants で当日終値取得"""
-    today = datetime.now(JST).date().strftime('%Y-%m-%d')
-    data = get_daily_quote(code, today)
+def fetch_close_jquants(code, trade_date=None):
+    """J-Quants で指定日の終値取得 (trade_date 未指定なら当日)"""
+    if trade_date is None:
+        trade_date = datetime.now(JST).date().strftime('%Y-%m-%d')
+    data = get_daily_quote(code, trade_date)
     if not data:
         return None
     quotes = data.get('daily_quotes', [])
     if not quotes:
         return None
     q = quotes[0]
-    close = q.get('Close')
-    open_ = q.get('Open')
+    close = _num(q.get('Close'))
+    open_ = _num(q.get('Open'))
     if close is None or open_ is None:
         return None
     return {
-        'open': float(open_),
-        'close': float(close),
-        'chgPct': ((float(close) - float(open_)) / float(open_)) * 100 if float(open_) != 0 else 0,
+        'open': open_,
+        'close': close,
+        'chgPct': ((close - open_) / open_) * 100 if open_ != 0 else 0,
     }
 
 def fetch_close_yfinance(code, suffix='.T'):
@@ -123,11 +170,13 @@ def fetch_close_yfinance(code, suffix='.T'):
         if hist.empty:
             return None
         latest = hist.iloc[-1]
-        close = float(latest['Close'])
-        open_p = float(latest['Open'])
+        close = _num(latest['Close'])
+        open_p = _num(latest['Open'])
+        if close is None or open_p is None:
+            return None
         if len(hist) >= 2:
-            prev_close = float(hist.iloc[-2]['Close'])
-            chg_pct = ((close - prev_close) / prev_close) * 100 if prev_close != 0 else 0
+            prev_close = _num(hist.iloc[-2]['Close'])
+            chg_pct = ((close - prev_close) / prev_close) * 100 if prev_close else 0
         else:
             chg_pct = ((close - open_p) / open_p) * 100 if open_p != 0 else 0
         return {'open': open_p, 'close': close, 'chgPct': chg_pct}
@@ -142,8 +191,10 @@ def fetch_index_close_yfinance(symbol):
         if hist.empty:
             return None
         latest = hist.iloc[-1]
-        close = float(latest['Close'])
-        open_p = float(latest['Open'])
+        close = _num(latest['Close'])
+        open_p = _num(latest['Open'])
+        if close is None or open_p is None:
+            return None
         return {'open': open_p, 'close': close,
                 'chgPct': ((close - open_p) / open_p) * 100 if open_p != 0 else 0}
     except Exception:
@@ -166,9 +217,25 @@ def main():
     morning_indicators = morning.get('indicators', {})
     morning_score = calc_score(morning_indicators)
     fetched_at = morning.get('fetchedAt', '')
-    today = datetime.now(JST).date().strftime('%Y-%m-%d')
-    
-    print(f"\n[朝の予測]")
+
+    # ② 取引日は「実行時刻」ではなく「朝 data.json の日付」を採用する。
+    #    GitHub Actions の遅延で実行が JST 翌日(土曜)へずれても、日付が化けない。
+    trade_date = None
+    if fetched_at:
+        try:
+            trade_date = datetime.fromisoformat(fetched_at).astimezone(JST).date()
+        except Exception:
+            trade_date = None
+    if trade_date is None:
+        trade_date = datetime.now(JST).date()
+    today = trade_date.strftime('%Y-%m-%d')
+
+    # ② 土日(市場休場)は答え合わせをスキップ。休場データはNaN/無意味で母数を汚す。
+    if trade_date.weekday() >= 5:
+        print(f"\n[SKIP] {today} は土日(市場休場)のため答え合わせを行いません。")
+        sys.exit(0)
+
+    print(f"\n[朝の予測] (取引日 {today} / weights={WEIGHTS_VERSION or 'default'})")
     print(f"  日時: {fetched_at}")
     print(f"  スコア: {morning_score:.1f}" if morning_score is not None else "  スコア: N/A")
     
@@ -193,7 +260,7 @@ def main():
     print(f"  個別銘柄 (J-Quants → yfinanceフォールバック):")
     stock_results = {}
     for st in DEFAULT_STOCKS:
-        r = fetch_close_jquants(st['code']) or fetch_close_yfinance(st['code'])
+        r = fetch_close_jquants(st['code'], today) or fetch_close_yfinance(st['code'])
         if r:
             stock_results[st['code']] = r
             print(f"    {st['code']} {st['name']:15s}: close={r['close']:>9.2f} chgPct={r['chgPct']:+6.2f}%")
@@ -246,8 +313,15 @@ def main():
     entry = {
         'date': today,
         'verifiedAt': datetime.now(JST).isoformat(),
+        'weightsVersion': WEIGHTS_VERSION,
         'morningScore': round(morning_score, 1) if morning_score is not None else None,
         'morningFetchedAt': fetched_at,
+        # ③ 自己学習エンジン用: 朝の各指標 chgPct スナップショット。
+        #    これが日々溜まることで後日の重み最適化(optimize_weights.py)が可能になる。
+        'morningIndicators': {
+            ind['key']: _num((morning_indicators.get(ind['key']) or {}).get('chgPct'))
+            for ind in INDICATORS
+        },
         'predictedPicks': [{'code':p['code'],'name':p['name'],'star':p['predictedStar']} for p in morning_picks],
         'actualIndices': {
             'N225': n225,
@@ -265,12 +339,17 @@ def main():
     # 同日のログがあれば上書き
     log = [l for l in log if l.get('date') != today]
     log.append(entry)
+    # 日付順に整列(遅延実行で前後しても綺麗に並ぶ)
+    log.sort(key=lambda l: l.get('date', ''))
     # 古いログは120件で打ち切り
     if len(log) > 120:
         log = log[-120:]
-    
+
+    # ① NaN/Inf を除去し、厳密JSONとして書き出す。
+    #    これを怠るとブラウザの JSON.parse が例外を投げ、答え合わせタブが空表示になる。
+    log = _clean(log)
     with open(log_path, 'w', encoding='utf-8') as f:
-        json.dump(log, f, ensure_ascii=False, indent=2)
+        json.dump(log, f, ensure_ascii=False, indent=2, allow_nan=False)
     
     print(f"\n  ✓ verification_log.json に追記 ({len(log)}件)")
     

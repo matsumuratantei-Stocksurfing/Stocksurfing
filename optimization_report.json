@@ -1,0 +1,27 @@
+{
+  "evaluatedAt": "2026-06-22T13:39:49.299306+09:00",
+  "days": 32,
+  "minDays": 40,
+  "margin": 0.05,
+  "baselineVersion": "baseline-2026-06-22",
+  "baselineInSample": 0.625,
+  "baselineOos": 0.625,
+  "candidateInSample": 0.625,
+  "candidateOos": 0.625,
+  "candidateWeights": {
+    "N225F": 3.0,
+    "TOPX": 1.25,
+    "NDX": 2.0,
+    "SPX": 1.8,
+    "SOX": 2.0,
+    "DJI": 1.5,
+    "USDJPY": 1.5,
+    "EURJPY": 0.8,
+    "TNX": 0.8,
+    "WTI": 0.6,
+    "VIX": 0.8,
+    "NKVI": 1.0
+  },
+  "promoted": false,
+  "reason": "データ不足 (あと8日でゲート判定開始)"
+}
