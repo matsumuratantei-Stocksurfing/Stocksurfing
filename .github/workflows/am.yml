@@ -1,0 +1,50 @@
+name: Fetch morning session (noon)
+
+on:
+  schedule:
+    - cron: '5 3 * * 1-5'  # 03:05 UTC = 12:05 JST 平日（前場引け直後）
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  am:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Fetch morning session (prices_am)
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python fetch_am.py
+
+      - name: Commit am.json (with retry)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add am.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Auto-update am.json [noon]"
+          for i in 1 2 3; do
+            if git push; then
+              echo "Push succeeded on attempt $i"
+              exit 0
+            fi
+            git pull --rebase --autostash || true
+            sleep 2
+          done
+          echo "Push failed after 3 attempts"
+          exit 1
