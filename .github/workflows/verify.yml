@@ -27,17 +27,20 @@ jobs:
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python verify_predictions.py
-      
-      - name: Commit verification_log.json (with retry)
+
+      - name: Optimize weights (self-learning)
+        run: python optimize_weights.py
+
+      - name: Commit log/weights/report (with retry)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add verification_log.json
+          git add verification_log.json weights.json optimization_report.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Auto-update verification_log [nightly]"
+          git commit -m "Auto-update verification_log + weights [nightly]"
           # 最大3回リトライ (race condition対策)
           for i in 1 2 3; do
             if git push; then
