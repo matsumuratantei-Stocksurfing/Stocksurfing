@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - 通知メール送信 (v3.1)
-v3で追加: 決算警告セクション・昨日の振り返り
+松村式Stocksurfing - 通知メール送信 (v3.4)
+決算警告セクション・昨日の振り返りを含む HTML メール。
+銘柄・指標・スコア計算は common.py を参照(重複排除)。
 """
 import os
 import sys
@@ -13,113 +14,15 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime, timezone, timedelta
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from common import (
+    DEFAULT_STOCKS, INDICATORS, NAME_MAP,
+    calc_score, stock_score, stars_for, WEIGHTS_VERSION,
+)
+
 JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-DEFAULT_STOCKS = [
-    {'code':'285A', 'name':'キオクシア',        'tags':['SOX','NQ']},
-    {'code':'8035', 'name':'東京エレクトロン',  'tags':['SOX','NQ']},
-    {'code':'6857', 'name':'アドバンテスト',    'tags':['SOX','NQ']},
-    {'code':'6920', 'name':'レーザーテック',    'tags':['SOX','NQ']},
-    {'code':'6146', 'name':'ディスコ',          'tags':['SOX','NQ']},
-    {'code':'4062', 'name':'イビデン',          'tags':['SOX','NQ']},
-    {'code':'6981', 'name':'村田製作所',        'tags':['SOX','景気']},
-    {'code':'5803', 'name':'フジクラ',          'tags':['AIインフラ','NQ']},
-    {'code':'5801', 'name':'古河電工',          'tags':['AIインフラ','NQ']},
-    {'code':'4063', 'name':'信越化学',          'tags':['SOX','景気']},
-    {'code':'5016', 'name':'JX金属',            'tags':['SOX','資源']},
-    {'code':'9984', 'name':'ソフトバンクG',     'tags':['NQ','日経寄与']},
-    {'code':'7011', 'name':'三菱重工業',        'tags':['防衛','重工']},
-    {'code':'7012', 'name':'川崎重工業',        'tags':['防衛','造船']},
-    {'code':'7013', 'name':'IHI',               'tags':['防衛','宇宙']},
-    {'code':'6501', 'name':'日立製作所',        'tags':['NY','景気']},
-    {'code':'6758', 'name':'ソニーG',           'tags':['NY','NQ','景気']},
-    {'code':'7203', 'name':'トヨタ自動車',      'tags':['NY','USDJPY','景気']},
-    {'code':'6506', 'name':'安川電機',          'tags':['フィジカルAI','NQ']},
-    {'code':'8058', 'name':'三菱商事',          'tags':['商社','資源']},
-    {'code':'8031', 'name':'三井物産',          'tags':['商社','資源']},
-    {'code':'8306', 'name':'三菱UFJ FG',        'tags':['金融','USDJPY']},
-    {'code':'8316', 'name':'三井住友FG',        'tags':['金融','USDJPY']},
-    {'code':'9107', 'name':'川崎汽船',          'tags':['資源','景気']},
-]
-INDICATORS = [
-    {'key':'N225F',  'weight':3.0, 'inverse':False},
-    {'key':'TOPX',   'weight':2.5, 'inverse':False},
-    {'key':'NDX',    'weight':2.0, 'inverse':False},
-    {'key':'SPX',    'weight':1.8, 'inverse':False},
-    {'key':'SOX',    'weight':2.0, 'inverse':False},
-    {'key':'DJI',    'weight':1.5, 'inverse':False},
-    {'key':'USDJPY', 'weight':1.5, 'inverse':False},
-    {'key':'EURJPY', 'weight':0.8, 'inverse':False},
-    {'key':'TNX',    'weight':0.8, 'inverse':True},
-    {'key':'WTI',    'weight':0.6, 'inverse':False},
-    {'key':'VIX',    'weight':0.8, 'inverse':True},
-    {'key':'NKVI',   'weight':1.0, 'inverse':True},
-]
-TAG_MAP = {
-    'SOX':'SOX','NQ':'NDX','NY':'DJI','USDJPY':'USDJPY',
-    '景気':'SPX','内需':'TOPX','金融':'TNX','商社':'WTI','資源':'WTI','日経寄与':'N225F',
-    '防衛':'N225F','造船':'N225F','重工':'SPX','宇宙':'NDX','AIインフラ':'NDX','フィジカルAI':'NDX',
-}
-NAME_MAP = {'N225F':'日経先物','TOPX':'TOPIX','NDX':'ナスダック100','SPX':'S&P500',
-            'SOX':'SOX半導体','DJI':'NYダウ','USDJPY':'ドル円','EURJPY':'ユーロ円',
-            'TNX':'米10年金利','WTI':'WTI原油','VIX':'VIX恐怖指数','NKVI':'日経VI'}
-
-def _load_weights():
-    """weights.json があれば INDICATORS の重みを上書き (自己学習エンジン連携)。
-    朝メールのスコアを HTML/答え合わせと完全に同期させるため、3ファイルで共通の重み源を使う。"""
-    path = os.path.join(SCRIPT_DIR, 'weights.json')
-    if not os.path.exists(path):
-        return None
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            wj = json.load(f)
-    except Exception:
-        return None
-    wmap = wj.get('weights', {})
-    for ind in INDICATORS:
-        if ind['key'] in wmap:
-            try:
-                v = float(wmap[ind['key']])
-            except (TypeError, ValueError):
-                continue
-            if v >= 0:
-                ind['weight'] = v
-    return wj.get('version')
-
-WEIGHTS_VERSION = _load_weights()
-
-def calc_score(indicators):
-    s, w = 0, 0
-    for ind in INDICATORS:
-        v = indicators.get(ind['key'])
-        if not v or v.get('chgPct') is None: continue
-        d = -1 if ind['inverse'] else 1
-        cp = max(-5, min(5, v['chgPct']))
-        s += cp * 15 * d * ind['weight']
-        w += ind['weight']
-    return None if w == 0 else max(-100, min(100, s / (w * 0.75)))
-
-def stock_score(stock, indicators):
-    s, n = 0, 0
-    for tag in stock['tags']:
-        k = TAG_MAP.get(tag)
-        if not k: continue
-        v = indicators.get(k)
-        if not v or v.get('chgPct') is None: continue
-        s += v['chgPct']
-        n += 1
-    return s / n if n else None
-
-def stars_for(stock, market_score, indicators):
-    ss = stock_score(stock, indicators)
-    if ss is None or market_score is None: return 0
-    combined = ss * 10 + market_score * 0.3
-    if combined >= 25: return 5
-    if combined >= 12: return 4
-    if combined >= 3: return 3
-    if combined >= -8: return 2
-    return 1
 
 def calc_gap(indicators, reference):
     cme = indicators.get('N225F')
@@ -178,7 +81,7 @@ def build_recap_html(recap):
     metrics = recap.get('metrics', {})
     direction_correct = metrics.get('n225_direction_correct')
     avg_pick = metrics.get('avg_pick_return')
-    
+
     n225_chg = n225.get('chgPct')
     direction_icon = '✓' if direction_correct else '✗' if direction_correct is False else '—'
     parts = [f"昨日({recap.get('date','?')}) の予測: <b>{'+' if score and score > 0 else ''}{score:.0f}</b>"] if score is not None else []
@@ -187,7 +90,7 @@ def build_recap_html(recap):
     parts.append(f"方向性: {direction_icon}")
     if avg_pick is not None:
         parts.append(f"★4候補平均: <b>{avg_pick:+.2f}%</b>")
-    
+
     return f'<div style="background:#1a2a4d;color:#e6ecff;padding:10px;border-radius:8px;font-size:12px;margin:12px 0">📒 {" / ".join(parts)}</div>'
 
 def build_earnings_warnings_html(earnings_warnings):
@@ -215,7 +118,7 @@ def build_morning_email(data, jst_now):
     verdict = verdict_text(score)
     gap = calc_gap(indicators, reference)
     twist = detect_twist(indicators)
-    
+
     picks = []
     for stock in DEFAULT_STOCKS:
         if stock['code'] in earnings_warnings: continue  # 決算警告対象は候補から外す
@@ -225,24 +128,24 @@ def build_morning_email(data, jst_now):
             picks.append({'stock': stock, 'star': star, 'ss': ss})
     picks.sort(key=lambda x: (-x['star'], -(x['ss'] or -99)))
     picks = picks[:5]
-    
+
     score_str = f"{'+' if score and score > 0 else ''}{score:.0f}" if score is not None else "—"
     subject = f"📈 [{jst_now.strftime('%m/%d')}] 場の判定 {score_str} / {verdict.split('（')[0]}"
-    
+
     gap_html = ''
     if gap:
         sign = '+' if gap['gap'] >= 0 else ''
         color = '#ff5766' if gap['gap'] >= 0 else '#2ecc71'
         gap_html = f'<p>🪟 <b>本日の窓開け予想</b>: <span style="color:{color};font-weight:bold">{sign}{gap["gap"]:.0f}円 ({sign}{gap["gapPct"]:.2f}%)</span></p>'
-    
+
     twist_html = ''
     if twist:
         twist_html = f'<p style="background:#3a2410;padding:8px;border-radius:6px;color:#f7b955">⚠️ <b>指標がねじれています</b>（不一致{twist}件）。サイズを半分にするのが安全です。</p>'
-    
+
     earnings_html = build_earnings_warnings_html(earnings_warnings)
     recap = get_yesterdays_recap(jst_now)
     recap_html = build_recap_html(recap)
-    
+
     picks_html = ''
     if picks:
         picks_html = '<h3>🎯 仕掛け候補（★4以上、決算3営業日以内除外）</h3><ul style="list-style:none;padding-left:0">'
@@ -252,11 +155,11 @@ def build_morning_email(data, jst_now):
         picks_html += '</ul>'
     else:
         picks_html = '<p style="color:#9aa8c7">★4以上の候補なし。様子見推奨。</p>'
-    
+
     indicators_table = '<h3>📊 指標一覧</h3><table style="border-collapse:collapse;width:100%"><tr style="background:#263353;color:#fff"><th style="padding:6px;text-align:left">指標</th><th style="padding:6px;text-align:right">前日終値</th><th style="padding:6px;text-align:right">前日比%</th></tr>'
     for ind in INDICATORS:
         v = indicators.get(ind['key'])
-        if not v: 
+        if not v:
             indicators_table += f'<tr><td style="padding:6px;border-bottom:1px solid #ddd">{NAME_MAP.get(ind["key"],ind["key"])}</td><td style="padding:6px;text-align:right;color:#999">—</td><td style="padding:6px;text-align:right;color:#999">—</td></tr>'
             continue
         chg = v.get('chgPct')
@@ -266,7 +169,7 @@ def build_morning_email(data, jst_now):
             chg_color = '#2ecc71' if chg and chg >= 0 else '#ff5766'
         indicators_table += f'<tr><td style="padding:6px;border-bottom:1px solid #ddd">{NAME_MAP.get(ind["key"],ind["key"])}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd">{v.get("price","—")}</td><td style="padding:6px;text-align:right;border-bottom:1px solid #ddd;color:{chg_color}">{chg_s}</td></tr>'
     indicators_table += '</table>'
-    
+
     pages_url = os.environ.get('PAGES_URL', 'https://matsumuratantei-stocksurfing.github.io/Stocksurfing/')
     body = f"""<!DOCTYPE html>
 <html><head><meta charset="UTF-8"></head>
@@ -284,7 +187,7 @@ def build_morning_email(data, jst_now):
 {picks_html}
 {indicators_table}
 <p style="margin-top:24px;text-align:center"><a href="{pages_url}" style="background:#4da3ff;color:#fff;padding:12px 24px;text-decoration:none;border-radius:8px;font-weight:bold">📱 アプリで詳細を見る</a></p>
-<p style="font-size:11px;color:#999;margin-top:24px;border-top:1px solid #ddd;padding-top:12px">v3.1 答え合わせエンジン搭載 / データ提供: yfinance / Nikkei公式 / J-Quants Premium</p>
+<p style="font-size:11px;color:#999;margin-top:24px;border-top:1px solid #ddd;padding-top:12px">v3.4 答え合わせエンジン搭載 / データ提供: yfinance / Nikkei公式 / J-Quants V2 Premium</p>
 </body></html>"""
     return subject, body
 

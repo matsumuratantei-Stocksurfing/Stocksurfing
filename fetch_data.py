@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - データ取得スクリプト (v3.1)
-yfinance + Nikkei公式 + J-Quants(決算カレンダー) を統合
+松村式Stocksurfing - データ取得スクリプト (v3.4)
+yfinance + Nikkei公式 + J-Quants V2(決算カレンダー) を統合
 """
 import json
 import sys
@@ -14,9 +14,10 @@ import yfinance as yf
 import requests
 from bs4 import BeautifulSoup
 
-# 同一ディレクトリのjquants_clientをimport
+# 同一ディレクトリの共通モジュール / J-Quants V2 クライアントをimport
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from jquants_client import jq_get, get_announcements
+from common import TRACKED_STOCKS
+from jquants_client import get_earnings_calendar
 
 JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -40,12 +41,6 @@ REFERENCE_OPTIONS = {
     'N225_CASH': ['^N225'],
     'SOX_PROXY': ['8035.T'],
 }
-
-# v3.1で追跡する20銘柄(HTMLのDEFAULT_STOCKSと同期)
-TRACKED_STOCKS = [
-    '8035','6920','6857','6146','6526','5803','4063','9984','7011','7012',
-    '7013','6501','6758','7203','6506','8058','8031','8306','8316','9107',
-]
 
 def fetch_yfinance_one(symbol):
     try:
@@ -134,7 +129,7 @@ def fetch_nkvi_multisource():
     print(f"      ✗ 日経VI 取得失敗")
     return None
 
-# ---------- 決算カレンダー(v3.2) ----------
+# ---------- 決算カレンダー (J-Quants V2) ----------
 def is_business_day(d):
     """土日のみ非営業日とみなす(祝日は無視)"""
     return d.weekday() < 5
@@ -156,20 +151,25 @@ def business_days_until(target_date_str, base_date):
     return days
 
 def fetch_earnings_calendar():
-    """J-Quants から決算発表予定を取得し、20銘柄分の3営業日以内警告をまとめる"""
+    """J-Quants V2 から決算発表予定を取得し、監視銘柄の3営業日以内警告をまとめる。
+
+    ※ V2の /equities/earnings-calendar は「翌営業日」に決算発表予定の
+       3月期・9月期銘柄のみを返す。よって実質「翌営業日(1営業日後)」の警告が中心。
+       それでも仕掛け回避の役には立つため3営業日窓のロジックは温存する。
+    """
     print()
-    print("[決算カレンダー取得 (J-Quants)]")
+    print("[決算カレンダー取得 (J-Quants V2)]")
     today = datetime.now(JST).date()
-    
-    data = get_announcements()
+
+    data = get_earnings_calendar()
     if not data:
         print(f"  ✗ J-Quants 接続失敗 or データなし")
         return {}
-    
-    # J-Quants /fins/announcement のレスポンス: {"announcement": [{...}, ...]}
-    announcements = data.get('announcement', [])
+
+    # V2 /equities/earnings-calendar のレスポンス: {"data": [{...}, ...]}
+    announcements = data.get('data', [])
     print(f"  全発表予定: {len(announcements)} 件取得")
-    
+
     warnings = {}
     for ann in announcements:
         code_raw = ann.get('Code', '')
@@ -188,23 +188,23 @@ def fetch_earnings_calendar():
         warnings[code] = {
             'date': date_str,
             'businessDaysUntil': bdays,
-            'fiscalYear': ann.get('FiscalYear', ''),
-            'fiscalPeriod': ann.get('FiscalPeriod', ''),
-            'companyName': ann.get('CompanyName', ''),
+            'fiscalYear': ann.get('FY', ''),
+            'fiscalPeriod': ann.get('FQ', ''),
+            'companyName': ann.get('CoName', ''),
         }
-        print(f"  ⚠️ {code} ({ann.get('CompanyName','')}) — 決算予定 {date_str} ({bdays}営業日後)")
-    
+        print(f"  ⚠️ {code} ({ann.get('CoName','')}) — 決算予定 {date_str} ({bdays}営業日後)")
+
     if not warnings:
-        print(f"  ✓ 20銘柄すべて決算3営業日以内なし")
+        print(f"  ✓ 監視銘柄すべて決算3営業日以内なし")
     return warnings
 
 def main():
     print("=" * 50)
-    print("  松村式Stocksurfing データ取得 (v3.1)")
+    print("  松村式Stocksurfing データ取得 (v3.4)")
     print(f"  実行時刻: {datetime.now(JST).isoformat()}")
     print("=" * 50)
     print()
-    
+
     indicators = {}
     print("[指標取得]")
     for key, symbols in SYMBOL_OPTIONS.items():
@@ -221,7 +221,7 @@ def main():
                 result = fetch_nkvi_multisource()
                 if result:
                     indicators[key] = result
-    
+
     reference = {}
     print()
     print("[参照データ]")
@@ -232,10 +232,10 @@ def main():
             print(f"  {key:10s} OK -> {used:10s} price={result['price']:>12.2f}")
         else:
             print(f"  {key:10s} FAIL")
-    
-    # v3.2: 決算カレンダー
+
+    # 決算カレンダー (J-Quants V2)
     earnings_warnings = fetch_earnings_calendar()
-    
+
     output = {
         'fetchedAt': datetime.now(JST).isoformat(),
         'indicators': indicators,
@@ -244,11 +244,11 @@ def main():
         'success': len(indicators),
         'total': len(SYMBOL_OPTIONS),
     }
-    
+
     out_path = os.path.join(SCRIPT_DIR, 'data.json')
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump(output, f, ensure_ascii=False, indent=2)
-    
+
     print()
     print("=" * 50)
     print(f"  取得完了: {len(indicators)}/{len(SYMBOL_OPTIONS)} 指標 + 決算警告 {len(earnings_warnings)} 件")

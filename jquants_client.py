@@ -1,120 +1,144 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-J-Quants API クライアント (Premium静的APIキー対応)
-複数の認証方式を試行して、最初に通るものを使う
+J-Quants API クライアント (V2 / x-api-key 方式)
+
+2026-06 に J-Quants は V1(api.jquants.com/v1, Bearer/refresh token)を廃止し、
+V2(api.jquants.com/v2, x-api-key ヘッダ)へ移行した。本モジュールは V2 専用。
+
+- ベースURL : https://api.jquants.com/v2
+- 認証      : x-api-key ヘッダ (Dashboard で発行したAPIキー。有効期限なし)
+- レスポンス: 原則 {"data": [...], "pagination_key": "..."}
+- 主要EP    : /equities/bars/daily, /equities/bars/daily/am,
+              /equities/earnings-calendar, /equities/master
+
+GitHub Secret `JQUANTS_API_KEY` には V2 のAPIキーを設定すること(V1キーは無効)。
 """
 import os
-import sys
 import requests
-from datetime import datetime, timezone, timedelta
 
-JST = timezone(timedelta(hours=9))
-JQ_BASE = 'https://api.jquants.com/v1'
+JQ_BASE = 'https://api.jquants.com/v2'
 API_KEY = os.environ.get('JQUANTS_API_KEY', '')
 
-# トークンキャッシュ (refresh→idtokenの場合に保持)
-_id_token_cache = None
+# pagination を辿る際の安全上限(無限ループ防止)
+_MAX_PAGES = 20
 
-def _get_id_token_via_refresh():
-    """API Keyをrefresh_tokenとしてid_tokenを発行"""
-    global _id_token_cache
-    if _id_token_cache:
-        return _id_token_cache
-    try:
-        r = requests.post(
-            f'{JQ_BASE}/token/auth_refresh',
-            params={'refreshtoken': API_KEY},
-            timeout=30
-        )
-        if r.status_code == 200:
-            data = r.json()
-            _id_token_cache = data.get('idToken')
-            return _id_token_cache
-    except Exception as e:
-        print(f"  [JQ] auth_refresh失敗: {e}")
-    return None
 
-def jq_get(path, params=None):
-    """J-Quants GET 複数の認証方式を試行"""
+def jq_get(path, params=None, follow_pagination=True):
+    """J-Quants V2 GET。
+
+    成功時は {"data": [...]} 形式の dict を返す(pagination_key があれば
+    全ページを辿って data を連結する)。失敗時は None。
+    呼び出し側は戻り値の 'data' 配列を見るだけでよい。
+    """
     if not API_KEY:
-        print(f"  [JQ] JQUANTS_API_KEY が未設定")
+        print("  [JQ] JQUANTS_API_KEY が未設定")
         return None
-    
-    url = f'{JQ_BASE}{path}'
-    
-    # 試行1: Bearer (静的APIキー直接)
-    try:
-        r = requests.get(url, headers={'Authorization': f'Bearer {API_KEY}'},
-                         params=params, timeout=30)
-        if r.status_code == 200:
-            return r.json()
-        elif r.status_code != 401:
-            print(f"  [JQ] {path} Bearer: HTTP {r.status_code} {r.text[:200]}")
-    except Exception as e:
-        print(f"  [JQ] {path} Bearer ex: {e}")
-    
-    # 試行2: 静的キーをrefresh_tokenとして扱い、id_tokenで再試行
-    id_token = _get_id_token_via_refresh()
-    if id_token:
-        try:
-            r = requests.get(url, headers={'Authorization': f'Bearer {id_token}'},
-                             params=params, timeout=30)
-            if r.status_code == 200:
-                return r.json()
-            elif r.status_code != 401:
-                print(f"  [JQ] {path} id_token: HTTP {r.status_code} {r.text[:200]}")
-        except Exception as e:
-            print(f"  [JQ] {path} id_token ex: {e}")
-    
-    return None
 
-# ---------- API利用関数 ----------
+    url = f'{JQ_BASE}{path}'
+    headers = {'x-api-key': API_KEY}
+    p = dict(params or {})
+    all_data = []
+    pages = 0
+
+    while True:
+        try:
+            r = requests.get(url, headers=headers, params=p, timeout=30)
+        except Exception as e:
+            print(f"  [JQ] {path} ex: {e}")
+            return None
+
+        if r.status_code != 200:
+            # 410(V1廃止)・401(キー不正)・403(プラン外)等はここで可視化
+            print(f"  [JQ] {path}: HTTP {r.status_code} {r.text[:200]}")
+            return None
+
+        try:
+            j = r.json()
+        except Exception as e:
+            print(f"  [JQ] {path} JSON parse失敗: {e}")
+            return None
+
+        data = j.get('data')
+        if isinstance(data, list):
+            all_data.extend(data)
+
+        pages += 1
+        pk = j.get('pagination_key')
+        if not follow_pagination or not pk or pages >= _MAX_PAGES:
+            break
+        p['pagination_key'] = pk
+
+    return {'data': all_data}
+
+
+# ---------- API利用関数 (V2) ----------
 
 def get_daily_quote(code, date=None):
-    """1銘柄の日次価格を取得 (4桁証券コード)"""
+    """株価四本値 /equities/bars/daily。
+
+    レスポンス data[].O/H/L/C(調整前), Vo/Va, 前場 MO/MH/ML/MC,
+    後場 AO/AH/AL/AC(前場/後場はPremiumのみ)。code は4桁でも5桁でも可。
+    """
     params = {'code': code}
     if date:
         params['date'] = date
-    return jq_get('/prices/daily_quotes', params)
+    return jq_get('/equities/bars/daily', params)
+
 
 def get_prices_am(code=None, date=None):
-    """前場(午前場)の4本値を取得 (Premium限定・正午頃に当日分が利用可能)。
-    v1: /prices/prices_am。レスポンス例: {'prices_am':[{'Date','Code',
-        'MorningOpen','MorningHigh','MorningLow','MorningClose','MorningVolume',...}]}"""
+    """前場四本値 /equities/bars/daily/am。
+
+    V2では当日分のみ(翌6:00頃まで)を返し、date パラメータは存在しない。
+    引数 date は後方互換のため受けるが無視する。
+    レスポンス data[].MO/MH/ML/MC, MVo/MVa。
+    """
     params = {}
     if code:
         params['code'] = code
-    if date:
-        params['date'] = date
-    return jq_get('/prices/prices_am', params or None)
+    return jq_get('/equities/bars/daily/am', params or None)
 
-def get_announcements():
-    """直近の決算発表予定を取得"""
-    return jq_get('/fins/announcement')
+
+def get_earnings_calendar():
+    """決算発表予定 /equities/earnings-calendar。
+
+    V2は「翌営業日」に決算発表予定の銘柄(3月期・9月期)のみを返す。
+    レスポンス data[].Date/Code/CoName/FY/SectorNm/FQ/Section。
+    """
+    return jq_get('/equities/earnings-calendar')
+
+
+# 後方互換エイリアス(旧名 get_announcements を呼ぶ箇所のため)
+get_announcements = get_earnings_calendar
+
 
 def get_listed_info(code=None):
-    """上場銘柄情報"""
+    """上場銘柄一覧 /equities/master。
+
+    レスポンス data[].Code/CoName/CoNameEn/S17.../Mkt/MktNm 等。
+    """
     params = {'code': code} if code else None
-    return jq_get('/listed/info', params)
+    return jq_get('/equities/master', params)
+
 
 # ---------- 動作テスト ----------
 def selftest():
-    print("[J-Quants 動作テスト]")
+    print("[J-Quants V2 動作テスト]")
     if not API_KEY:
         print("  JQUANTS_API_KEY が未設定。テストできません")
         return False
     print(f"  API Key: {API_KEY[:6]}...{API_KEY[-4:]} (length={len(API_KEY)})")
-    
-    # 上場銘柄情報を1社取得してみる (トヨタ)
+
+    # 上場銘柄情報を1社取得してみる (トヨタ 7203)
     r = get_listed_info('7203')
     if r:
-        info = r.get('info', [])
+        info = r.get('data', [])
         if info:
-            print(f"  ✓ 接続成功: {info[0].get('CompanyName', '?')}")
+            print(f"  ✓ 接続成功: {info[0].get('CoName', '?')}")
             return True
-    print(f"  ✗ 接続失敗")
+    print("  ✗ 接続失敗")
     return False
+
 
 if __name__ == '__main__':
     selftest()
