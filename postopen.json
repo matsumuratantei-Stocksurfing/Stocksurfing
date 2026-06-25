@@ -1,35 +1,35 @@
 {
-  "updated_at": "2026-06-25T13:40:18.183577+09:00",
-  "updated_jst": "2026-06-25 13:40:18 JST",
+  "updated_at": "2026-06-26T08:53:08.348850+09:00",
+  "updated_jst": "2026-06-26 08:53:08 JST",
   "data": {
     "TSE_OPEN": {
       "name": "日経平均",
       "symbol": "^N225",
       "value": {
-        "price": 71976.7031,
+        "price": 72527.5234,
         "open": 70114.0938,
-        "prev_close": 69174.9688,
-        "chgPct": 4.0502
+        "prev_close": 69788.3828,
+        "chgPct": 3.9249
       }
     },
     "SOX_PROXY": {
       "name": "東京エレクトロン",
       "symbol": "8035.T",
       "value": {
-        "price": 74690.0,
+        "price": 75540.0,
         "open": 72700.0,
         "prev_close": 69900.0,
-        "chgPct": 6.8526
+        "chgPct": 8.0687
       }
     },
     "USDJPY_OPEN": {
       "name": "ドル円",
       "symbol": "USDJPY=X",
       "value": {
-        "price": 161.726,
-        "open": 161.76,
-        "prev_close": 161.599,
-        "chgPct": 0.0786
+        "price": 161.801,
+        "open": 161.778,
+        "prev_close": 161.763,
+        "chgPct": 0.0235
       }
     }
   },
