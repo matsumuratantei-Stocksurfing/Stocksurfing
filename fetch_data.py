@@ -8,6 +8,7 @@ import json
 import sys
 import os
 import re
+import time
 from datetime import datetime, timezone, timedelta
 
 import yfinance as yf
@@ -26,10 +27,10 @@ UA_DESKTOP = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTM
 SYMBOL_OPTIONS = {
     'N225F':  ['NKD=F'],
     'TOPX':   ['^TPX', '^TOPX', '1306.T'],
-    'NDX':    ['^NDX'],
-    'SPX':    ['^GSPC'],
-    'SOX':    ['^SOX'],
-    'DJI':    ['^DJI'],
+    'NDX':    ['^NDX', 'QQQ'],
+    'SPX':    ['^GSPC', 'SPY', '^SPX'],
+    'SOX':    ['^SOX', 'SOXX'],
+    'DJI':    ['^DJI', 'DIA'],
     'USDJPY': ['JPY=X'],
     'EURJPY': ['EURJPY=X'],
     'TNX':    ['^TNX'],
@@ -42,23 +43,33 @@ REFERENCE_OPTIONS = {
     'SOX_PROXY': ['8035.T'],
 }
 
-def fetch_yfinance_one(symbol):
-    try:
-        ticker = yf.Ticker(symbol)
-        hist = ticker.history(period='5d', interval='1d')
-        if hist.empty or len(hist) < 1:
+def fetch_yfinance_one(symbol, retries=2):
+    """yfinanceで1シンボル取得。yfinance/Yahooは一時的失敗(レート制限・空応答)が
+    あるため、空/例外なら短い間隔でリトライする。"""
+    for attempt in range(retries + 1):
+        try:
+            ticker = yf.Ticker(symbol)
+            hist = ticker.history(period='5d', interval='1d')
+            if hist.empty or len(hist) < 1:
+                if attempt < retries:
+                    time.sleep(1.5)
+                    continue
+                return None
+            latest = hist.iloc[-1]
+            close = float(latest['Close'])
+            if len(hist) >= 2:
+                prev_close = float(hist.iloc[-2]['Close'])
+                chg_pct = ((close - prev_close) / prev_close) * 100 if prev_close != 0 else None
+            else:
+                open_p = float(latest['Open'])
+                chg_pct = ((close - open_p) / open_p) * 100 if open_p != 0 else None
+            return {'price': round(close, 4), 'chgPct': round(chg_pct, 4) if chg_pct is not None else None}
+        except Exception:
+            if attempt < retries:
+                time.sleep(1.5)
+                continue
             return None
-        latest = hist.iloc[-1]
-        close = float(latest['Close'])
-        if len(hist) >= 2:
-            prev_close = float(hist.iloc[-2]['Close'])
-            chg_pct = ((close - prev_close) / prev_close) * 100 if prev_close != 0 else None
-        else:
-            open_p = float(latest['Open'])
-            chg_pct = ((close - open_p) / open_p) * 100 if open_p != 0 else None
-        return {'price': round(close, 4), 'chgPct': round(chg_pct, 4) if chg_pct is not None else None}
-    except Exception:
-        return None
+    return None
 
 def fetch_with_options(symbols):
     for sym in symbols:
