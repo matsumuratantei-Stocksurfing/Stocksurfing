@@ -1,0 +1,358 @@
+{
+  "generatedAt": "2026-07-01T23:13:14.378819+09:00",
+  "note": "計測専用。本番ロジック非変更。価格は調整済み(Adj*)優先、権利落ち日は除外。",
+  "lookbackCalendarDays": 400,
+  "stocksUsed": 24,
+  "totalObservations": 6415,
+  "stopPct": -2.0,
+  "targetPct": 4.0,
+  "bucketPrecedence": "range外→OUT / morning_ret<0→D / A窓(0<=mr<=3 & 0.30<=cp<=0.65)→A / cp>0.80→B / cp<0.20→C / それ以外→E",
+  "buckets": {
+    "A": {
+      "n": 775,
+      "pm_ret": {
+        "n": 775,
+        "mean": 0.029,
+        "median": 0.0,
+        "winRate": 49.7,
+        "std": 1.344
+      },
+      "next1_ret": {
+        "n": 774,
+        "mean": 0.197,
+        "median": 0.02,
+        "winRate": 50.0,
+        "std": 3.328
+      },
+      "next3_ret": {
+        "n": 766,
+        "mean": 0.899,
+        "median": 0.374,
+        "winRate": 53.5,
+        "std": 5.928
+      },
+      "sim": {
+        "win": 225,
+        "lose": 405,
+        "even": 145,
+        "winPct_ofAll": 29.0,
+        "winPct_ofDecided": 35.7
+      }
+    },
+    "B": {
+      "n": 1088,
+      "pm_ret": {
+        "n": 1088,
+        "mean": 0.077,
+        "median": 0.093,
+        "winRate": 53.3,
+        "std": 1.15
+      },
+      "next1_ret": {
+        "n": 1088,
+        "mean": 0.303,
+        "median": 0.0,
+        "winRate": 49.6,
+        "std": 3.587
+      },
+      "next3_ret": {
+        "n": 1084,
+        "mean": 1.035,
+        "median": 0.293,
+        "winRate": 53.2,
+        "std": 6.281
+      },
+      "sim": {
+        "win": 324,
+        "lose": 580,
+        "even": 184,
+        "winPct_ofAll": 29.8,
+        "winPct_ofDecided": 35.8
+      }
+    },
+    "C": {
+      "n": 280,
+      "pm_ret": {
+        "n": 280,
+        "mean": 0.111,
+        "median": 0.07,
+        "winRate": 52.9,
+        "std": 1.297
+      },
+      "next1_ret": {
+        "n": 276,
+        "mean": 0.271,
+        "median": 0.377,
+        "winRate": 55.8,
+        "std": 3.052
+      },
+      "next3_ret": {
+        "n": 273,
+        "mean": 0.535,
+        "median": 0.062,
+        "winRate": 51.3,
+        "std": 5.529
+      },
+      "sim": {
+        "win": 93,
+        "lose": 143,
+        "even": 44,
+        "winPct_ofAll": 33.2,
+        "winPct_ofDecided": 39.4
+      }
+    },
+    "D": {
+      "n": 2695,
+      "pm_ret": {
+        "n": 2695,
+        "mean": 0.041,
+        "median": 0.028,
+        "winRate": 50.8,
+        "std": 1.412
+      },
+      "next1_ret": {
+        "n": 2689,
+        "mean": 0.352,
+        "median": 0.179,
+        "winRate": 53.6,
+        "std": 3.242
+      },
+      "next3_ret": {
+        "n": 2677,
+        "mean": 1.431,
+        "median": 0.613,
+        "winRate": 55.6,
+        "std": 5.936
+      },
+      "sim": {
+        "win": 809,
+        "lose": 1362,
+        "even": 524,
+        "winPct_ofAll": 30.0,
+        "winPct_ofDecided": 37.3
+      }
+    },
+    "E": {
+      "n": 941,
+      "pm_ret": {
+        "n": 941,
+        "mean": 0.02,
+        "median": 0.04,
+        "winRate": 51.5,
+        "std": 1.362
+      },
+      "next1_ret": {
+        "n": 937,
+        "mean": 0.608,
+        "median": 0.307,
+        "winRate": 54.7,
+        "std": 3.483
+      },
+      "next3_ret": {
+        "n": 929,
+        "mean": 1.241,
+        "median": 0.698,
+        "winRate": 56.1,
+        "std": 6.049
+      },
+      "sim": {
+        "win": 323,
+        "lose": 477,
+        "even": 141,
+        "winPct_ofAll": 34.3,
+        "winPct_ofDecided": 40.4
+      }
+    },
+    "OUT": {
+      "n": 636
+    }
+  },
+  "pushScoreTerciles_withinA": {
+    "low": {
+      "n": 258,
+      "push_score_range": [
+        0.0,
+        0.284
+      ],
+      "pm_ret": {
+        "n": 258,
+        "mean": 0.012,
+        "median": -0.026,
+        "winRate": 48.8,
+        "std": 1.193
+      },
+      "next3_ret": {
+        "n": 256,
+        "mean": 1.321,
+        "median": 0.478,
+        "winRate": 55.9,
+        "std": 6.043
+      }
+    },
+    "mid": {
+      "n": 258,
+      "push_score_range": [
+        0.287,
+        0.7
+      ],
+      "pm_ret": {
+        "n": 258,
+        "mean": -0.022,
+        "median": -0.007,
+        "winRate": 48.8,
+        "std": 1.068
+      },
+      "next3_ret": {
+        "n": 254,
+        "mean": 0.572,
+        "median": 0.219,
+        "winRate": 52.8,
+        "std": 5.659
+      }
+    },
+    "high": {
+      "n": 259,
+      "push_score_range": [
+        0.702,
+        1.917
+      ],
+      "pm_ret": {
+        "n": 259,
+        "mean": 0.097,
+        "median": 0.028,
+        "winRate": 51.4,
+        "std": 1.686
+      },
+      "next3_ret": {
+        "n": 256,
+        "mean": 0.8,
+        "median": 0.235,
+        "winRate": 52.0,
+        "std": 6.048
+      }
+    }
+  },
+  "closePosSensitivityScan_mr0to3": [
+    {
+      "close_pos": "[0.00,0.20)",
+      "n": 254,
+      "pm_ret_mean": 0.097,
+      "next3_mean": 0.953,
+      "next3_winRate": 55.1
+    },
+    {
+      "close_pos": "[0.20,0.35)",
+      "n": 266,
+      "pm_ret_mean": 0.038,
+      "next3_mean": 1.287,
+      "next3_winRate": 61.1
+    },
+    {
+      "close_pos": "[0.35,0.50)",
+      "n": 284,
+      "pm_ret_mean": -0.047,
+      "next3_mean": 0.658,
+      "next3_winRate": 51.3
+    },
+    {
+      "close_pos": "[0.50,0.65)",
+      "n": 396,
+      "pm_ret_mean": 0.061,
+      "next3_mean": 1.032,
+      "next3_winRate": 55.0
+    },
+    {
+      "close_pos": "[0.65,0.80)",
+      "n": 434,
+      "pm_ret_mean": -0.034,
+      "next3_mean": 1.086,
+      "next3_winRate": 54.1
+    },
+    {
+      "close_pos": "[0.80,1.01)",
+      "n": 718,
+      "pm_ret_mean": 0.038,
+      "next3_mean": 1.008,
+      "next3_winRate": 53.2
+    }
+  ],
+  "regimeBreakdown_A": {
+    "追い風": {
+      "n": 310,
+      "pm_ret": {
+        "n": 310,
+        "mean": 0.257,
+        "median": 0.095,
+        "winRate": 56.8,
+        "std": 1.298
+      },
+      "next3_ret": {
+        "n": 303,
+        "mean": 0.023,
+        "median": -0.365,
+        "winRate": 46.9,
+        "std": 5.3
+      },
+      "sim": {
+        "win": 93,
+        "lose": 161,
+        "even": 56,
+        "winPct_ofAll": 30.0,
+        "winPct_ofDecided": 36.6
+      }
+    },
+    "中立": {
+      "n": 300,
+      "pm_ret": {
+        "n": 300,
+        "mean": 0.017,
+        "median": -0.066,
+        "winRate": 47.3,
+        "std": 1.237
+      },
+      "next3_ret": {
+        "n": 298,
+        "mean": 1.045,
+        "median": 0.663,
+        "winRate": 57.7,
+        "std": 5.671
+      },
+      "sim": {
+        "win": 93,
+        "lose": 149,
+        "even": 58,
+        "winPct_ofAll": 31.0,
+        "winPct_ofDecided": 38.4
+      }
+    },
+    "逆風": {
+      "n": 165,
+      "pm_ret": {
+        "n": 165,
+        "mean": -0.378,
+        "median": -0.207,
+        "winRate": 40.6,
+        "std": 1.505
+      },
+      "next3_ret": {
+        "n": 165,
+        "mean": 2.243,
+        "median": 0.774,
+        "winRate": 58.2,
+        "std": 7.088
+      },
+      "sim": {
+        "win": 39,
+        "lose": 95,
+        "even": 31,
+        "winPct_ofAll": 23.6,
+        "winPct_ofDecided": 29.1
+      }
+    }
+  },
+  "verdict": [
+    "(1) A優位性: A next3平均=0.899% vs B/C/D=1.264% (差-0.36pt), A pm_ret平均=0.029% vs 0.055%, A決着勝率=35.7% → 明確に優位とは言い切れない",
+    "(2) 閾値妥当性: close_pos感度スキャンで next3平均が最良の帯は [0.20,0.35) (next3平均 1.287% / n=266)。現行 0.30-0.65 と比べ、この帯にずらす/絞る余地を検討。range/morning_retの現行値は据え置きで可否を要判断",
+    "(3) push_score単調性: next3: 非単調 ([1.321, 0.572, 0.8]) / pm_ret: 非単調 ([0.012, -0.022, 0.097])"
+  ]
+}
