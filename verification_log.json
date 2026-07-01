@@ -6856,7 +6856,7 @@
   },
   {
     "date": "2026-07-01",
-    "verifiedAt": "2026-07-01T23:01:21.635730+09:00",
+    "verifiedAt": "2026-07-02T01:15:27.541946+09:00",
     "weightsVersion": "baseline-2026-06-22",
     "morningScore": 18.8,
     "morningFetchedAt": "2026-07-01T13:54:31.942039+09:00",
@@ -6952,7 +6952,11 @@
       }
     ],
     "actualIndices": {
-      "N225": null,
+      "N225": {
+        "open": 70085.6015625,
+        "close": 70062.3203125,
+        "chgPct": -0.033218306586465636
+      },
       "TOPX": null
     },
     "actualStocks": {
@@ -7078,7 +7082,7 @@
       }
     },
     "metrics": {
-      "n225_direction_correct": null,
+      "n225_direction_correct": true,
       "avg_pick_return": -2.1091,
       "avg_all_return": -2.0957,
       "picks_outperformed": false
