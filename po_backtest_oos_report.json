@@ -1,0 +1,1305 @@
+{
+  "generatedAt": "2026-07-02T11:03:25.803609+09:00",
+  "mode": "oos",
+  "note": "計測専用・本番非変更。ロジックはPhase1と完全同一・期間のみ変更。調整済み終値・権利落ち除外・コスト未考慮。",
+  "structuralGap": "窓①②は短期間でイベント数が少なく、薄いセルの数字は過信しない。セクターETFは当時未上場が多くOOS検証がほぼ不能な可能性。取引コスト/スリッページ未考慮。",
+  "fetchFrom": "2023-09-01",
+  "fetchTo": "2026-07-02",
+  "regimeWindows": [
+    {
+      "name": "窓②暴落(2024-08)",
+      "from": "2024-07-01",
+      "to": "2024-10-31"
+    },
+    {
+      "name": "窓①下げもみ合い(2025上期)",
+      "from": "2025-01-01",
+      "to": "2025-06-30"
+    },
+    {
+      "name": "上げ相場(参考)",
+      "from": "2025-10-01",
+      "to": "2100-01-01"
+    }
+  ],
+  "earliestByStock": [
+    {
+      "group": "個別",
+      "code": "285A",
+      "name": "キオクシア",
+      "days": 372,
+      "earliest": "2024-12-18"
+    },
+    {
+      "group": "個別",
+      "code": "8035",
+      "name": "東京エレクトロン",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6857",
+      "name": "アドバンテスト",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6920",
+      "name": "レーザーテック",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6146",
+      "name": "ディスコ",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "4062",
+      "name": "イビデン",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6981",
+      "name": "村田製作所",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "5803",
+      "name": "フジクラ",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "5801",
+      "name": "古河電工",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "4063",
+      "name": "信越化学",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "5016",
+      "name": "JX金属",
+      "days": 314,
+      "earliest": "2025-03-19"
+    },
+    {
+      "group": "個別",
+      "code": "9984",
+      "name": "ソフトバンクG",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "7011",
+      "name": "三菱重工業",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "7012",
+      "name": "川崎重工業",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "7013",
+      "name": "IHI",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6501",
+      "name": "日立製作所",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6758",
+      "name": "ソニーG",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "7203",
+      "name": "トヨタ自動車",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "6506",
+      "name": "安川電機",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "8058",
+      "name": "三菱商事",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "8031",
+      "name": "三井物産",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "8306",
+      "name": "三菱UFJ FG",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "8316",
+      "name": "三井住友FG",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "個別",
+      "code": "9107",
+      "name": "川崎汽船",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "ETF",
+      "code": "213A",
+      "name": "半導体ETF-A",
+      "days": 479,
+      "earliest": "2024-07-12"
+    },
+    {
+      "group": "ETF",
+      "code": "221A",
+      "name": "半導体ETF-B",
+      "days": 475,
+      "earliest": "2024-07-19"
+    },
+    {
+      "group": "ETF",
+      "code": "200A",
+      "name": "半導体ETF-C",
+      "days": 507,
+      "earliest": "2024-06-04"
+    },
+    {
+      "group": "ETF",
+      "code": "282A",
+      "name": "半導体ETF-D",
+      "days": 391,
+      "earliest": "2024-11-21"
+    },
+    {
+      "group": "ETF",
+      "code": "2243",
+      "name": "半導体ETF-E",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "ETF",
+      "code": "513A",
+      "name": "防衛テックETF",
+      "days": 85,
+      "earliest": "2026-02-26"
+    },
+    {
+      "group": "ETF",
+      "code": "1619",
+      "name": "建設・資材ETF",
+      "days": 690,
+      "earliest": "2023-09-01"
+    },
+    {
+      "group": "ベースライン",
+      "code": "1306",
+      "name": "TOPIX ETF(ベースライン)",
+      "days": 690,
+      "earliest": "2023-09-01"
+    }
+  ],
+  "regimes": {
+    "窓②暴落(2024-08)": {
+      "events": 49,
+      "bandedEvents": 45,
+      "pooled_group_trend": {
+        "個別/PO": {
+          "n": 21,
+          "recovered_pct": 52.4,
+          "fwd_mean": -4.731,
+          "fwd_median": -2.518,
+          "maxdd_mean": -9.597,
+          "maxdd_median": -8.072,
+          "broke200_pct": 0.0,
+          "recover_days_median": 1,
+          "slope25_mean": 6.855,
+          "stop_struct": {
+            "win": 12,
+            "lose": 8,
+            "even": 1,
+            "winPct_decided": 60.0
+          },
+          "stop_fixed7": {
+            "win": 10,
+            "lose": 11,
+            "even": 0,
+            "winPct_decided": 47.6
+          }
+        },
+        "個別/資格": {
+          "n": 23,
+          "recovered_pct": 56.5,
+          "fwd_mean": 1.28,
+          "fwd_median": 0.688,
+          "maxdd_mean": -7.867,
+          "maxdd_median": -5.3,
+          "broke200_pct": 8.7,
+          "recover_days_median": 5,
+          "slope25_mean": 6.131,
+          "stop_struct": {
+            "win": 12,
+            "lose": 11,
+            "even": 0,
+            "winPct_decided": 52.2
+          },
+          "stop_fixed7": {
+            "win": 12,
+            "lose": 11,
+            "even": 0,
+            "winPct_decided": 52.2
+          }
+        },
+        "ETF/資格": {
+          "n": 1,
+          "recovered_pct": 0.0,
+          "fwd_mean": -12.298,
+          "fwd_median": -12.298,
+          "maxdd_mean": -14.609,
+          "maxdd_median": -14.609,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 4.466,
+          "stop_struct": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          },
+          "stop_fixed7": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          }
+        }
+      },
+      "crossTab": [
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[2,5)",
+          "n": 18,
+          "recovered_pct": 61.1,
+          "fwd_mean": -3.817,
+          "fwd_median": -2.388,
+          "maxdd_mean": -8.946,
+          "maxdd_median": -8.058,
+          "broke200_pct": 0.0,
+          "recover_days_median": 1,
+          "slope25_mean": 7.623,
+          "stop_struct": {
+            "win": 12,
+            "lose": 6,
+            "even": 0,
+            "winPct_decided": 66.7
+          },
+          "stop_fixed7": {
+            "win": 10,
+            "lose": 8,
+            "even": 0,
+            "winPct_decided": 55.6
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[5,8)",
+          "n": 3,
+          "recovered_pct": 0.0,
+          "fwd_mean": -10.215,
+          "fwd_median": -16.523,
+          "maxdd_mean": -13.503,
+          "maxdd_median": -18.037,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 2.248,
+          "stop_struct": {
+            "win": 0,
+            "lose": 2,
+            "even": 1,
+            "winPct_decided": 0.0
+          },
+          "stop_fixed7": {
+            "win": 0,
+            "lose": 3,
+            "even": 0,
+            "winPct_decided": 0.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[2,5)",
+          "n": 12,
+          "recovered_pct": 50.0,
+          "fwd_mean": -1.219,
+          "fwd_median": -1.062,
+          "maxdd_mean": -7.767,
+          "maxdd_median": -6.22,
+          "broke200_pct": 8.3,
+          "recover_days_median": 1.5,
+          "slope25_mean": 5.89,
+          "stop_struct": {
+            "win": 5,
+            "lose": 7,
+            "even": 0,
+            "winPct_decided": 41.7
+          },
+          "stop_fixed7": {
+            "win": 5,
+            "lose": 7,
+            "even": 0,
+            "winPct_decided": 41.7
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[5,8)",
+          "n": 10,
+          "recovered_pct": 70.0,
+          "fwd_mean": 6.798,
+          "fwd_median": 8.597,
+          "maxdd_mean": -5.998,
+          "maxdd_median": -3.765,
+          "broke200_pct": 10.0,
+          "recover_days_median": 6,
+          "slope25_mean": 6.809,
+          "stop_struct": {
+            "win": 7,
+            "lose": 3,
+            "even": 0,
+            "winPct_decided": 70.0
+          },
+          "stop_fixed7": {
+            "win": 7,
+            "lose": 3,
+            "even": 0,
+            "winPct_decided": 70.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[8,12)",
+          "n": 1,
+          "recovered_pct": 0.0,
+          "fwd_mean": -23.909,
+          "fwd_median": -23.909,
+          "maxdd_mean": -27.747,
+          "maxdd_median": -27.747,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 2.234,
+          "stop_struct": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          },
+          "stop_fixed7": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "資格",
+          "band": "[5,8)",
+          "n": 1,
+          "recovered_pct": 0.0,
+          "fwd_mean": -12.298,
+          "fwd_median": -12.298,
+          "maxdd_mean": -14.609,
+          "maxdd_median": -14.609,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 4.466,
+          "stop_struct": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          },
+          "stop_fixed7": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          }
+        }
+      ],
+      "po_summary": {
+        "n": 21,
+        "recovered_pct": 52.4,
+        "fwd_mean": -4.731,
+        "maxdd_median": -8.072,
+        "broke200_pct": 0.0,
+        "stop_struct_win": 60.0,
+        "stop_fixed7_win": 47.6,
+        "recovered_2to5": 61.1,
+        "recovered_2to5_n": 18,
+        "po_vs_shikaku_recovered": 54.2
+      }
+    },
+    "窓①下げもみ合い(2025上期)": {
+      "events": 54,
+      "bandedEvents": 46,
+      "pooled_group_trend": {
+        "個別/PO": {
+          "n": 29,
+          "recovered_pct": 69.0,
+          "fwd_mean": -0.575,
+          "fwd_median": 0.782,
+          "maxdd_mean": -9.449,
+          "maxdd_median": -5.5,
+          "broke200_pct": 6.9,
+          "recover_days_median": 3.0,
+          "slope25_mean": 5.279,
+          "stop_struct": {
+            "win": 21,
+            "lose": 6,
+            "even": 2,
+            "winPct_decided": 77.8
+          },
+          "stop_fixed7": {
+            "win": 17,
+            "lose": 12,
+            "even": 0,
+            "winPct_decided": 58.6
+          }
+        },
+        "個別/資格": {
+          "n": 14,
+          "recovered_pct": 57.1,
+          "fwd_mean": 2.022,
+          "fwd_median": 1.354,
+          "maxdd_mean": -4.405,
+          "maxdd_median": -4.008,
+          "broke200_pct": 0.0,
+          "recover_days_median": 4.5,
+          "slope25_mean": 6.051,
+          "stop_struct": {
+            "win": 9,
+            "lose": 3,
+            "even": 2,
+            "winPct_decided": 75.0
+          },
+          "stop_fixed7": {
+            "win": 9,
+            "lose": 4,
+            "even": 1,
+            "winPct_decided": 69.2
+          }
+        },
+        "ETF/資格": {
+          "n": 3,
+          "recovered_pct": 33.3,
+          "fwd_mean": 3.392,
+          "fwd_median": 1.249,
+          "maxdd_mean": -2.141,
+          "maxdd_median": -2.173,
+          "broke200_pct": 0.0,
+          "recover_days_median": 1,
+          "slope25_mean": 3.291,
+          "stop_struct": {
+            "win": 2,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          },
+          "stop_fixed7": {
+            "win": 2,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          }
+        }
+      },
+      "crossTab": [
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[2,5)",
+          "n": 27,
+          "recovered_pct": 70.4,
+          "fwd_mean": -0.556,
+          "fwd_median": 0.782,
+          "maxdd_mean": -9.629,
+          "maxdd_median": -5.5,
+          "broke200_pct": 7.4,
+          "recover_days_median": 3,
+          "slope25_mean": 4.918,
+          "stop_struct": {
+            "win": 20,
+            "lose": 5,
+            "even": 2,
+            "winPct_decided": 80.0
+          },
+          "stop_fixed7": {
+            "win": 16,
+            "lose": 11,
+            "even": 0,
+            "winPct_decided": 59.3
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[5,8)",
+          "n": 2,
+          "recovered_pct": 50.0,
+          "fwd_mean": -0.825,
+          "fwd_median": -0.825,
+          "maxdd_mean": -7.012,
+          "maxdd_median": -7.012,
+          "broke200_pct": 0.0,
+          "recover_days_median": 8,
+          "slope25_mean": 10.15,
+          "stop_struct": {
+            "win": 1,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 50.0
+          },
+          "stop_fixed7": {
+            "win": 1,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 50.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[2,5)",
+          "n": 10,
+          "recovered_pct": 80.0,
+          "fwd_mean": 4.503,
+          "fwd_median": 3.2,
+          "maxdd_mean": -3.295,
+          "maxdd_median": -3.106,
+          "broke200_pct": 0.0,
+          "recover_days_median": 4.5,
+          "slope25_mean": 5.913,
+          "stop_struct": {
+            "win": 8,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 88.9
+          },
+          "stop_fixed7": {
+            "win": 8,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 88.9
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[5,8)",
+          "n": 3,
+          "recovered_pct": 0.0,
+          "fwd_mean": -1.11,
+          "fwd_median": -1.969,
+          "maxdd_mean": -4.889,
+          "maxdd_median": -3.99,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 7.479,
+          "stop_struct": {
+            "win": 1,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 50.0
+          },
+          "stop_fixed7": {
+            "win": 1,
+            "lose": 2,
+            "even": 0,
+            "winPct_decided": 33.3
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[8,12)",
+          "n": 1,
+          "recovered_pct": 0.0,
+          "fwd_mean": -13.391,
+          "fwd_median": -13.391,
+          "maxdd_mean": -14.049,
+          "maxdd_median": -14.049,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 3.146,
+          "stop_struct": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          },
+          "stop_fixed7": {
+            "win": 0,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 0.0
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "資格",
+          "band": "[2,5)",
+          "n": 3,
+          "recovered_pct": 33.3,
+          "fwd_mean": 3.392,
+          "fwd_median": 1.249,
+          "maxdd_mean": -2.141,
+          "maxdd_median": -2.173,
+          "broke200_pct": 0.0,
+          "recover_days_median": 1,
+          "slope25_mean": 3.291,
+          "stop_struct": {
+            "win": 2,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          },
+          "stop_fixed7": {
+            "win": 2,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          }
+        }
+      ],
+      "po_summary": {
+        "n": 29,
+        "recovered_pct": 69.0,
+        "fwd_mean": -0.575,
+        "maxdd_median": -5.5,
+        "broke200_pct": 6.9,
+        "stop_struct_win": 77.8,
+        "stop_fixed7_win": 58.6,
+        "recovered_2to5": 70.4,
+        "recovered_2to5_n": 27,
+        "po_vs_shikaku_recovered": 52.9
+      }
+    },
+    "上げ相場(参考)": {
+      "events": 301,
+      "bandedEvents": 289,
+      "pooled_group_trend": {
+        "個別/PO": {
+          "n": 164,
+          "recovered_pct": 69.9,
+          "fwd_mean": 6.157,
+          "fwd_median": 2.298,
+          "maxdd_mean": -8.418,
+          "maxdd_median": -6.785,
+          "broke200_pct": 0.0,
+          "recover_days_median": 2,
+          "slope25_mean": 12.439,
+          "stop_struct": {
+            "win": 135,
+            "lose": 13,
+            "even": 16,
+            "winPct_decided": 91.2
+          },
+          "stop_fixed7": {
+            "win": 103,
+            "lose": 60,
+            "even": 1,
+            "winPct_decided": 63.2
+          }
+        },
+        "個別/資格": {
+          "n": 40,
+          "recovered_pct": 66.7,
+          "fwd_mean": 0.909,
+          "fwd_median": 0.663,
+          "maxdd_mean": -7.52,
+          "maxdd_median": -4.33,
+          "broke200_pct": 0.0,
+          "recover_days_median": 2.5,
+          "slope25_mean": 8.048,
+          "stop_struct": {
+            "win": 29,
+            "lose": 6,
+            "even": 5,
+            "winPct_decided": 82.9
+          },
+          "stop_fixed7": {
+            "win": 28,
+            "lose": 7,
+            "even": 5,
+            "winPct_decided": 80.0
+          }
+        },
+        "ETF/PO": {
+          "n": 56,
+          "recovered_pct": 87.3,
+          "fwd_mean": 5.044,
+          "fwd_median": 5.238,
+          "maxdd_mean": -5.436,
+          "maxdd_median": -4.762,
+          "broke200_pct": 0.0,
+          "recover_days_median": 2.5,
+          "slope25_mean": 8.351,
+          "stop_struct": {
+            "win": 50,
+            "lose": 4,
+            "even": 2,
+            "winPct_decided": 92.6
+          },
+          "stop_fixed7": {
+            "win": 45,
+            "lose": 10,
+            "even": 1,
+            "winPct_decided": 81.8
+          }
+        },
+        "ETF/資格": {
+          "n": 24,
+          "recovered_pct": 70.0,
+          "fwd_mean": 3.918,
+          "fwd_median": 5.362,
+          "maxdd_mean": -4.339,
+          "maxdd_median": -3.508,
+          "broke200_pct": 0.0,
+          "recover_days_median": 3.5,
+          "slope25_mean": 7.092,
+          "stop_struct": {
+            "win": 13,
+            "lose": 5,
+            "even": 6,
+            "winPct_decided": 72.2
+          },
+          "stop_fixed7": {
+            "win": 13,
+            "lose": 10,
+            "even": 1,
+            "winPct_decided": 56.5
+          }
+        },
+        "ベースライン/baseline": {
+          "n": 5,
+          "recovered_pct": 75.0,
+          "fwd_mean": -0.231,
+          "fwd_median": -0.583,
+          "maxdd_mean": -3.071,
+          "maxdd_median": -1.869,
+          "broke200_pct": 0.0,
+          "recover_days_median": 6,
+          "slope25_mean": 2.095,
+          "stop_struct": {
+            "win": 3,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 75.0
+          },
+          "stop_fixed7": {
+            "win": 3,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 75.0
+          }
+        }
+      },
+      "crossTab": [
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[2,5)",
+          "n": 117,
+          "recovered_pct": 73.0,
+          "fwd_mean": 5.158,
+          "fwd_median": 2.499,
+          "maxdd_mean": -7.649,
+          "maxdd_median": -5.69,
+          "broke200_pct": 0.0,
+          "recover_days_median": 1,
+          "slope25_mean": 11.183,
+          "stop_struct": {
+            "win": 99,
+            "lose": 10,
+            "even": 8,
+            "winPct_decided": 90.8
+          },
+          "stop_fixed7": {
+            "win": 80,
+            "lose": 36,
+            "even": 1,
+            "winPct_decided": 69.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[5,8)",
+          "n": 41,
+          "recovered_pct": 62.5,
+          "fwd_mean": 8.676,
+          "fwd_median": 2.643,
+          "maxdd_mean": -10.168,
+          "maxdd_median": -8.63,
+          "broke200_pct": 0.0,
+          "recover_days_median": 3,
+          "slope25_mean": 15.162,
+          "stop_struct": {
+            "win": 30,
+            "lose": 3,
+            "even": 8,
+            "winPct_decided": 90.9
+          },
+          "stop_fixed7": {
+            "win": 20,
+            "lose": 21,
+            "even": 0,
+            "winPct_decided": 48.8
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[8,12)",
+          "n": 5,
+          "recovered_pct": 75.0,
+          "fwd_mean": 10.746,
+          "fwd_median": 13.73,
+          "maxdd_mean": -12.731,
+          "maxdd_median": -13.142,
+          "broke200_pct": 0.0,
+          "recover_days_median": 5,
+          "slope25_mean": 21.592,
+          "stop_struct": {
+            "win": 5,
+            "lose": 0,
+            "even": 0,
+            "winPct_decided": 100.0
+          },
+          "stop_fixed7": {
+            "win": 2,
+            "lose": 3,
+            "even": 0,
+            "winPct_decided": 40.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "PO",
+          "band": "[12,∞)",
+          "n": 1,
+          "recovered_pct": 0.0,
+          "fwd_mean": -2.105,
+          "fwd_median": -2.105,
+          "maxdd_mean": -6.479,
+          "maxdd_median": -6.479,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 1.875,
+          "stop_struct": {
+            "win": 1,
+            "lose": 0,
+            "even": 0,
+            "winPct_decided": 100.0
+          },
+          "stop_fixed7": {
+            "win": 1,
+            "lose": 0,
+            "even": 0,
+            "winPct_decided": 100.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[2,5)",
+          "n": 26,
+          "recovered_pct": 75.0,
+          "fwd_mean": 3.317,
+          "fwd_median": 1.897,
+          "maxdd_mean": -4.341,
+          "maxdd_median": -2.639,
+          "broke200_pct": 0.0,
+          "recover_days_median": 3.0,
+          "slope25_mean": 6.443,
+          "stop_struct": {
+            "win": 20,
+            "lose": 2,
+            "even": 4,
+            "winPct_decided": 90.9
+          },
+          "stop_fixed7": {
+            "win": 20,
+            "lose": 2,
+            "even": 4,
+            "winPct_decided": 90.9
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[5,8)",
+          "n": 9,
+          "recovered_pct": 55.6,
+          "fwd_mean": -3.972,
+          "fwd_median": -5.663,
+          "maxdd_mean": -12.1,
+          "maxdd_median": -11.113,
+          "broke200_pct": 0.0,
+          "recover_days_median": 2,
+          "slope25_mean": 7.954,
+          "stop_struct": {
+            "win": 7,
+            "lose": 2,
+            "even": 0,
+            "winPct_decided": 77.8
+          },
+          "stop_fixed7": {
+            "win": 6,
+            "lose": 3,
+            "even": 0,
+            "winPct_decided": 66.7
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[8,12)",
+          "n": 2,
+          "recovered_pct": null,
+          "fwd_mean": null,
+          "fwd_median": null,
+          "maxdd_mean": null,
+          "maxdd_median": null,
+          "broke200_pct": null,
+          "recover_days_median": null,
+          "slope25_mean": 11.106,
+          "stop_struct": {
+            "win": 1,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          },
+          "stop_fixed7": {
+            "win": 1,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          }
+        },
+        {
+          "group": "個別",
+          "trend": "資格",
+          "band": "[12,∞)",
+          "n": 3,
+          "recovered_pct": 33.3,
+          "fwd_mean": -3.707,
+          "fwd_median": -11.907,
+          "maxdd_mean": -19.205,
+          "maxdd_median": -22.575,
+          "broke200_pct": 0.0,
+          "recover_days_median": 8,
+          "slope25_mean": 20.201,
+          "stop_struct": {
+            "win": 1,
+            "lose": 2,
+            "even": 0,
+            "winPct_decided": 33.3
+          },
+          "stop_fixed7": {
+            "win": 1,
+            "lose": 2,
+            "even": 0,
+            "winPct_decided": 33.3
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "PO",
+          "band": "[2,5)",
+          "n": 54,
+          "recovered_pct": 88.7,
+          "fwd_mean": 5.337,
+          "fwd_median": 5.27,
+          "maxdd_mean": -5.422,
+          "maxdd_median": -4.762,
+          "broke200_pct": 0.0,
+          "recover_days_median": 2,
+          "slope25_mean": 8.505,
+          "stop_struct": {
+            "win": 49,
+            "lose": 4,
+            "even": 1,
+            "winPct_decided": 92.5
+          },
+          "stop_fixed7": {
+            "win": 44,
+            "lose": 9,
+            "even": 1,
+            "winPct_decided": 83.0
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "PO",
+          "band": "[5,8)",
+          "n": 2,
+          "recovered_pct": 50.0,
+          "fwd_mean": -2.71,
+          "fwd_median": -2.71,
+          "maxdd_mean": -5.792,
+          "maxdd_median": -5.792,
+          "broke200_pct": 0.0,
+          "recover_days_median": 6,
+          "slope25_mean": 4.177,
+          "stop_struct": {
+            "win": 1,
+            "lose": 0,
+            "even": 1,
+            "winPct_decided": 100.0
+          },
+          "stop_fixed7": {
+            "win": 1,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 50.0
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "資格",
+          "band": "[2,5)",
+          "n": 17,
+          "recovered_pct": 82.4,
+          "fwd_mean": 4.609,
+          "fwd_median": 6.207,
+          "maxdd_mean": -4.121,
+          "maxdd_median": -1.855,
+          "broke200_pct": 0.0,
+          "recover_days_median": 3.5,
+          "slope25_mean": 6.219,
+          "stop_struct": {
+            "win": 13,
+            "lose": 3,
+            "even": 1,
+            "winPct_decided": 81.2
+          },
+          "stop_fixed7": {
+            "win": 11,
+            "lose": 6,
+            "even": 0,
+            "winPct_decided": 64.7
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "資格",
+          "band": "[5,8)",
+          "n": 3,
+          "recovered_pct": 0.0,
+          "fwd_mean": -0.001,
+          "fwd_median": 2.453,
+          "maxdd_mean": -5.578,
+          "maxdd_median": -4.599,
+          "broke200_pct": 0.0,
+          "recover_days_median": null,
+          "slope25_mean": 3.894,
+          "stop_struct": {
+            "win": 0,
+            "lose": 2,
+            "even": 1,
+            "winPct_decided": 0.0
+          },
+          "stop_fixed7": {
+            "win": 2,
+            "lose": 1,
+            "even": 0,
+            "winPct_decided": 66.7
+          }
+        },
+        {
+          "group": "ETF",
+          "trend": "資格",
+          "band": "[8,12)",
+          "n": 4,
+          "recovered_pct": null,
+          "fwd_mean": null,
+          "fwd_median": null,
+          "maxdd_mean": null,
+          "maxdd_median": null,
+          "broke200_pct": null,
+          "recover_days_median": null,
+          "slope25_mean": 13.202,
+          "stop_struct": {
+            "win": 0,
+            "lose": 0,
+            "even": 4,
+            "winPct_decided": null
+          },
+          "stop_fixed7": {
+            "win": 0,
+            "lose": 3,
+            "even": 1,
+            "winPct_decided": 0.0
+          }
+        },
+        {
+          "group": "ベースライン",
+          "trend": "baseline",
+          "band": "[2,5)",
+          "n": 5,
+          "recovered_pct": 75.0,
+          "fwd_mean": -0.231,
+          "fwd_median": -0.583,
+          "maxdd_mean": -3.071,
+          "maxdd_median": -1.869,
+          "broke200_pct": 0.0,
+          "recover_days_median": 6,
+          "slope25_mean": 2.095,
+          "stop_struct": {
+            "win": 3,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 75.0
+          },
+          "stop_fixed7": {
+            "win": 3,
+            "lose": 1,
+            "even": 1,
+            "winPct_decided": 75.0
+          }
+        }
+      ],
+      "po_summary": {
+        "n": 220,
+        "recovered_pct": 74.4,
+        "fwd_mean": 5.867,
+        "maxdd_median": -5.69,
+        "broke200_pct": 0.0,
+        "stop_struct_win": 91.6,
+        "stop_fixed7_win": 67.9,
+        "recovered_2to5": 78.0,
+        "recovered_2to5_n": 171,
+        "po_vs_shikaku_recovered": 67.9
+      }
+    }
+  },
+  "threePeriodComparison_PO": [
+    {
+      "metric": "PO n(イベント数)",
+      "上げ相場(参考)": 220,
+      "窓①下げもみ合い(2025上期)": 29,
+      "窓②暴落(2024-08)": 21
+    },
+    {
+      "metric": "PO戻り率% (M10)",
+      "上げ相場(参考)": 74.4,
+      "窓①下げもみ合い(2025上期)": 69.0,
+      "窓②暴落(2024-08)": 52.4
+    },
+    {
+      "metric": "PO fwd平均%",
+      "上げ相場(参考)": 5.867,
+      "窓①下げもみ合い(2025上期)": -0.575,
+      "窓②暴落(2024-08)": -4.731
+    },
+    {
+      "metric": "PO構造損切り勝率%",
+      "上げ相場(参考)": 91.6,
+      "窓①下げもみ合い(2025上期)": 77.8,
+      "窓②暴落(2024-08)": 60.0
+    },
+    {
+      "metric": "PO固定-7%勝率%",
+      "上げ相場(参考)": 67.9,
+      "窓①下げもみ合い(2025上期)": 58.6,
+      "窓②暴落(2024-08)": 47.6
+    },
+    {
+      "metric": "PO崩壊率%(broke200)",
+      "上げ相場(参考)": 0.0,
+      "窓①下げもみ合い(2025上期)": 6.9,
+      "窓②暴落(2024-08)": 0.0
+    },
+    {
+      "metric": "PO最大DD中央%",
+      "上げ相場(参考)": -5.69,
+      "窓①下げもみ合い(2025上期)": -5.5,
+      "窓②暴落(2024-08)": -8.072
+    },
+    {
+      "metric": "押し2-5%帯PO戻り率%",
+      "上げ相場(参考)": 78.0,
+      "窓①下げもみ合い(2025上期)": 70.4,
+      "窓②暴落(2024-08)": 61.1
+    },
+    {
+      "metric": "資格のみ戻り率%(対比)",
+      "上げ相場(参考)": 67.9,
+      "窓①下げもみ合い(2025上期)": 52.9,
+      "窓②暴落(2024-08)": 54.2
+    }
+  ],
+  "verdict": [
+    "(1) βか実力か: PO戻り率 上げ=74.4%(n220) / 窓①=69.0%(n29) / 窓②=52.4%(n21) → 下げ窓で大きく低下ならPhase1の高戻り率はβ。維持ならトレンドフォローの実力寄り",
+    "(2) 損切り頑健性【最重要】: 構造損切り勝率 上げ=91.6% / 窓①=77.8% / 窓②=60.0% ; 固定-7% 上げ=67.9% / 窓①=58.6% / 窓②=47.6% → 窓②暴落でも構造>固定が生き残れば本物、崩壊なら『押し安値を割らなかっただけ』",
+    "(3) PO優位頑健性: 資格のみ戻り率 上げ=67.9% / 窓①=52.9% / 窓②=54.2% (各PO戻り率と比較) → PO>資格 が下げ窓でも維持されるか",
+    "(4) 崩壊率/DD: broke200 上げ=0.0% / 窓①=6.9% / 窓②=0.0% ; 最大DD中央 上げ=-5.69% / 窓①=-5.5% / 窓②=-8.072% → 実運用で耐えられる水準か",
+    "(5) 総合仕分け: 3期間を通じて生き残った要素のみ実装候補、上げ相場でしか成立しない要素はβ・不採用。 ETFは当時未上場でOOS検証不能なら確証は先送り。"
+  ]
+}
