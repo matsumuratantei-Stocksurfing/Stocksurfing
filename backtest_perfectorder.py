@@ -27,7 +27,7 @@ import statistics
 from datetime import datetime, timezone, timedelta
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import DEFAULT_STOCKS
+from common import DEFAULT_STOCKS, INDICATORS
 from jquants_client import jq_get
 
 JST = timezone(timedelta(hours=9))
@@ -271,6 +271,95 @@ def cell_summary(rows, M=M_PRIMARY):
     }
 
 
+# ==================================================================
+#  パートII: 場の判定12指標の貢献度ランキング
+# ==================================================================
+def _pearson(xs, ys):
+    """None を除いたペアでピアソン相関を返す。(corr, n)。"""
+    pairs = [(x, y) for x, y in zip(xs, ys) if x is not None and y is not None]
+    n = len(pairs)
+    if n < 3:
+        return None, n
+    mx = sum(p[0] for p in pairs) / n
+    my = sum(p[1] for p in pairs) / n
+    sx = sum((p[0] - mx) ** 2 for p in pairs)
+    sy = sum((p[1] - my) ** 2 for p in pairs)
+    if sx <= 0 or sy <= 0:
+        return None, n
+    cov = sum((p[0] - mx) * (p[1] - my) for p in pairs)
+    return round(cov / (sx ** 0.5 * sy ** 0.5), 3), n
+
+
+def analyze_indicators():
+    """verification_log.json から、各指標の朝chgPct(逆相関は符号反転)と
+    当日日経実勢%の相関・方向一致率を測り、現行重みと対比。多重共線性も出す。"""
+    path = os.path.join(SCRIPT_DIR, 'verification_log.json')
+    if not os.path.exists(path):
+        return {'available': False, 'note': 'verification_log.json が見つからない'}
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            log = json.load(f)
+    except Exception as e:
+        return {'available': False, 'note': f'読込失敗: {e}'}
+
+    rows = []  # (y=N225実勢chgPct, morningIndicators dict)
+    for l in log:
+        y = ((l.get('actualIndices') or {}).get('N225') or {}).get('chgPct')
+        mi = l.get('morningIndicators') or {}
+        if y is None or not mi:
+            continue
+        rows.append((y, mi))
+    N = len(rows)
+    keys = [ind['key'] for ind in INDICATORS]
+    inv = {ind['key']: ind['inverse'] for ind in INDICATORS}
+    wt = {ind['key']: ind['weight'] for ind in INDICATORS}
+    ys = [r[0] for r in rows]
+
+    per = []
+    for k in keys:
+        sign = -1 if inv[k] else 1
+        xs_adj = [(r[1].get(k) * sign if r[1].get(k) is not None else None) for r in rows]
+        corr, nn = _pearson(xs_adj, ys)
+        hit = tot = 0
+        for x, y in zip(xs_adj, ys):
+            if x is None or y is None or x == 0 or y == 0:
+                continue
+            tot += 1
+            if (x > 0) == (y > 0):
+                hit += 1
+        per.append({
+            'key': k, 'weight': wt[k], 'inverse': inv[k], 'n': nn,
+            'corr_vs_N225': corr,
+            'direction_hit_pct': round(hit / tot * 100, 1) if tot else None,
+            'direction_n': tot,
+        })
+    per.sort(key=lambda p: (abs(p['corr_vs_N225']) if p['corr_vs_N225'] is not None else -1), reverse=True)
+
+    # 多重共線性(指標同士の生chgPct相関、|r|>=0.8を重複として抽出)
+    high_pairs = []
+    for a in range(len(keys)):
+        for b in range(a + 1, len(keys)):
+            r_ab, nn = _pearson([r[1].get(keys[a]) for r in rows],
+                                [r[1].get(keys[b]) for r in rows])
+            if r_ab is not None and abs(r_ab) >= 0.8:
+                high_pairs.append({'pair': [keys[a], keys[b]], 'corr': r_ab, 'n': nn})
+    high_pairs.sort(key=lambda p: abs(p['corr']), reverse=True)
+
+    # そぎ落とし提案: (a)相関低&重み低=削除, (b)重複=統合, (c)相関高=芯
+    delete = [p['key'] for p in per
+              if (abs(p['corr_vs_N225']) if p['corr_vs_N225'] is not None else 0) < 0.15 and p['weight'] <= 1.0]
+    core = [p['key'] for p in per
+            if (abs(p['corr_vs_N225']) if p['corr_vs_N225'] is not None else 0) >= 0.4]
+    merge = [f"{h['pair'][0]}↔{h['pair'][1]}(r={h['corr']})" for h in high_pairs]
+
+    return {
+        'available': True, 'samples': N,
+        'perIndicator': per,
+        'multicollinearity_highPairs': high_pairs,
+        'pruning': {'delete_candidates': delete, 'merge_pairs': merge, 'core': core},
+    }
+
+
 def main():
     print("=" * 64)
     print("  Stocksurfing Phase1 パーフェクトオーダー押し目バックテスト (計測専用)")
@@ -330,7 +419,10 @@ def main():
             if rows:
                 m_sens[f'{key_group}/{tr}'] = {f'recovered_M{M}': _rate([r[f'rec{M}'] for r in rows]) for M in M_LIST}
 
-    # ---------- 所見(データ駆動・5点) ----------
+    # ---------- パートII: 指標貢献度 ----------
+    partii = analyze_indicators()
+
+    # ---------- 所見(データ駆動・6点) ----------
     def rp(key):
         return (pooled.get(key) or {}).get('recovered_pct')
 
@@ -394,11 +486,25 @@ def main():
         f"{'⚠戻り率は高いのに損切り勝率が低い=戻る前に刈られる罠が発生' if trap else '大きな刈られ罠は見られない'}"
     )
 
-    # (5) 総括
+    # (5) パートII: 指標そぎ落とし
+    if partii.get('available'):
+        pr = partii['pruning']
+        top = partii['perIndicator'][:3]
+        top_s = ", ".join(f"{p['key']}({p['corr_vs_N225']})" for p in top)
+        verdict.append(
+            f"(5) 指標そぎ落とし(n={partii['samples']}日): 相関上位={top_s} / "
+            f"削除候補(相関低&重み低)={pr['delete_candidates'] or 'なし'} / "
+            f"統合候補(重複r≥0.8)={pr['merge_pairs'] or 'なし'} / 芯(相関≥0.4)={pr['core'] or 'なし'}"
+            + ("" if partii['samples'] >= 30 else " ※標本薄く確度低。蓄積後に再評価")
+        )
+    else:
+        verdict.append(f"(5) 指標そぎ落とし: 判定不能 ({partii.get('note')})")
+
+    # (6) 総括
     implementable = (po_rec is not None and base_rec is not None
                      and (po_rec - base_rec) >= 5 and (st or 0) >= 45)
     verdict.append(
-        f"(5) 実装可否: {'エッジの芽あり(ただし単一相場・単一セル過学習に注意、別期間の再現確認が必須)' if implementable else 'エッジ薄〜不明、現時点で実装は非推奨'}。"
+        f"(6) 実装可否: {'エッジの芽あり(ただし単一相場・単一セル過学習に注意、別期間の再現確認が必須)' if implementable else 'エッジ薄〜不明、現時点で実装は非推奨'}。"
         f" 本標本は上昇相場に偏り・コスト未考慮のため、数値は楽観バイアスがある前提で解釈すること。"
     )
 
@@ -414,6 +520,7 @@ def main():
         'pooled_group_trend': pooled,
         'mSensitivity_recovered': m_sens,
         'crossTab': cross,
+        'partII_indicatorContribution': partii,
         'verdict': verdict,
     }
     with open(os.path.join(SCRIPT_DIR, 'po_backtest_report.json'), 'w', encoding='utf-8') as f:
@@ -442,6 +549,29 @@ def main():
     print("\n[戻り率のM感度]")
     for k, v in m_sens.items():
         print(f"  {k:<12} " + " ".join(f"{kk}={vv}%" for kk, vv in v.items()))
+
+    print("\n" + "=" * 64)
+    print("  パートII: 場の判定12指標の貢献度ランキング")
+    print("=" * 64)
+    if partii.get('available'):
+        print(f"  標本 {partii['samples']}日" + ("" if partii['samples'] >= 30 else "  ※標本薄・確度低"))
+        print(f"  {'指標':<8}{'重み':>6}{'逆相関':>7}{'対N225相関':>11}{'方向一致%':>10}{'n':>5}")
+        for p in partii['perIndicator']:
+            print(f"  {p['key']:<8}{p['weight']:>6}{('◯' if p['inverse'] else '-'):>7}"
+                  f"{str(p['corr_vs_N225']):>11}{str(p['direction_hit_pct']):>10}{p['n']:>5}")
+        hp = partii['multicollinearity_highPairs']
+        print("\n  多重共線性(|r|≥0.8の重複ペア):")
+        if hp:
+            for h in hp:
+                print(f"    {h['pair'][0]}↔{h['pair'][1]}  r={h['corr']} (n={h['n']})")
+        else:
+            print("    強い重複ペアなし(または標本不足)")
+        pr = partii['pruning']
+        print(f"\n  削除候補: {pr['delete_candidates'] or 'なし'}")
+        print(f"  統合候補: {pr['merge_pairs'] or 'なし'}")
+        print(f"  芯(残すべき): {pr['core'] or 'なし'}")
+    else:
+        print(f"  判定不能: {partii.get('note')}")
 
     print("\n" + "=" * 64)
     print("  所見(計測者):")
