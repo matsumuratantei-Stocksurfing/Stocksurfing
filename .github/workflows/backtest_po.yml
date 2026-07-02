@@ -2,7 +2,14 @@ name: Backtest perfect-order pullback (measurement only)
 
 # 計測専用。手動実行(workflow_dispatch)のみ。cronなし=本番スケジュールに一切関与しない。
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'recent (Phase1 直近) or oos (Phase1.5 下げ/暴落再現)'
+        required: true
+        default: 'oos'
+        type: choice
+        options: [recent, oos]
 
 permissions:
   contents: write
@@ -25,18 +32,21 @@ jobs:
       - name: Run perfect-order backtest
         env:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+          BACKTEST_MODE: ${{ inputs.mode }}
         run: python backtest_perfectorder.py
 
-      - name: Commit po_backtest_report.json
+      - name: Commit report(s)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add po_backtest_report.json
+          for f in po_backtest_report.json po_backtest_oos_report.json; do
+            [ -f "$f" ] && git add "$f"
+          done
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Add/update po_backtest_report.json [measurement]"
+          git commit -m "Add/update PO backtest report [${{ inputs.mode }}]"
           for i in 1 2 3; do
             if git push; then exit 0; fi
             git pull --rebase --autostash || true
