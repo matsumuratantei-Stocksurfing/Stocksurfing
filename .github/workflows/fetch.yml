@@ -32,18 +32,19 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # タイプ判定は「実行時刻(UTC hour)」ではなく「発火した cron 式」で決める。
+      # これにより、GitHub Actions の遅延・予定外発火で実行時刻がズレても
+      # 朝枠(30 22)は必ず morning、寄り後枠(20 0)は必ず postopen に固定される。
+      # (旧実装は HOUR_UTC==22 判定で、遅延時に morning が postopen へ化けていた)
       - name: Determine notification type
         id: notif
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "type=${{ inputs.notification_type }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event.schedule }}" = "30 22 * * 0-4" ]; then
+            echo "type=morning" >> $GITHUB_OUTPUT
           else
-            HOUR_UTC=$(date -u +%H)
-            if [ "$HOUR_UTC" = "22" ]; then
-              echo "type=morning" >> $GITHUB_OUTPUT
-            else
-              echo "type=postopen" >> $GITHUB_OUTPUT
-            fi
+            echo "type=postopen" >> $GITHUB_OUTPUT
           fi
 
       - name: Fetch market data
