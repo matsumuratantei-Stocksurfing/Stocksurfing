@@ -96,10 +96,12 @@ def band_label(p):
 
 
 # ---------- データ取得 ----------
-def fetch_days(code):
+def fetch_days(code, frm=None, to=None):
     today = datetime.now(JST).date()
-    frm = (today - timedelta(days=LOOKBACK_CALENDAR_DAYS)).strftime('%Y-%m-%d')
-    to = today.strftime('%Y-%m-%d')
+    if frm is None:
+        frm = (today - timedelta(days=LOOKBACK_CALENDAR_DAYS)).strftime('%Y-%m-%d')
+    if to is None:
+        to = today.strftime('%Y-%m-%d')
     data = jq_get('/equities/bars/daily', {'code': code, 'from': frm, 'to': to})
     if not data:
         return []
@@ -581,5 +583,207 @@ def main():
     print("\n  ✓ po_backtest_report.json 書き出し完了")
 
 
+# ==================================================================
+#  Phase 1.5: アウトオブサンプル(下げ・もみ合い・暴落)モード
+#  ※ ロジックは Phase 1 と完全同一。期間(イベントの振り分け窓)だけ変える。
+# ==================================================================
+OOS_FETCH_FROM = '2023-09-01'   # SMA200 助走を賄う一括取得の起点
+REGIME_WINDOWS = [
+    ('窓②暴落(2024-08)',        '2024-07-01', '2024-10-31'),
+    ('窓①下げもみ合い(2025上期)', '2025-01-01', '2025-06-30'),
+    ('上げ相場(参考)',           '2025-10-01', '2100-01-01'),
+]
+
+
+def regime_of(date_str):
+    for name, a, b in REGIME_WINDOWS:
+        if a <= date_str <= b:
+            return name
+    return None
+
+
+def _pooled_and_cross(events):
+    """あるレジームのイベント群 → pooled(群/トレンド) と crossTab を返す。"""
+    banded = [e for e in events if e['band'] != '[<2)']
+    pooled = {}
+    for group in ['個別', 'ETF', 'ベースライン']:
+        trends = ['baseline'] if group == 'ベースライン' else ['PO', '資格']
+        for tr in trends:
+            rows = [e for e in banded if e['group'] == group and e['trend'] == tr]
+            if rows:
+                pooled[f'{group}/{tr}'] = cell_summary(rows)
+    cross = []
+    for group in ['個別', 'ETF', 'ベースライン']:
+        trends = ['baseline'] if group == 'ベースライン' else ['PO', '資格']
+        for tr in trends:
+            for lo, hi in PULLBACK_BANDS:
+                bl = f'[{lo},{hi if hi < 9999 else "∞"})'
+                rows = [e for e in banded if e['group'] == group and e['trend'] == tr and e['band'] == bl]
+                if rows:
+                    cross.append({'group': group, 'trend': tr, 'band': bl, **cell_summary(rows)})
+    return pooled, cross, banded
+
+
+def _po_metrics(banded):
+    """PO(個別+ETF)プールの主要指標を返す(三期間比較用)。"""
+    po = [e for e in banded if e['trend'] == 'PO']
+    if not po:
+        return {'n': 0}
+    s = cell_summary(po)
+    b25 = [e for e in po if e['band'] == '[2,5)']
+    def wl(rows, key):
+        w = sum(1 for r in rows if r[key] == 'WIN'); l = sum(1 for r in rows if r[key] == 'LOSE')
+        return round(w / (w + l) * 100, 1) if (w + l) else None
+    return {
+        'n': s['n'],
+        'recovered_pct': s['recovered_pct'],
+        'fwd_mean': s['fwd_mean'],
+        'maxdd_median': s['maxdd_median'],
+        'broke200_pct': s['broke200_pct'],
+        'stop_struct_win': wl(po, 'stop_struct'),
+        'stop_fixed7_win': wl(po, 'stop_fixed7'),
+        'recovered_2to5': _rate([r[f'rec{M_PRIMARY}'] for r in b25]) if b25 else None,
+        'recovered_2to5_n': len(b25),
+        'po_vs_shikaku_recovered': _rate([r[f'rec{M_PRIMARY}'] for r in banded if r['trend'] == '資格']),
+    }
+
+
+def main_oos():
+    today = datetime.now(JST).date().strftime('%Y-%m-%d')
+    print("=" * 64)
+    print("  Stocksurfing Phase1.5 OOS(下げ・もみ合い・暴落)再現確認 (計測専用)")
+    print(f"  実行: {datetime.now(JST).isoformat()}  取得: {OOS_FETCH_FROM}〜{today}")
+    print("  ※ロジックはPhase1と完全同一。期間の振り分けのみ変更。")
+    print("=" * 64)
+
+    universe = (
+        [('個別', s['code'], s['name']) for s in DEFAULT_STOCKS]
+        + [('ETF', e['code'], e['name']) for e in ETF_UNIVERSE]
+        + [('ベースライン', b['code'], b['name']) for b in BASELINE_UNIVERSE]
+    )
+
+    all_events = []
+    earliest = []
+    for group, code, name in universe:
+        days = fetch_days(code, frm=OOS_FETCH_FROM, to=today)
+        time.sleep(SLEEP_BETWEEN_CALLS)
+        usable = [d for d in days if d['c'] is not None]
+        first_date = usable[0]['date'] if usable else None
+        earliest.append({'group': group, 'code': code, 'name': name,
+                         'days': len(usable), 'earliest': first_date})
+        if len(usable) < 210:
+            print(f"  [{group}] {code} {name}: {len(usable)}日(最古 {first_date}) → SMA200不足でスキップ")
+            continue
+        apply_gate = (group != 'ベースライン')
+        evs = scan_events(days, group, apply_gate)
+        for e in evs:
+            e['regime'] = regime_of(e['date'])
+        all_events.extend(evs)
+        print(f"  [{group}] {code} {name}: {len(usable)}日(最古 {first_date}) → イベント{len(evs)}件")
+
+    # レジーム別集計
+    regimes = {}
+    for name, _, _ in REGIME_WINDOWS:
+        evs = [e for e in all_events if e.get('regime') == name]
+        pooled, cross, banded = _pooled_and_cross(evs)
+        regimes[name] = {'events': len(evs), 'bandedEvents': len(banded),
+                         'pooled_group_trend': pooled, 'crossTab': cross,
+                         'po_summary': _po_metrics(banded)}
+
+    # 三期間比較(PO 個別+ETFプール)
+    order = ['上げ相場(参考)', '窓①下げもみ合い(2025上期)', '窓②暴落(2024-08)']
+    comp_rows = [
+        ('PO n(イベント数)', 'n'),
+        ('PO戻り率% (M10)', 'recovered_pct'),
+        ('PO fwd平均%', 'fwd_mean'),
+        ('PO構造損切り勝率%', 'stop_struct_win'),
+        ('PO固定-7%勝率%', 'stop_fixed7_win'),
+        ('PO崩壊率%(broke200)', 'broke200_pct'),
+        ('PO最大DD中央%', 'maxdd_median'),
+        ('押し2-5%帯PO戻り率%', 'recovered_2to5'),
+        ('資格のみ戻り率%(対比)', 'po_vs_shikaku_recovered'),
+    ]
+    comparison = []
+    for label, key in comp_rows:
+        comparison.append({'metric': label,
+                           **{name: regimes[name]['po_summary'].get(key) for name in order}})
+
+    # ---------- 所見(5点) ----------
+    def g(name, key):
+        return regimes[name]['po_summary'].get(key)
+    up, w1, w2 = order
+    verdict = []
+    verdict.append(
+        f"(1) βか実力か: PO戻り率 上げ={g(up,'recovered_pct')}%(n{g(up,'n')}) / "
+        f"窓①={g(w1,'recovered_pct')}%(n{g(w1,'n')}) / 窓②={g(w2,'recovered_pct')}%(n{g(w2,'n')}) → "
+        "下げ窓で大きく低下ならPhase1の高戻り率はβ。維持ならトレンドフォローの実力寄り"
+    )
+    verdict.append(
+        f"(2) 損切り頑健性【最重要】: 構造損切り勝率 上げ={g(up,'stop_struct_win')}% / "
+        f"窓①={g(w1,'stop_struct_win')}% / 窓②={g(w2,'stop_struct_win')}% ; "
+        f"固定-7% 上げ={g(up,'stop_fixed7_win')}% / 窓①={g(w1,'stop_fixed7_win')}% / 窓②={g(w2,'stop_fixed7_win')}% → "
+        "窓②暴落でも構造>固定が生き残れば本物、崩壊なら『押し安値を割らなかっただけ』"
+    )
+    verdict.append(
+        f"(3) PO優位頑健性: 資格のみ戻り率 上げ={g(up,'po_vs_shikaku_recovered')}% / "
+        f"窓①={g(w1,'po_vs_shikaku_recovered')}% / 窓②={g(w2,'po_vs_shikaku_recovered')}% "
+        f"(各PO戻り率と比較) → PO>資格 が下げ窓でも維持されるか"
+    )
+    verdict.append(
+        f"(4) 崩壊率/DD: broke200 上げ={g(up,'broke200_pct')}% / 窓①={g(w1,'broke200_pct')}% / 窓②={g(w2,'broke200_pct')}% ; "
+        f"最大DD中央 上げ={g(up,'maxdd_median')}% / 窓①={g(w1,'maxdd_median')}% / 窓②={g(w2,'maxdd_median')}% → 実運用で耐えられる水準か"
+    )
+    thin = any((g(n, 'n') or 0) < 15 for n in (w1, w2))
+    verdict.append(
+        "(5) 総合仕分け: 3期間を通じて生き残った要素のみ実装候補、上げ相場でしか成立しない要素はβ・不採用。"
+        + (" ⚠下げ窓のサンプルが薄く(n<15のセルあり)確度低・過信禁物。" if thin else "")
+        + " ETFは当時未上場でOOS検証不能なら確証は先送り。"
+    )
+
+    report = {
+        'generatedAt': datetime.now(JST).isoformat(),
+        'mode': 'oos',
+        'note': '計測専用・本番非変更。ロジックはPhase1と完全同一・期間のみ変更。調整済み終値・権利落ち除外・コスト未考慮。',
+        'structuralGap': '窓①②は短期間でイベント数が少なく、薄いセルの数字は過信しない。セクターETFは当時未上場が多くOOS検証がほぼ不能な可能性。取引コスト/スリッページ未考慮。',
+        'fetchFrom': OOS_FETCH_FROM, 'fetchTo': today,
+        'regimeWindows': [{'name': n, 'from': a, 'to': b} for n, a, b in REGIME_WINDOWS],
+        'earliestByStock': earliest,
+        'regimes': regimes,
+        'threePeriodComparison_PO': comparison,
+        'verdict': verdict,
+    }
+    with open(os.path.join(SCRIPT_DIR, 'po_backtest_oos_report.json'), 'w', encoding='utf-8') as f:
+        json.dump(report, f, ensure_ascii=False, indent=2, allow_nan=False)
+
+    # ---------- 人が読む要約 ----------
+    print("\n[データ取得可否: 銘柄別 最古日]")
+    for e in earliest:
+        flag = '' if e['days'] >= 210 else '  ←SMA200不足でスキップ'
+        print(f"  [{e['group']}] {e['code']} {e['name']:<14} {e['days']:>4}日  最古 {e['earliest']}{flag}")
+
+    print("\n[三期間比較 (PO=個別+ETFプール)]")
+    print(f"  {'指標':<24}{'上げ相場':>10}{'窓①下げ':>10}{'窓②暴落':>10}")
+    for row in comparison:
+        print(f"  {row['metric']:<24}{str(row[order[0]]):>10}{str(row[order[1]]):>10}{str(row[order[2]]):>10}")
+
+    print("\n[レジーム別 群×トレンド プール]")
+    for rname in order:
+        print(f"\n  ◆ {rname} (イベント {regimes[rname]['events']})")
+        for k, v in regimes[rname]['pooled_group_trend'].items():
+            print(f"    {k:<16} n={v['n']:>4} 戻り率={v['recovered_pct']} "
+                  f"構造勝率={v['stop_struct']['winPct_decided']} 固定7勝率={v['stop_fixed7']['winPct_decided']} "
+                  f"崩壊率={v['broke200_pct']} DD中央={v['maxdd_median']}")
+
+    print("\n" + "=" * 64)
+    print("  所見(計測者):")
+    for line in verdict:
+        print("  " + line)
+    print("=" * 64)
+    print("\n  ✓ po_backtest_oos_report.json 書き出し完了")
+
+
 if __name__ == '__main__':
-    main()
+    if os.environ.get('BACKTEST_MODE', 'recent').lower() == 'oos':
+        main_oos()
+    else:
+        main()
