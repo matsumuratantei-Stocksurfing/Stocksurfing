@@ -214,6 +214,52 @@ def build_postopen_email(data, jst_now):
 </body></html>"""
     return subject, body
 
+def postopen_send_ok(jst_now):
+    """寄り後メールを送ってよいかの安全ガード。False=送らない(スキップ)。
+
+    (1) JST 9:05 未満は寄り値未確定 → 送らない。
+    (2) postopen.json が無い/当日更新でない → 送らない。
+    (3) 日経の寄り値(open)が欠損、または前日終値と完全一致(寄り未確定の疑い) → 送らない。
+    寄り値が確定している時のみ True を返し、その時だけ「寄り後判定」を名乗る。
+    """
+    # (1) 時刻ガード
+    if (jst_now.hour, jst_now.minute) < (9, 5):
+        print(f"[SKIP] 寄り前(9:05 JST未満 / 現在 {jst_now.strftime('%H:%M')})のため寄り後メールを送信しません")
+        return False
+
+    # (2) postopen.json 存在・当日更新チェック
+    pj_path = os.path.join(SCRIPT_DIR, 'postopen.json')
+    if not os.path.exists(pj_path):
+        print("[SKIP] postopen.json が無い(寄り値未取得)ため送信しません")
+        return False
+    try:
+        with open(pj_path, 'r', encoding='utf-8') as f:
+            pj = json.load(f)
+    except Exception:
+        print("[SKIP] postopen.json 読込失敗のため送信しません")
+        return False
+    try:
+        upd_date = datetime.fromisoformat(pj.get('updated_at', '')).astimezone(JST).date()
+    except Exception:
+        upd_date = None
+    if upd_date != jst_now.date():
+        print(f"[SKIP] postopen.json が当日更新でない(更新日 {upd_date})ため送信しません")
+        return False
+
+    # (3) 日経の寄り値確定チェック
+    nk = ((pj.get('data') or {}).get('TSE_OPEN') or {}).get('value')
+    if not nk or nk.get('open') is None:
+        print("[SKIP] 日経の寄り値(open)が未取得/欠損(寄り未確定)のため送信しません")
+        return False
+    op, pc = nk.get('open'), nk.get('prev_close')
+    if pc is not None and op == pc:
+        print("[SKIP] 日経の寄り値が前日終値と完全一致(寄り未確定の疑い)のため送信しません")
+        return False
+
+    print(f"[OK] 寄り値確定を確認({jst_now.strftime('%H:%M')} JST / 日経寄り {op})。寄り後メールを送信します")
+    return True
+
+
 def send_mail(subject, html_body, recipients, gmail_user, gmail_password):
     msg = MIMEMultipart('alternative')
     msg['From'] = gmail_user
@@ -245,6 +291,11 @@ def main():
         data = json.load(f)
     jst_now = datetime.now(JST)
     if notification_type == 'postopen':
+        # 二重の安全ガード: 寄り前 or 寄り値未確定なら「寄り後判定」を送らない。
+        # cron/判定が万一ズレても、寄り付き前に寄り後メールが飛ぶことを構造的に防ぐ。
+        if not postopen_send_ok(jst_now):
+            print("[OK] 寄り後メールはスキップしました(誤配信防止ガード)")
+            sys.exit(0)
         subject, body = build_postopen_email(data, jst_now)
     else:
         subject, body = build_morning_email(data, jst_now)
