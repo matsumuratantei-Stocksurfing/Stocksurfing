@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-02T10:22:24.618146+09:00",
+  "generatedAt": "2026-07-03T23:13:27.056277+09:00",
   "note": "計測専用・本番非変更。価格は調整済み(AdjC)、権利落ち日除外。取引コスト/スリッページ未考慮。",
-  "structuralGap": "本標本は上昇相場ひと相場ぶんに偏っている可能性が高い。下げ/もみ合い相場のイベント不足により戻り率は楽観方向にバイアス。結論を過信しないこと。別期間での再現確認を必須とする。",
+  "structuralGap": "本標本は上昇相場ひと相場ぶんに偏っている可能性が高い。別期間での再現確認を必須とする。",
   "params": {
     "lookbackDays": 720,
     "M_list": [
@@ -36,7 +36,7 @@
       "group": "個別",
       "code": "285A",
       "name": "キオクシア",
-      "days": 372,
+      "days": 374,
       "events": 22,
       "status": "OK"
     },
@@ -44,7 +44,7 @@
       "group": "個別",
       "code": "8035",
       "name": "東京エレクトロン",
-      "days": 479,
+      "days": 480,
       "events": 18,
       "status": "OK"
     },
@@ -52,7 +52,7 @@
       "group": "個別",
       "code": "6857",
       "name": "アドバンテスト",
-      "days": 479,
+      "days": 480,
       "events": 13,
       "status": "OK"
     },
@@ -60,7 +60,7 @@
       "group": "個別",
       "code": "6920",
       "name": "レーザーテック",
-      "days": 479,
+      "days": 480,
       "events": 13,
       "status": "OK"
     },
@@ -68,7 +68,7 @@
       "group": "個別",
       "code": "6146",
       "name": "ディスコ",
-      "days": 479,
+      "days": 480,
       "events": 10,
       "status": "OK"
     },
@@ -76,7 +76,7 @@
       "group": "個別",
       "code": "4062",
       "name": "イビデン",
-      "days": 479,
+      "days": 480,
       "events": 29,
       "status": "OK"
     },
@@ -84,7 +84,7 @@
       "group": "個別",
       "code": "6981",
       "name": "村田製作所",
-      "days": 479,
+      "days": 480,
       "events": 20,
       "status": "OK"
     },
@@ -92,7 +92,7 @@
       "group": "個別",
       "code": "5803",
       "name": "フジクラ",
-      "days": 479,
+      "days": 480,
       "events": 22,
       "status": "OK"
     },
@@ -100,7 +100,7 @@
       "group": "個別",
       "code": "5801",
       "name": "古河電工",
-      "days": 479,
+      "days": 480,
       "events": 23,
       "status": "OK"
     },
@@ -108,7 +108,7 @@
       "group": "個別",
       "code": "4063",
       "name": "信越化学",
-      "days": 479,
+      "days": 480,
       "events": 8,
       "status": "OK"
     },
@@ -116,7 +116,7 @@
       "group": "個別",
       "code": "5016",
       "name": "JX金属",
-      "days": 314,
+      "days": 316,
       "events": 7,
       "status": "OK"
     },
@@ -124,7 +124,7 @@
       "group": "個別",
       "code": "9984",
       "name": "ソフトバンクG",
-      "days": 479,
+      "days": 480,
       "events": 17,
       "status": "OK"
     },
@@ -132,7 +132,7 @@
       "group": "個別",
       "code": "7011",
       "name": "三菱重工業",
-      "days": 479,
+      "days": 480,
       "events": 16,
       "status": "OK"
     },
@@ -140,7 +140,7 @@
       "group": "個別",
       "code": "7012",
       "name": "川崎重工業",
-      "days": 479,
+      "days": 480,
       "events": 7,
       "status": "OK"
     },
@@ -148,15 +148,15 @@
       "group": "個別",
       "code": "7013",
       "name": "IHI",
-      "days": 479,
-      "events": 17,
+      "days": 480,
+      "events": 16,
       "status": "OK"
     },
     {
       "group": "個別",
       "code": "6501",
       "name": "日立製作所",
-      "days": 479,
+      "days": 480,
       "events": 8,
       "status": "OK"
     },
@@ -164,7 +164,7 @@
       "group": "個別",
       "code": "6758",
       "name": "ソニーG",
-      "days": 479,
+      "days": 480,
       "events": 9,
       "status": "OK"
     },
@@ -172,7 +172,7 @@
       "group": "個別",
       "code": "7203",
       "name": "トヨタ自動車",
-      "days": 479,
+      "days": 480,
       "events": 8,
       "status": "OK"
     },
@@ -180,7 +180,7 @@
       "group": "個別",
       "code": "6506",
       "name": "安川電機",
-      "days": 479,
+      "days": 480,
       "events": 10,
       "status": "OK"
     },
@@ -188,7 +188,7 @@
       "group": "個別",
       "code": "8058",
       "name": "三菱商事",
-      "days": 479,
+      "days": 480,
       "events": 14,
       "status": "OK"
     },
@@ -196,7 +196,7 @@
       "group": "個別",
       "code": "8031",
       "name": "三井物産",
-      "days": 479,
+      "days": 480,
       "events": 17,
       "status": "OK"
     },
@@ -204,7 +204,7 @@
       "group": "個別",
       "code": "8306",
       "name": "三菱UFJ FG",
-      "days": 479,
+      "days": 480,
       "events": 13,
       "status": "OK"
     },
@@ -212,7 +212,7 @@
       "group": "個別",
       "code": "8316",
       "name": "三井住友FG",
-      "days": 479,
+      "days": 480,
       "events": 14,
       "status": "OK"
     },
@@ -220,7 +220,7 @@
       "group": "個別",
       "code": "9107",
       "name": "川崎汽船",
-      "days": 479,
+      "days": 480,
       "events": 6,
       "status": "OK"
     },
@@ -228,7 +228,7 @@
       "group": "ETF",
       "code": "213A",
       "name": "半導体ETF-A",
-      "days": 479,
+      "days": 480,
       "events": 22,
       "status": "OK"
     },
@@ -236,7 +236,7 @@
       "group": "ETF",
       "code": "221A",
       "name": "半導体ETF-B",
-      "days": 475,
+      "days": 477,
       "events": 20,
       "status": "OK"
     },
@@ -244,7 +244,7 @@
       "group": "ETF",
       "code": "200A",
       "name": "半導体ETF-C",
-      "days": 479,
+      "days": 480,
       "events": 22,
       "status": "OK"
     },
@@ -252,7 +252,7 @@
       "group": "ETF",
       "code": "282A",
       "name": "半導体ETF-D",
-      "days": 391,
+      "days": 393,
       "events": 17,
       "status": "OK"
     },
@@ -260,7 +260,7 @@
       "group": "ETF",
       "code": "2243",
       "name": "半導体ETF-E",
-      "days": 479,
+      "days": 480,
       "events": 19,
       "status": "OK"
     },
@@ -268,14 +268,14 @@
       "group": "ETF",
       "code": "513A",
       "name": "防衛テックETF",
-      "days": 85,
+      "days": 87,
       "status": "データ不足/なし"
     },
     {
       "group": "ETF",
       "code": "1619",
       "name": "建設・資材ETF",
-      "days": 479,
+      "days": 480,
       "events": 12,
       "status": "OK"
     },
@@ -283,58 +283,58 @@
       "group": "ベースライン",
       "code": "1306",
       "name": "TOPIX ETF(ベースライン)",
-      "days": 479,
+      "days": 480,
       "events": 21,
       "status": "OK"
     }
   ],
-  "totalEvents": 474,
-  "bandedEvents": 443,
+  "totalEvents": 473,
+  "bandedEvents": 442,
   "pooled_group_trend": {
     "個別/PO": {
-      "n": 228,
-      "recovered_pct": 73.6,
-      "fwd_mean": 5.356,
-      "fwd_median": 2.413,
-      "maxdd_mean": -7.143,
-      "maxdd_median": -5.309,
+      "n": 227,
+      "recovered_pct": 73.7,
+      "fwd_mean": 5.013,
+      "fwd_median": 2.115,
+      "maxdd_mean": -7.322,
+      "maxdd_median": -5.393,
       "broke200_pct": 0.0,
-      "recover_days_median": 2.0,
-      "slope25_mean": 10.683,
+      "recover_days_median": 2,
+      "slope25_mean": 10.714,
       "stop_struct": {
-        "win": 193,
+        "win": 192,
         "lose": 15,
         "even": 20,
         "winPct_decided": 92.8
       },
       "stop_fixed7": {
-        "win": 158,
+        "win": 157,
         "lose": 67,
         "even": 3,
-        "winPct_decided": 70.2
+        "winPct_decided": 70.1
       }
     },
     "個別/資格": {
       "n": 109,
-      "recovered_pct": 64.8,
-      "fwd_mean": 3.184,
+      "recovered_pct": 63.6,
+      "fwd_mean": 3.167,
       "fwd_median": 2.477,
-      "maxdd_mean": -4.73,
-      "maxdd_median": -2.833,
+      "maxdd_mean": -4.674,
+      "maxdd_median": -2.86,
       "broke200_pct": 1.9,
       "recover_days_median": 3.0,
-      "slope25_mean": 7.586,
+      "slope25_mean": 7.592,
       "stop_struct": {
         "win": 85,
-        "lose": 12,
-        "even": 12,
-        "winPct_decided": 87.6
+        "lose": 13,
+        "even": 11,
+        "winPct_decided": 86.7
       },
       "stop_fixed7": {
         "win": 82,
-        "lose": 18,
-        "even": 9,
-        "winPct_decided": 82.0
+        "lose": 19,
+        "even": 8,
+        "winPct_decided": 81.2
       }
     },
     "ETF/PO": {
@@ -355,9 +355,9 @@
       },
       "stop_fixed7": {
         "win": 49,
-        "lose": 10,
-        "even": 1,
-        "winPct_decided": 83.1
+        "lose": 11,
+        "even": 0,
+        "winPct_decided": 81.7
       }
     },
     "ETF/資格": {
@@ -378,9 +378,9 @@
       },
       "stop_fixed7": {
         "win": 24,
-        "lose": 13,
-        "even": 2,
-        "winPct_decided": 64.9
+        "lose": 14,
+        "even": 1,
+        "winPct_decided": 63.2
       }
     },
     "ベースライン/baseline": {
@@ -409,24 +409,24 @@
   },
   "mSensitivity_recovered": {
     "個別/PO": {
-      "recovered_M5": 62.3,
-      "recovered_M10": 73.6,
+      "recovered_M5": 62.1,
+      "recovered_M10": 73.7,
       "recovered_M20": 85.4
     },
     "個別/資格": {
-      "recovered_M5": 50.9,
-      "recovered_M10": 64.8,
+      "recovered_M5": 50.5,
+      "recovered_M10": 63.6,
       "recovered_M20": 80.0
     },
     "ETF/PO": {
       "recovered_M5": 75.0,
       "recovered_M10": 88.1,
-      "recovered_M20": 90.2
+      "recovered_M20": 90.7
     },
     "ETF/資格": {
       "recovered_M5": 35.9,
       "recovered_M10": 65.7,
-      "recovered_M20": 76.5
+      "recovered_M20": 77.1
     }
   },
   "crossTab": [
@@ -434,26 +434,26 @@
       "group": "個別",
       "trend": "PO",
       "band": "[2,5)",
-      "n": 176,
-      "recovered_pct": 77.6,
-      "fwd_mean": 4.665,
-      "fwd_median": 2.489,
-      "maxdd_mean": -6.344,
-      "maxdd_median": -4.668,
+      "n": 175,
+      "recovered_pct": 77.9,
+      "fwd_mean": 4.411,
+      "fwd_median": 2.338,
+      "maxdd_mean": -6.489,
+      "maxdd_median": -4.841,
       "broke200_pct": 0.0,
-      "recover_days_median": 2.0,
-      "slope25_mean": 9.352,
+      "recover_days_median": 1.5,
+      "slope25_mean": 9.385,
       "stop_struct": {
-        "win": 154,
+        "win": 153,
         "lose": 11,
         "even": 11,
         "winPct_decided": 93.3
       },
       "stop_fixed7": {
-        "win": 133,
+        "win": 132,
         "lose": 40,
         "even": 3,
-        "winPct_decided": 76.9
+        "winPct_decided": 76.7
       }
     },
     {
@@ -461,11 +461,11 @@
       "trend": "PO",
       "band": "[5,8)",
       "n": 46,
-      "recovered_pct": 60.0,
-      "fwd_mean": 7.652,
-      "fwd_median": 2.096,
-      "maxdd_mean": -9.676,
-      "maxdd_median": -8.359,
+      "recovered_pct": 58.7,
+      "fwd_mean": 7.192,
+      "fwd_median": 1.976,
+      "maxdd_mean": -9.89,
+      "maxdd_median": -8.63,
       "broke200_pct": 0.0,
       "recover_days_median": 3,
       "slope25_mean": 14.782,
@@ -487,13 +487,13 @@
       "trend": "PO",
       "band": "[8,12)",
       "n": 5,
-      "recovered_pct": 75.0,
-      "fwd_mean": 10.746,
-      "fwd_median": 13.73,
-      "maxdd_mean": -12.731,
-      "maxdd_median": -13.142,
+      "recovered_pct": 80.0,
+      "fwd_mean": 7.116,
+      "fwd_median": 1.005,
+      "maxdd_mean": -12.552,
+      "maxdd_median": -13.124,
       "broke200_pct": 0.0,
-      "recover_days_median": 5,
+      "recover_days_median": 4.0,
       "slope25_mean": 21.592,
       "stop_struct": {
         "win": 5,
@@ -539,11 +539,11 @@
       "trend": "資格",
       "band": "[2,5)",
       "n": 84,
-      "recovered_pct": 72.0,
-      "fwd_mean": 4.147,
-      "fwd_median": 3.055,
-      "maxdd_mean": -3.439,
-      "maxdd_median": -2.391,
+      "recovered_pct": 70.2,
+      "fwd_mean": 4.101,
+      "fwd_median": 2.938,
+      "maxdd_mean": -3.428,
+      "maxdd_median": -2.446,
       "broke200_pct": 2.4,
       "recover_days_median": 3,
       "slope25_mean": 7.084,
@@ -592,24 +592,24 @@
       "band": "[8,12)",
       "n": 7,
       "recovered_pct": 40.0,
-      "fwd_mean": 6.492,
+      "fwd_mean": 6.521,
       "fwd_median": 2.509,
-      "maxdd_mean": -4.127,
-      "maxdd_median": -2.522,
+      "maxdd_mean": -3.623,
+      "maxdd_median": -1.649,
       "broke200_pct": 0.0,
-      "recover_days_median": 4.5,
-      "slope25_mean": 7.424,
+      "recover_days_median": 4.0,
+      "slope25_mean": 7.522,
       "stop_struct": {
-        "win": 4,
-        "lose": 1,
-        "even": 2,
-        "winPct_decided": 80.0
-      },
-      "stop_fixed7": {
         "win": 4,
         "lose": 2,
         "even": 1,
         "winPct_decided": 66.7
+      },
+      "stop_fixed7": {
+        "win": 4,
+        "lose": 3,
+        "even": 0,
+        "winPct_decided": 57.1
       }
     },
     {
@@ -659,9 +659,9 @@
       },
       "stop_fixed7": {
         "win": 48,
-        "lose": 9,
-        "even": 1,
-        "winPct_decided": 84.2
+        "lose": 10,
+        "even": 0,
+        "winPct_decided": 82.8
       }
     },
     {
@@ -763,8 +763,8 @@
       },
       "stop_fixed7": {
         "win": 0,
-        "lose": 3,
-        "even": 1,
+        "lose": 4,
+        "even": 0,
         "winPct_decided": 0.0
       }
     },
@@ -797,106 +797,106 @@
   ],
   "partII_indicatorContribution": {
     "available": true,
-    "samples": 40,
+    "samples": 42,
     "perIndicator": [
       {
         "key": "SOX",
         "weight": 2.0,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": 0.408,
-        "direction_hit_pct": 62.5,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": 0.363,
+        "direction_hit_pct": 61.9,
+        "direction_n": 42
       },
       {
         "key": "VIX",
         "weight": 0.8,
         "inverse": true,
-        "n": 40,
-        "corr_vs_N225": 0.328,
-        "direction_hit_pct": 52.5,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": 0.331,
+        "direction_hit_pct": 54.8,
+        "direction_n": 42
       },
       {
         "key": "NDX",
         "weight": 2.0,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": 0.314,
-        "direction_hit_pct": 62.5,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": 0.288,
+        "direction_hit_pct": 61.9,
+        "direction_n": 42
       },
       {
         "key": "DJI",
         "weight": 1.5,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": 0.248,
-        "direction_hit_pct": 60.0,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": 0.269,
+        "direction_hit_pct": 61.9,
+        "direction_n": 42
       },
       {
         "key": "USDJPY",
         "weight": 1.5,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": -0.243,
-        "direction_hit_pct": 40.0,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": -0.257,
+        "direction_hit_pct": 40.5,
+        "direction_n": 42
       },
       {
         "key": "SPX",
         "weight": 1.8,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": 0.242,
-        "direction_hit_pct": 55.0,
-        "direction_n": 40
-      },
-      {
-        "key": "TNX",
-        "weight": 0.8,
-        "inverse": true,
-        "n": 40,
-        "corr_vs_N225": 0.214,
-        "direction_hit_pct": 50.0,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": 0.24,
+        "direction_hit_pct": 57.1,
+        "direction_n": 42
       },
       {
         "key": "EURJPY",
         "weight": 0.8,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": 0.179,
-        "direction_hit_pct": 62.5,
-        "direction_n": 40
+        "n": 42,
+        "corr_vs_N225": 0.161,
+        "direction_hit_pct": 61.9,
+        "direction_n": 42
+      },
+      {
+        "key": "TNX",
+        "weight": 0.8,
+        "inverse": true,
+        "n": 42,
+        "corr_vs_N225": 0.155,
+        "direction_hit_pct": 50.0,
+        "direction_n": 42
       },
       {
         "key": "WTI",
         "weight": 0.6,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": -0.119,
-        "direction_hit_pct": 56.4,
-        "direction_n": 39
+        "n": 42,
+        "corr_vs_N225": -0.106,
+        "direction_hit_pct": 58.5,
+        "direction_n": 41
       },
       {
         "key": "N225F",
         "weight": 3.0,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": 0.077,
-        "direction_hit_pct": 64.1,
-        "direction_n": 39
+        "n": 42,
+        "corr_vs_N225": 0.07,
+        "direction_hit_pct": 63.4,
+        "direction_n": 41
       },
       {
         "key": "TOPX",
         "weight": 2.5,
         "inverse": false,
-        "n": 40,
-        "corr_vs_N225": -0.013,
-        "direction_hit_pct": 46.2,
-        "direction_n": 39
+        "n": 42,
+        "corr_vs_N225": -0.003,
+        "direction_hit_pct": 46.3,
+        "direction_n": 41
       },
       {
         "key": "NKVI",
@@ -912,26 +912,26 @@
       {
         "pair": [
           "NDX",
-          "SPX"
+          "SOX"
         ],
-        "corr": 0.934,
-        "n": 40
+        "corr": 0.928,
+        "n": 42
       },
       {
         "pair": [
           "NDX",
-          "SOX"
+          "SPX"
         ],
-        "corr": 0.927,
-        "n": 40
+        "corr": 0.918,
+        "n": 42
       },
       {
         "pair": [
           "SPX",
           "VIX"
         ],
-        "corr": -0.827,
-        "n": 40
+        "corr": -0.825,
+        "n": 42
       }
     ],
     "pruning": {
@@ -940,21 +940,19 @@
         "NKVI"
       ],
       "merge_pairs": [
-        "NDX↔SPX(r=0.934)",
-        "NDX↔SOX(r=0.927)",
-        "SPX↔VIX(r=-0.827)"
+        "NDX↔SOX(r=0.928)",
+        "NDX↔SPX(r=0.918)",
+        "SPX↔VIX(r=-0.825)"
       ],
-      "core": [
-        "SOX"
-      ]
+      "core": []
     }
   },
   "verdict": [
-    "(1) PO優位性: PO戻り率(M10)=76.7% / 資格のみ=65.0% / baseline(TOPIX)=83.3% (PO−base=-6.6pt) → 上げ相場の押し目一般と大差なし(PO固有の価値は弱い)",
-    "(2) ETF vs 個別(PO): 戻り率 ETF=88.1% vs 個別=73.6% / 崩壊率(broke200) ETF=0.0% vs 個別=0.0% / 最大DD中央値 ETF=-4.401% vs 個別=-5.309% → 個別と大差なし/個別優位",
-    "(3) 押し深さ×戻り率(PO): [2,5):80.6%(n234) / [5,8):59.6%(n48) / [8,12):75.0%(n5) / [12,∞):0.0%(n1) → 浅いほど戻りやすい(単調)、最良帯=[2,5)",
-    "(4) 損切り(PO決着勝率): 構造(押し安値下)=92.9% vs 固定-7%=72.9% → 構造の方が良い。大きな刈られ罠は見られない",
-    "(5) 指標そぎ落とし(n=40日): 相関上位=SOX(0.408), VIX(0.328), NDX(0.314) / 削除候補(相関低&重み低)=['WTI', 'NKVI'] / 統合候補(重複r≥0.8)=['NDX↔SPX(r=0.934)', 'NDX↔SOX(r=0.927)', 'SPX↔VIX(r=-0.827)'] / 芯(相関≥0.4)=['SOX']",
+    "(1) PO優位性: PO戻り率(M10)=76.7% / 資格のみ=64.1% / baseline(TOPIX)=83.3% (PO−base=-6.6pt) → 上げ相場の押し目一般と大差なし(PO固有の価値は弱い)",
+    "(2) ETF vs 個別(PO): 戻り率 ETF=88.1% vs 個別=73.7% / 崩壊率(broke200) ETF=0.0% vs 個別=0.0% / 最大DD中央値 ETF=-4.401% vs 個別=-5.393% → 個別と大差なし/個別優位",
+    "(3) 押し深さ×戻り率(PO): [2,5):80.8%(n233) / [5,8):58.3%(n48) / [8,12):80.0%(n5) / [12,∞):0.0%(n1) → 浅いほど戻りやすい(単調)、最良帯=[2,5)",
+    "(4) 損切り(PO決着勝率): 構造(押し安値下)=92.8% vs 固定-7%=72.5% → 構造の方が良い。大きな刈られ罠は見られない",
+    "(5) 指標そぎ落とし(n=42日): 相関上位=SOX(0.363), VIX(0.331), NDX(0.288) / 削除候補(相関低&重み低)=['WTI', 'NKVI'] / 統合候補(重複r≥0.8)=['NDX↔SOX(r=0.928)', 'NDX↔SPX(r=0.918)', 'SPX↔VIX(r=-0.825)'] / 芯(相関≥0.4)=なし",
     "(6) 実装可否: エッジ薄〜不明、現時点で実装は非推奨。 本標本は上昇相場に偏り・コスト未考慮のため、数値は楽観バイアスがある前提で解釈すること。"
   ]
 }
