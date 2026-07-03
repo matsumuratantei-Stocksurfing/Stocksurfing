@@ -79,7 +79,7 @@
     <div class="tab active" data-tab="dash">ダッシュ</div>
     <div class="tab" data-tab="positions">💼ポジション</div>
     <div class="tab" data-tab="verify">🎯答え合わせ</div>
-    <div class="tab" data-tab="intraday">📈場中</div>
+    <div class="tab" data-tab="observe">🔬観測</div>
     <div class="tab" data-tab="history">📊履歴</div>
     <div class="tab" data-tab="edit">銘柄編集</div>
     <div class="tab" data-tab="help">使い方</div>
@@ -178,24 +178,37 @@
     </div>
   </section>
 
-  <!-- INTRADAY ENTRY TIMING (v3.3) -->
-  <section id="tab-intraday" class="hide">
-    <div class="card">
-      <h2>📈 後場の入り判定 <span style="color:var(--sub);font-size:10px;font-weight:400;letter-spacing:0">(J-Quants前場4本値・正午確定)</span></h2>
-      <div class="status">正午すぎに、各銘柄の<b>前場の値動き</b>から「後場は追わない／押し目買い候補／反発待ち」を判定します。寄りで上げ切った銘柄は自動で“追いかけ注意”に分類。データはJ-Quants（確実）。<br>※リアルタイムの細かいタッチ確認は、moomoo / HYPER SBI 2 のチャート（VWAP・ボリンジャー標準装備）をお使いください。</div>
-      <div class="row" style="margin:10px 0">
-        <button id="fetchAmBtn" class="ghost small">🔄 後場判定を更新</button>
-        <span id="amUpdated" style="color:var(--sub);font-size:11px;margin-left:8px"></span>
-      </div>
-      <div id="amList"></div>
+  <!-- OBSERVATION MODE (v3.5.0) -->
+  <section id="tab-observe" class="hide">
+    <!-- 発注なしバナー(常時表示) -->
+    <div class="card" style="border:1px solid var(--warn);background:#2a1f0e">
+      <div style="font-size:15px;font-weight:700;color:var(--warn);line-height:1.5">⚠️ 観測モード — 発注は行われません</div>
+      <div id="obsBanner" style="font-size:12px;color:var(--sub);margin-top:6px;line-height:1.6">前向き検証データを読み込み中…</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:6px;line-height:1.5">PO（パーフェクトオーダー）押し目エントリーに本当にエッジがあるかを、実際の発注なしで3ヶ月以上かけて検証しています。基準を全て満たすまでシグナル化しません。</div>
+    </div>
 
-      <hr style="border:none;border-top:1px solid var(--line);margin:18px 0 12px">
-      <div class="status" style="font-size:11px">⚡ 参考：リアルタイム5分足のVWAP乖離・ボリンジャー2σ/3σ・RSI。無料データ元（プロキシ経由）が不安定なため、取得できないことがあります。確実なのは上の「後場の入り判定」です。</div>
-      <div class="row" style="margin:8px 0">
-        <button id="fetchIntradayBtn" class="ghost small">⚡ リアルタイム参考を試す</button>
-        <span id="intradayUpdated" style="color:var(--sub);font-size:11px;margin-left:8px"></span>
-      </div>
-      <div id="intradayList"></div>
+    <!-- 格上げ達成状況 -->
+    <div class="card">
+      <h2>格上げ基準の達成状況</h2>
+      <div id="obsPromotion"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
+    </div>
+
+    <!-- クローズ済みパフォーマンス -->
+    <div class="card">
+      <h2>検証成績（クローズ済み）</h2>
+      <div id="obsSummary"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
+    </div>
+
+    <!-- 本日の検出 -->
+    <div class="card">
+      <h2>直近の検出</h2>
+      <div id="obsToday"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
+    </div>
+
+    <!-- 観測中ポジション -->
+    <div class="card">
+      <h2>観測中（オープン）</h2>
+      <div id="obsOpen"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
     </div>
   </section>
 
@@ -322,7 +335,7 @@
     </div>
   </section>
 
-  <footer>松村式Stocksurfing v3.2 · 方向性付き寄り後判定 + ETF候補 · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
+  <footer>松村式Stocksurfing v3.5.0 · 観測モード(発注なし前向き検証) · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
 </main>
 
 <script>
@@ -349,31 +362,27 @@ const INDICATORS = [
   {key:'NKVI',  name:'日経VI',   stooq:null,     yahoo:'^N225VI',weight:1.0, inverse:true, localOnly:true} // v2.3: yfinance経由で自動取得,
 ];
 
-// 監視銘柄 v3.3（出来高上位×テーマのハイブリッド・24銘柄）
-// 2026-06 売買代金上位のAI半導体サプライチェーンを取り込み、テーマ分散も維持
+// 初期20銘柄（連動タグ付き）v2.0
 const DEFAULT_STOCKS = [
-  // 半導体・AI（高売買代金の主力／7）
-  {code:'285A', name:'キオクシア',        tags:['SOX','NQ']},
+  // 半導体・AI（5）
   {code:'8035', name:'東京エレクトロン',  tags:['SOX','NQ']},
-  {code:'6857', name:'アドバンテスト',    tags:['SOX','NQ']},
   {code:'6920', name:'レーザーテック',    tags:['SOX','NQ']},
+  {code:'6857', name:'アドバンテスト',    tags:['SOX','NQ']},
   {code:'6146', name:'ディスコ',          tags:['SOX','NQ']},
-  {code:'4062', name:'イビデン',          tags:['SOX','NQ']},
-  {code:'6981', name:'村田製作所',        tags:['SOX','景気']},
-  // AIインフラ・素材（5）
+  {code:'6526', name:'ソシオネクスト',    tags:['SOX','NQ']},
+  // AI関連（3）
   {code:'5803', name:'フジクラ',          tags:['AIインフラ','NQ']},
-  {code:'5801', name:'古河電工',          tags:['AIインフラ','NQ']},
   {code:'4063', name:'信越化学',          tags:['SOX','景気']},
-  {code:'5016', name:'JX金属',            tags:['SOX','資源']},
   {code:'9984', name:'ソフトバンクG',     tags:['NQ','日経寄与']},
-  // 防衛・造船（3）
+  // 防衛・造船（3）🆕
   {code:'7011', name:'三菱重工業',        tags:['防衛','重工']},
   {code:'7012', name:'川崎重工業',        tags:['防衛','造船']},
   {code:'7013', name:'IHI',               tags:['防衛','宇宙']},
-  // 景気敏感・大型（4）
+  // 景気敏感・大型（3）
   {code:'6501', name:'日立製作所',        tags:['NY','景気']},
   {code:'6758', name:'ソニーG',           tags:['NY','NQ','景気']},
   {code:'7203', name:'トヨタ自動車',      tags:['NY','USDJPY','景気']},
+  // フィジカルAI（1）🆕
   {code:'6506', name:'安川電機',          tags:['フィジカルAI','NQ']},
   // 商社（2）
   {code:'8058', name:'三菱商事',          tags:['商社','資源']},
@@ -393,10 +402,8 @@ const DEFAULT_STOCKS = [
   // 日経レバレッジ2倍（強気相場で大化け）
   {code:'1570', name:'NF 日経平均レバレッジ2倍',       tags:['日経寄与','N225F','レバ2倍'], etf:true, leverage:2},
   {code:'1579', name:'日経平均ブル2倍上場投信',         tags:['日経寄与','N225F','レバ2倍'], etf:true, leverage:2},
-  // 日経インバース（下げ相場用・予測vs実勢の整合性確認用）
+  // 日経インバース2倍（下げ相場検証用・予測vs実勢の整合性確認用）
   {code:'1357', name:'NF 日経Wインバース',              tags:['日経寄与','N225F','インバース'], etf:true, leverage:-2},
-  {code:'1580', name:'日経平均ベア上場投信',            tags:['日経寄与','N225F','インバース'], etf:true, leverage:-1},
-  {code:'1360', name:'日経平均ベア2倍上場投信',         tags:['日経寄与','N225F','インバース'], etf:true, leverage:-2},
   // テーマETF（防衛・建設インフラ）
   {code:'513A', name:'GX 防衛テック-日本株式',          tags:['防衛','重工','日経寄与'], etf:true},
   {code:'1619', name:'NF 建設・資材（TOPIX-17）',       tags:['内需','景気','建設インフラ'], etf:true},
@@ -408,26 +415,7 @@ let earningsWarnings = {}; // v3.1: 決算警告 {code: {date, businessDaysUntil
 let positions = loadPositions(); // v3.1: 保有ポジション
 
 /* ---------- INIT ---------- */
-// v3.2: 自己学習エンジンが出力した weights.json があれば重みを上書きする。
-// 取得失敗・未配信でも既定の手調整重みで動くフェイルセーフ設計。
-let LEARNED_WEIGHTS_VERSION = null;
-async function applyLearnedWeights(){
-  try{
-    const res = await fetch('weights.json?_=' + Date.now(), {cache:'no-store'});
-    if(!res.ok) return;
-    const wj = await res.json();
-    const wmap = wj && wj.weights;
-    if(!wmap) return;
-    INDICATORS.forEach(ind=>{
-      const v = wmap[ind.key];
-      if(typeof v === 'number' && isFinite(v) && v >= 0) ind.weight = v;
-    });
-    LEARNED_WEIGHTS_VERSION = wj.version || null;
-  }catch(e){ /* 既定重みのまま継続 */ }
-}
-
 async function init(){
-  await applyLearnedWeights(); // 重みを最優先で反映してからスコア計算
   renderIndicatorInputs();
   renderStocks();
   renderEditList();
@@ -440,6 +428,7 @@ async function init(){
   renderHistory(); // v2.1: 履歴を初期表示
   renderPositions(); // v3.1
   loadVerification(); // v3.1: 答え合わせデータ取得
+  loadObservation(); // v3.5.0: 観測モードデータ取得(発注なし・前向き検証)
   // v2.2: 起動時に自動で全指標を取得(ボタンを押す手間を省く)
   try{
     await fetchAll();
@@ -467,12 +456,10 @@ function bindTabs(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      ['dash','positions','verify','intraday','history','edit','help'].forEach(id=>{
+      ['dash','positions','verify','observe','history','edit','help'].forEach(id=>{
         document.getElementById('tab-'+id).classList.add('hide');
       });
       document.getElementById('tab-'+t.dataset.tab).classList.remove('hide');
-      // 場中タブを開いたら、確実なJ-Quants後場判定(am.json)を自動取得
-      if(t.dataset.tab === 'intraday'){ loadAm(); }
     });
   });
 }
@@ -480,10 +467,6 @@ function bindTabs(){
 /* ---------- BUTTONS ---------- */
 function bindButtons(){
   document.getElementById('fetchBtn').addEventListener('click',fetchAll);
-  const ib = document.getElementById('fetchIntradayBtn');
-  if(ib) ib.addEventListener('click', loadIntraday);
-  const ab = document.getElementById('fetchAmBtn');
-  if(ab) ab.addEventListener('click', loadAm);
   document.getElementById('clearBtn').addEventListener('click',()=>{
     indValues={}; renderIndicatorInputs(); recalc();
   });
@@ -617,48 +600,29 @@ async function fetchAll(){
   recalc();
 }
 
-/* ---------- 寄り後の自動取得（v3.1.1 / 2026-05-17 クラウド配信版） ---------- */
-// 旧 v2.2 系は Stooq + CORSプロキシ4段の直叩きだったが、無料プロキシが全部落ちると
-// 「失敗 3」で詰まる弱点があった。v3.1.1 から GitHub Actions 側で yfinance により
-// postopen.json を生成・配信する方式に切り替え。クライアントは fetch するだけ。
+/* ---------- 寄り後の自動取得（v2.2） ---------- */
+// 9:05 JST以降に呼び出して、東証寄り値を取得
 async function fetchPostOpen(){
   const status = document.getElementById('postOpenStatus');
   if(status) status.textContent = '🔄 寄り値取得中…';
+  let ok=0, ng=0;
+  // 日経（^nkx）- 東証現値
   try{
-    // キャッシュ回避クエリ付きで postopen.json を取得
-    const res = await fetch('postopen.json?t=' + Date.now(), {cache:'no-store'});
-    if(!res.ok) throw new Error('postopen.json HTTP ' + res.status);
-    const j = await res.json();
-    const data = j && j.data ? j.data : {};
-
-    let ok=0, ng=0;
-    function adopt(key){
-      const v = data[key] && data[key].value;
-      if(v && typeof v.price === 'number'){
-        referenceData[key] = { price:v.price, chgPct: (typeof v.chgPct==='number'? v.chgPct : null) };
-        ok++;
-      }else{
-        ng++;
-      }
-    }
-    adopt('TSE_OPEN');
-    adopt('SOX_PROXY');
-    adopt('USDJPY_OPEN');
-
-    const ts = j.updated_jst || j.updated_at || '';
-    if(status){
-      if(ok === 3){
-        status.textContent = `✅ 寄り値取得 成功 (${ts})`;
-      }else if(ok > 0){
-        status.textContent = `⚠ 寄り値取得：成功 ${ok} / 失敗 ${ng} (${ts}) ※失敗分は手動入力`;
-      }else{
-        status.textContent = `❌ 寄り値未取得：9:10〜9:30 のクラウド更新待ちです (${ts}) ※手動入力可`;
-      }
-    }
-  }catch(e){
-    // postopen.json がまだ存在しない・配信遅延などの場合
-    if(status) status.textContent = '⏳ 寄り値はクラウド側で 9:10〜9:30 に更新されます。少し待ってからもう一度押すか、手動入力してください。';
-  }
+    const r = await fetchStooq('^nkx');
+    if(r){ referenceData.TSE_OPEN = r; ok++; } else ng++;
+  }catch(e){ ng++; }
+  // 半導体プロキシ：東京エレクトロン（8035.jp）
+  try{
+    const r = await fetchStooq('8035.jp');
+    if(r){ referenceData.SOX_PROXY = r; ok++; } else ng++;
+  }catch(e){ ng++; }
+  // ドル円（現在値）
+  try{
+    const r = await fetchStooq('usdjpy');
+    if(r){ referenceData.USDJPY_OPEN = r; ok++; } else ng++;
+  }catch(e){ ng++; }
+  
+  if(status) status.textContent = `寄り値取得：成功 ${ok} / 失敗 ${ng}${ng?'（失敗分は手動入力）':''}`;
   renderPostOpenJudgment();
 }
 
@@ -1605,207 +1569,152 @@ async function loadVerification(){
   });
 }
 
-/* ---------- 後場の入り判定 (J-Quants前場4本値, v3.3) ---------- */
-// サーバ側(fetch_am.py)が正午すぎに am.json を生成。PWAはそれを読むだけ＝確実。
-async function loadAm(){
-  const list = document.getElementById('amList');
-  const upd = document.getElementById('amUpdated');
-  if(!list) return;
-  list.innerHTML = '<div style="color:var(--sub);font-size:13px">読込中…</div>';
-  let data = null;
+/* ==========================================================
+   OBSERVATION MODE (v3.5.0) — 前向き検証・発注なし・読み取り専用
+   observations.json を読むだけ。編集・削除・発注の機能は持たない。
+   ========================================================== */
+async function loadObservation(){
+  let obs = null;
   try{
-    const res = await fetch('am.json?_=' + Date.now(), {cache:'no-store'});
-    if(res.ok) data = await res.json();
+    const res = await fetch('observations.json?_=' + Date.now());
+    if(res.ok) obs = await res.json();
   }catch(e){}
-  if(!data || !data.items || !data.items.length){
-    list.innerHTML = '<div style="color:var(--sub);font-size:13px">まだ後場判定データがありません。<br>平日12:05頃にJ-Quantsの前場4本値から自動生成されます。前場が終わった後にご覧ください。</div>';
-    if(upd) upd.textContent = '';
+
+  const banner = document.getElementById('obsBanner');
+  const promoBox = document.getElementById('obsPromotion');
+  const sumBox = document.getElementById('obsSummary');
+  const todayBox = document.getElementById('obsToday');
+  const openBox = document.getElementById('obsOpen');
+  if(!banner) return;
+
+  if(!obs || !obs.records){
+    banner.innerHTML = 'まだ観測データがありません。夜間ジョブ（平日23:20 JST）で検出が始まると、ここに前向き検証の状況が表示されます。';
+    promoBox.innerHTML = sumBox.innerHTML = todayBox.innerHTML = openBox.innerHTML =
+      '<div style="color:var(--sub);font-size:12px">蓄積待ち</div>';
     return;
   }
-  let html = '';
-  data.items.forEach(it => {
-    if(!it.ok){
-      html += `<div style="background:var(--panel2);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:var(--sub)">${it.code} ${it.name}：前場データなし</div>`;
-      return;
-    }
-    const color = it.cls==='up' ? 'var(--up)' : it.cls==='down' ? 'var(--down)' : 'var(--sub)';
-    html += `<div style="background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px">
-      <div class="row" style="justify-content:space-between">
-        <div style="font-weight:700;font-size:14px">${it.code} ${it.name}</div>
-        <div style="font-weight:700;color:${color};font-size:13px">${it.label}</div>
+
+  const meta = obs.meta || {};
+  const records = obs.records || [];
+  const ver = meta.logic_version || '—';
+  const openRecs = records.filter(r => r.status === 'open' && r.logic_version === meta.logic_version);
+  const start = meta.observation_start || '—';
+  const days = meta.days_elapsed != null ? meta.days_elapsed : '—';
+  const nAll = records.length;
+
+  banner.innerHTML =
+    `開始日 <b style="color:var(--txt)">${start}</b> ／ 経過 <b style="color:var(--txt)">${days}</b> 日 ／ 蓄積 <b style="color:var(--txt)">${nAll}</b> 件（うちオープン ${openRecs.length} 件） ／ ロジック版 <b style="color:var(--txt)">${ver}</b>`;
+
+  renderObsPromotion(promoBox, meta.promotion);
+  renderObsSummary(sumBox, meta.summary);
+  renderObsToday(todayBox, records);
+  renderObsOpen(openBox, openRecs);
+}
+
+function renderObsPromotion(box, promo){
+  if(!promo || !promo.checks){
+    box.innerHTML = '<div style="color:var(--sub);font-size:12px">クローズ実績が貯まると基準判定を表示します。</div>';
+    return;
+  }
+  const badge = promo.all_pass
+    ? '<div style="background:#0e2a16;border:1px solid var(--down);color:var(--down);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700;margin-bottom:10px">🎖 格上げ判定可能（全基準クリア）— 実際の格上げは相談して手動で決定します</div>'
+    : '<div style="background:#1a2540;border:1px solid var(--line);color:var(--sub);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:10px">検証継続中（基準未達）。全基準クリアで「格上げ判定可能」になります。</div>';
+  const rows = promo.checks.map(c => {
+    const icon = c.pass ? '<span class="down">✓</span>' : '<span style="color:var(--sub)">…</span>';
+    let actual = c.actual;
+    if(actual && typeof actual === 'object') actual = `dumb ${fmtNum(actual.dumb)} / TOPIX ${fmtNum(actual.topix)}`;
+    else actual = fmtNum(actual);
+    return `<div class="kv"><span>${icon} ${c.no}. ${c.label}</span><span>${actual} <span style="color:var(--sub)">/ 目標 ${c.target}</span></span></div>`;
+  }).join('');
+  box.innerHTML = badge + rows +
+    `<div style="font-size:10px;color:var(--sub);margin-top:8px">※基準 ${promo.criteria_version}（開始前に確定・変更不可）。集計は現行ロジック版のクローズ済みのみ。</div>`;
+}
+
+function fmtNum(v){
+  if(v == null) return '—';
+  if(typeof v === 'number') return (v>=0?'':'') + v;
+  return v;
+}
+
+function renderObsSummary(box, s){
+  if(!s || !s.closed){
+    box.innerHTML = '<div style="color:var(--sub);font-size:12px">まだクローズ済みのトレードがありません。決着すると成績を集計します。</div>';
+    return;
+  }
+  const cls = (v)=> v==null?'':(v>=0?'up':'down');
+  const sg = (v,suf='')=> v==null?'—':((v>=0?'+':'')+v+suf);
+  let regime = '';
+  if(s.regime_breakdown && Object.keys(s.regime_breakdown).length){
+    regime = '<div style="font-size:11px;color:var(--sub);margin-top:8px">地合い別 期待値：</div>' +
+      Object.entries(s.regime_breakdown).map(([k,v]) =>
+        `<div class="kv"><span>${k}（${v.n}件）</span><span class="${cls(v.expectancy)}">${sg(v.expectancy,'%')}</span></div>`).join('');
+  }
+  box.innerHTML = `
+    <div class="kv"><span>クローズ件数</span><span>${s.closed}件（オープン${s.open??0}）</span></div>
+    <div class="kv"><span>勝率</span><span class="${cls(s.win_rate-50)}">${s.win_rate??'—'}%</span></div>
+    <div class="kv"><span>期待値（1回平均）</span><span class="${cls(s.expectancy)}">${sg(s.expectancy,'%')}</span></div>
+    <div class="kv"><span>平均利益 / 平均損失</span><span>${sg(s.avg_win,'%')} / ${sg(s.avg_loss==null?null:-s.avg_loss,'%')}</span></div>
+    <div class="kv"><span>R倍数（利益÷損失）</span><span class="${cls((s.r_multiple||0)-1.5)}">${s.r_multiple??'—'}</span></div>
+    <div class="kv"><span>baseline比超過 vs 無条件保有</span><span class="${cls(s.excess_vs_dumb)}">${sg(s.excess_vs_dumb,'%')}</span></div>
+    <div class="kv"><span>baseline比超過 vs TOPIX</span><span class="${cls(s.excess_vs_topix)}">${sg(s.excess_vs_topix,'%')}</span></div>
+    <div class="kv"><span>最大ドローダウン</span><span class="down">${s.max_drawdown??'—'}%</span></div>
+    <div class="kv"><span>弱地合いの期待値</span><span class="${cls(s.weak_regime_expectancy)}">${sg(s.weak_regime_expectancy,'%')}</span></div>
+    ${regime}
+  `;
+}
+
+function renderObsToday(box, records){
+  if(!records.length){ box.innerHTML = '<div style="color:var(--sub);font-size:12px">検出はまだありません。</div>'; return; }
+  // 最新の検出日を「本日分」とみなす
+  const dates = records.map(r => (r.baseline_ref && r.baseline_ref.detect_date) || '').filter(Boolean);
+  const latest = dates.sort().slice(-1)[0];
+  const today = records.filter(r => (r.baseline_ref||{}).detect_date === latest);
+  if(!today.length){ box.innerHTML = '<div style="color:var(--sub);font-size:12px">検出はまだありません。</div>'; return; }
+  box.innerHTML = `<div style="font-size:11px;color:var(--sub);margin-bottom:6px">検出日 ${latest}（${today.length}件）</div>` +
+    today.map(r => obsCard(r)).join('');
+}
+
+function renderObsOpen(box, openRecs){
+  if(!openRecs.length){ box.innerHTML = '<div style="color:var(--sub);font-size:12px">観測中のオープンはありません。</div>'; return; }
+  box.innerHTML = openRecs
+    .sort((a,b)=> (b.detected_at||'').localeCompare(a.detected_at||''))
+    .map(r => obsCard(r, true)).join('');
+}
+
+function obsCard(r, showStopDist){
+  const entry = r.detection_price;
+  const stop = r.structural_stop;
+  const distPct = (entry && stop) ? ((stop - entry) / entry * 100) : null;
+  const mc = (r.detection_context||{}).market_condition || {};
+  const sp = (r.detection_context||{}).signal_params || {};
+  let closedLine = '';
+  if(r.status === 'closed'){
+    const bl = r.baseline || {};
+    const reasonMap = {structural_stop:'構造損切り', target_recovery:'高値回復', time_exit:'時間切れ'};
+    const rc = (r.return_pct!=null && r.return_pct>=0) ? 'up':'down';
+    closedLine = `<div style="font-size:11px;margin-top:4px" class="${rc}">決済 ${reasonMap[r.exit_reason]||r.exit_reason}：${r.return_pct>=0?'+':''}${r.return_pct}%（${r.holding_days}日）` +
+      `<span style="color:var(--sub)"> ／ vs無条件 ${fmtSg(bl.excess_vs_dumb)} ／ vsTOPIX ${fmtSg(bl.excess_vs_topix)}</span></div>`;
+  }
+  const distLine = (showStopDist && distPct!=null)
+    ? `<div style="font-size:11px;color:var(--warn);margin-top:2px">損切りまで ${distPct.toFixed(2)}%（エントリー ${fmtPrice(entry)} → 損切り ${fmtPrice(stop)}）</div>`
+    : '';
+  return `
+    <div class="stock" style="display:block">
+      <div class="row" style="gap:6px;flex-wrap:wrap;align-items:baseline">
+        <div class="ticker">${r.ticker}</div>
+        <div class="name2">${r.ticker_name||''}</div>
+        <span style="font-size:10px;color:var(--sub)">${r.group||''}</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--sub)">押し ${sp.pullback_pct??'—'}%${sp.band?'/'+sp.band:''}</span>
       </div>
-      <div style="color:var(--sub);font-size:11px;margin-top:4px">${it.note||''}</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:2px">
+        地合い ${mc.label||'—'}${mc.score!=null?'('+mc.score+')':''} ／ エントリー ${fmtPrice(entry)} ／ 構造損切り ${fmtPrice(stop)}
+      </div>
+      ${distLine}
+      ${closedLine}
     </div>`;
-  });
-  list.innerHTML = html;
-  if(upd) upd.textContent = `${data.date||''} 前場確定 / 成功 ${data.success}/${data.total}`;
 }
-
-/* ---------- INTRADAY ENTRY TIMING (v3.3) ---------- */
-// 妻が場中に見られるよう、PWAを開く/更新するたびにYahoo 5分足から
-// VWAP乖離・ボリンジャー2σ/3σ・RSI を算出し、エントリー適否を判定する。
-let intradayLoadedOnce = false;
-
-function fetchWithTimeout(url, ms){
-  // ハングするプロキシで全体が止まらないよう、各リクエストにタイムアウトを設ける
-  return new Promise((resolve, reject) => {
-    const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-    const timer = setTimeout(() => { if(ctrl) ctrl.abort(); reject(new Error('timeout')); }, ms);
-    fetch(url, {cache:'no-store', signal: ctrl ? ctrl.signal : undefined})
-      .then(r => { clearTimeout(timer); resolve(r); })
-      .catch(e => { clearTimeout(timer); reject(e); });
-  });
-}
-
-async function fetchOneSource(u){
-  // fetch + 本文読み取り(json)までを行い、5分足配列を返す（失敗時 null）
-  const res = await fetchWithTimeout(u, 7000);
-  if(!res || !res.ok) return null;
-  const txt = await res.text();
-  let j;
-  try{ j = JSON.parse(txt); }catch(_){ return null; } // 一部プロキシはJSONを文字列で包むため text→parse
-  const r = j && j.chart && j.chart.result && j.chart.result[0];
-  if(!r || !r.timestamp || !r.indicators) return null;
-  const q = r.indicators.quote[0];
-  const bars = [];
-  for(let i=0;i<r.timestamp.length;i++){
-    const c=q.close[i], h=q.high[i], l=q.low[i], v=q.volume[i];
-    if(c==null||h==null||l==null) continue;
-    bars.push({c:c, h:h, l:l, v:v||0});
-  }
-  return bars.length>=3 ? bars : null;
-}
-
-function withDeadline(promise, ms){
-  // fetch・本文読み取り・解析すべてを含めて ms で必ず打ち切る（“取得中”固まり防止）
-  return Promise.race([
-    promise,
-    new Promise((_, rej) => setTimeout(() => rej(new Error('deadline')), ms))
-  ]);
-}
-
-async function fetchIntradayBars(code){
-  const sym = encodeURIComponent(code) + '.T';
-  const target = `https://query1.finance.yahoo.com/v8/finance/chart/${sym}?interval=5m&range=1d`;
-  const urls = [
-    target,
-    'https://api.allorigins.win/raw?url=' + encodeURIComponent(target),
-    'https://corsproxy.io/?url=' + encodeURIComponent(target),
-  ];
-  for(const u of urls){
-    try{
-      const bars = await withDeadline(fetchOneSource(u), 8000);
-      if(bars) return bars;
-    }catch(e){ /* タイムアウト/失敗 → 次のソースへ */ }
-  }
-  return null;
-}
-
-function calcVWAP(bars){
-  let pv=0, vv=0;
-  bars.forEach(b=>{ const tp=(b.h+b.l+b.c)/3; pv+=tp*b.v; vv+=b.v; });
-  return vv>0 ? pv/vv : null;
-}
-function calcRSI(closes, period){
-  period = period||14;
-  if(closes.length<period+1) return null;
-  let gain=0, loss=0;
-  for(let i=closes.length-period;i<closes.length;i++){
-    const d=closes[i]-closes[i-1];
-    if(d>=0) gain+=d; else loss-=d;
-  }
-  if(gain+loss===0) return 50;
-  const rs = gain/(loss||1e-9);
-  return 100 - 100/(1+rs);
-}
-function calcBoll(closes, period){
-  period = period||20;
-  if(closes.length<period) return null;
-  const slice = closes.slice(-period);
-  const mean = slice.reduce((a,b)=>a+b,0)/period;
-  const variance = slice.reduce((a,b)=>a+(b-mean)*(b-mean),0)/period;
-  return {mean:mean, sd:Math.sqrt(variance)};
-}
-
-// エントリー適否判定（妻の悩み「寄りで上げて横横→飛び乗れない」に対応）
-function classifyEntry(price, vwap, boll, rsi){
-  if(vwap==null||boll==null||rsi==null) return {label:'データ不足', cls:'sub', note:''};
-  const dev = (price - vwap)/vwap*100;
-  const sd = boll.sd, mean = boll.mean;
-  const upper2=mean+2*sd, upper3=mean+3*sd, lower2=mean-2*sd, lower3=mean-3*sd;
-  if(price>=upper3 || (rsi>=78 && price>=upper2))
-    return {label:'買われすぎ⚠ 見送り/利確', cls:'down', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)} / 3σ圏`};
-  if(price>=upper2 || (dev>2.5 && rsi>=70))
-    return {label:'飛び乗り注意（高値圏）', cls:'down', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
-  if(price<=lower3 || (rsi<=22 && price<=lower2))
-    return {label:'売られすぎ（反発狙い・逆張り注意）', cls:'up', note:`VWAP${dev.toFixed(1)}% / RSI${rsi.toFixed(0)} / 下3σ`};
-  if(Math.abs(dev)<=0.8 && rsi>=40 && rsi<=62)
-    return {label:'押し目（買い場候補）', cls:'up', note:`VWAP±${Math.abs(dev).toFixed(1)}% / RSI${rsi.toFixed(0)}`};
-  if(dev>0 && dev<=1.5 && rsi<68)
-    return {label:'やや上・許容範囲', cls:'sub', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
-  if(dev<0)
-    return {label:'VWAP下（様子見/反発待ち）', cls:'sub', note:`VWAP${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
-  return {label:'中立', cls:'sub', note:`VWAP+${dev.toFixed(1)}% / RSI${rsi.toFixed(0)}`};
-}
-
-async function loadIntraday(){
-  const list = document.getElementById('intradayList');
-  const upd = document.getElementById('intradayUpdated');
-  if(!list) return;
-  intradayLoadedOnce = true;
-  const targets = (stocks||DEFAULT_STOCKS).filter(s=>!s.etf && s.code);
-  list.innerHTML = '<div style="color:var(--sub);font-size:13px">取得中… 銘柄が多いので20〜40秒ほどかかります</div>';
-  if(upd) upd.textContent = '';
-  const results = new Array(targets.length);
-  let idx = 0;
-  async function worker(){
-    while(idx < targets.length){
-      const my = idx++;
-      const st = targets[my];
-      const bars = await fetchIntradayBars(st.code);
-      if(!bars){ results[my] = {st:st, ok:false}; continue; }
-      const closes = bars.map(b=>b.c);
-      const price = closes[closes.length-1];
-      const vwap = calcVWAP(bars);
-      const boll = calcBoll(closes,20);
-      const rsi = calcRSI(closes,14);
-      const open = bars[0].c;
-      const fromOpen = open ? (price-open)/open*100 : 0;
-      results[my] = {st:st, ok:true, price:price, fromOpen:fromOpen, verdict:classifyEntry(price,vwap,boll,rsi)};
-    }
-  }
-  const CONC = Math.min(5, targets.length);
-  await Promise.all(Array.from({length:CONC}, ()=>worker()));
-  const order = {'up':0,'sub':1,'down':2};
-  results.sort((a,b)=> ((a.verdict&&order[a.verdict.cls])||1) - ((b.verdict&&order[b.verdict.cls])||1));
-  let html='', okCount=0;
-  results.forEach(r=>{
-    if(!r.ok){
-      html += `<div style="background:var(--panel2);border-radius:10px;padding:8px 10px;margin-bottom:6px;font-size:12px;color:var(--sub)">${r.st.code} ${r.st.name}：データ取得失敗（時間をおいて再更新）</div>`;
-      return;
-    }
-    okCount++;
-    const v=r.verdict;
-    const color = v.cls==='up'?'var(--up)':v.cls==='down'?'var(--down)':'var(--sub)';
-    html += `<div style="background:var(--panel2);border-radius:10px;padding:10px;margin-bottom:8px">
-      <div class="row" style="justify-content:space-between">
-        <div style="font-weight:700;font-size:14px">${r.st.code} ${r.st.name}</div>
-        <div style="font-weight:700;color:${color};font-size:13px">${v.label}</div>
-      </div>
-      <div style="color:var(--sub);font-size:11px;margin-top:4px">
-        現値 ${r.price.toLocaleString()} ・ 寄りから ${r.fromOpen>=0?'+':''}${r.fromOpen.toFixed(2)}% ・ ${v.note}
-      </div>
-    </div>`;
-  });
-  list.innerHTML = html || '<div style="color:var(--sub)">表示できる銘柄がありません</div>';
-  if(okCount===0){
-    list.innerHTML = '<div style="color:var(--down);font-size:13px">場中データを取得できませんでした。市場が閉まっている時間帯か、データ元が一時的に応答していない可能性があります。場中（9:00〜15:30）に「🔄場中を更新」を押してお試しください。</div>';
-  }
-  if(upd){
-    const now=new Date();
-    upd.textContent = `更新 ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}（成功 ${okCount}/${targets.length}）`;
-  }
-}
+function fmtPrice(v){ return v==null?'—':Number(v).toLocaleString('ja-JP',{maximumFractionDigits:1})+'円'; }
+function fmtSg(v){ return v==null?'—':((v>=0?'+':'')+v+'%'); }
 
 /* ---------- GO ---------- */
 init();
