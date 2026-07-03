@@ -1,0 +1,54 @@
+name: Observe PO-pullback (forward observation)
+
+# 観測モード(前向き検証・発注なし)。既存のam/verifyと同じ「独立workflow+cron」方式。
+# verify(23:00)と同帯だが数分ずらして J-Quants の同時アクセスを避ける。
+on:
+  schedule:
+    - cron: '20 14 * * 1-5'  # 14:20 UTC = 23:20 JST 平日（日足確定後・verify直後）
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Detect PO-pullback candidates (append-only)
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python observe_detect.py
+
+      - name: Close virtual trades + baseline + summary
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python observe_close.py
+
+      - name: Commit observations.json (with retry)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add observations.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Auto-update observations.json [observe]"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash || true
+            sleep 2
+          done
+          echo "Push failed after 3 attempts"
+          exit 1
