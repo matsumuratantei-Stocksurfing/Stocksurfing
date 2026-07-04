@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-04T11:02:38.695184+09:00",
+    "generatedAt": "2026-07-04T11:20:02.193903+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
