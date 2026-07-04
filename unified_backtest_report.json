@@ -1,0 +1,355 @@
+{
+  "generatedAt": "2026-07-04T10:50:47.535907+09:00",
+  "note": "計測専用・本番非変更。価格は調整済み(AdjC)。取引コスト/スリッページ未考慮。上昇相場偏り。",
+  "strategy": "松村式一本化: 地合い(TOPIX>200MA)×上昇トレンド新高値/近接入口×ボラ損切り×+5%半利確→SMA25トレール",
+  "params": {
+    "fetchFrom": "2022-01-01",
+    "fetchTo": "2026-07-04",
+    "W52": 250,
+    "atrWin": 20,
+    "tpPct": 5.0,
+    "maxHold": 40,
+    "nearHighPct": 3.0
+  },
+  "universeStatus": [
+    {
+      "group": "個別",
+      "code": "285A",
+      "name": "キオクシア",
+      "days": 374,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8035",
+      "name": "東京エレクトロン",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6857",
+      "name": "アドバンテスト",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6920",
+      "name": "レーザーテック",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6146",
+      "name": "ディスコ",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "4062",
+      "name": "イビデン",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6981",
+      "name": "村田製作所",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "5803",
+      "name": "フジクラ",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "5801",
+      "name": "古河電工",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "4063",
+      "name": "信越化学",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "5016",
+      "name": "JX金属",
+      "days": 316,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "9984",
+      "name": "ソフトバンクG",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7011",
+      "name": "三菱重工業",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7012",
+      "name": "川崎重工業",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7013",
+      "name": "IHI",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6501",
+      "name": "日立製作所",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6758",
+      "name": "ソニーG",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7203",
+      "name": "トヨタ自動車",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6506",
+      "name": "安川電機",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8058",
+      "name": "三菱商事",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8031",
+      "name": "三井物産",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8306",
+      "name": "三菱UFJ FG",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8316",
+      "name": "三井住友FG",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "9107",
+      "name": "川崎汽船",
+      "days": 1100,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "213A",
+      "name": "半導体ETF-A",
+      "days": 481,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "221A",
+      "name": "半導体ETF-B",
+      "days": 477,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "200A",
+      "name": "半導体ETF-C",
+      "days": 509,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "282A",
+      "name": "半導体ETF-D",
+      "days": 393,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "2243",
+      "name": "半導体ETF-E",
+      "days": 788,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "513A",
+      "name": "防衛テックETF",
+      "days": 87,
+      "status": "データ不足/なし"
+    },
+    {
+      "group": "ETF",
+      "code": "1619",
+      "name": "建設・資材ETF",
+      "days": 1088,
+      "status": "OK"
+    }
+  ],
+  "variants": {
+    "regimeON/struct": {
+      "n": 428,
+      "win_rate": 61.4,
+      "expectancy": 3.006,
+      "median": 2.5,
+      "avg_win": 7.975,
+      "avg_loss": -4.915,
+      "r_multiple": 1.62,
+      "bigwin_pct(>=8%)": 18.5,
+      "total_R_sum": 1286.5,
+      "avg_hold": 15.023,
+      "max_drawdown_Rsum": -42.0,
+      "tp_hit_pct": 59.8
+    },
+    "regimeON/atr2": {
+      "n": 447,
+      "win_rate": 58.8,
+      "expectancy": 2.834,
+      "median": 2.5,
+      "avg_win": 7.924,
+      "avg_loss": -4.441,
+      "r_multiple": 1.78,
+      "bigwin_pct(>=8%)": 17.2,
+      "total_R_sum": 1266.8,
+      "avg_hold": 13.998,
+      "max_drawdown_Rsum": -40.0,
+      "tp_hit_pct": 57.3
+    },
+    "regimeON/atr3": {
+      "n": 431,
+      "win_rate": 61.0,
+      "expectancy": 2.988,
+      "median": 2.5,
+      "avg_win": 7.985,
+      "avg_loss": -4.834,
+      "r_multiple": 1.65,
+      "bigwin_pct(>=8%)": 18.3,
+      "total_R_sum": 1288.0,
+      "avg_hold": 14.856,
+      "max_drawdown_Rsum": -37.0,
+      "tp_hit_pct": 59.4
+    },
+    "regimeON/fix2": {
+      "n": 637,
+      "win_rate": 38.6,
+      "expectancy": 1.832,
+      "median": -2.0,
+      "avg_win": 7.814,
+      "avg_loss": -1.931,
+      "r_multiple": 4.05,
+      "bigwin_pct(>=8%)": 11.3,
+      "total_R_sum": 1167.3,
+      "avg_hold": 8.819,
+      "max_drawdown_Rsum": -24.6,
+      "tp_hit_pct": 37.4
+    },
+    "regimeOFF/struct": {
+      "n": 427,
+      "win_rate": 61.4,
+      "expectancy": 3.065,
+      "median": 2.5,
+      "avg_win": 8.056,
+      "avg_loss": -4.859,
+      "r_multiple": 1.66,
+      "bigwin_pct(>=8%)": 19.0,
+      "total_R_sum": 1308.9,
+      "avg_hold": 15.227,
+      "max_drawdown_Rsum": -42.0,
+      "tp_hit_pct": 59.7
+    },
+    "regimeOFF/atr2": {
+      "n": 448,
+      "win_rate": 58.5,
+      "expectancy": 2.838,
+      "median": 2.5,
+      "avg_win": 8.004,
+      "avg_loss": -4.44,
+      "r_multiple": 1.8,
+      "bigwin_pct(>=8%)": 17.6,
+      "total_R_sum": 1271.4,
+      "avg_hold": 14.105,
+      "max_drawdown_Rsum": -40.0,
+      "tp_hit_pct": 56.9
+    },
+    "regimeOFF/atr3": {
+      "n": 431,
+      "win_rate": 60.8,
+      "expectancy": 3.028,
+      "median": 2.5,
+      "avg_win": 8.066,
+      "avg_loss": -4.781,
+      "r_multiple": 1.69,
+      "bigwin_pct(>=8%)": 18.8,
+      "total_R_sum": 1305.3,
+      "avg_hold": 15.014,
+      "max_drawdown_Rsum": -37.0,
+      "tp_hit_pct": 59.2
+    },
+    "regimeOFF/fix2": {
+      "n": 637,
+      "win_rate": 38.8,
+      "expectancy": 1.863,
+      "median": -2.0,
+      "avg_win": 7.851,
+      "avg_loss": -1.929,
+      "r_multiple": 4.07,
+      "bigwin_pct(>=8%)": 11.5,
+      "total_R_sum": 1186.8,
+      "avg_hold": 8.914,
+      "max_drawdown_Rsum": -26.0,
+      "tp_hit_pct": 37.5
+    }
+  },
+  "bestByExpectancy": "regimeOFF/struct",
+  "verdict": [
+    "(1) 損切りの効き(地合いON): struct 勝率61.4%・期待値3.006%・R1.62 / atr2 勝率58.8%・期待値2.834%・R1.78 / atr3 勝率61.0%・期待値2.988%・R1.65 / fix2 勝率38.6%・期待値1.832%・R4.05",
+    "(2) 固定-2% vs ボラ損切り(地合いON): 固定-2%=38.6%/期待値1.832% vs 構造=61.4%/期待値3.006% vs ATR2=58.8%/期待値2.834% → ボラ損切りが優位(固定-2%は不利)",
+    "(3) 地合いフィルターの価値(構造損切り): ON 期待値3.006%/maxDD-42.0 vs OFF 期待値3.065%/maxDD-42.0 → 効果小",
+    "(4) 最良構成(期待値基準)= regimeOFF/struct: 勝率61.4% 期待値3.065% R1.66 大勝ち率(>=8%)19.0% 平均保有15.227日 総R1308.9 maxDD-42.0 → アプリ「一本化」タブの初期パラメータ候補",
+    "(5) 実装方針: 勝率と期待値・DDのバランス最良の損切りを採用し、+5%半利確→残りSMA25トレールで大勝ちも拾う。 本標本は上昇相場偏り・コスト未考慮のため、採用は観測モードでの前向き実測と併走が前提。"
+  ]
+}
