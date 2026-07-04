@@ -8,6 +8,9 @@ v3.4.3 (2026-07-04):
 - 各指標に asOf (データの日付) を記録し、日付ズレ/staleデータ混入を検出 (dataQuality)
 - 日経VI: Nikkei公式のURL構造変更(?idx= が一覧ページ化し「現値」が消失)に対応。
   個別指数プロフィールページ (/nkave/index/profile?idx=nk225vi) から取得する。
+v3.4.4 (2026-07-04):
+- 決算警告に JPX公式Excel (jpx_earnings.py) を統合し「3営業日前警告」を復活。
+  J-Quants V2 (翌営業日分のみ・確度高) を優先し、JPXで先の予定を補完する。
 """
 import json
 import sys
@@ -24,6 +27,7 @@ from bs4 import BeautifulSoup
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import TRACKED_STOCKS
 from jquants_client import get_earnings_calendar
+from jpx_earnings import get_jpx_warnings
 
 JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -278,12 +282,13 @@ def fetch_earnings_calendar():
 
     data = get_earnings_calendar()
     if not data:
-        print(f"  ✗ J-Quants 接続失敗 or データなし")
-        return {}
-
-    # V2 /equities/earnings-calendar のレスポンス: {"data": [{...}, ...]}
-    announcements = data.get('data', [])
-    print(f"  全発表予定: {len(announcements)} 件取得")
+        # v3.4.4: J-Quantsが落ちてもJPXのみで継続できるよう、早期returnしない
+        print(f"  ✗ J-Quants 接続失敗 or データなし (JPXのみで継続)")
+        announcements = []
+    else:
+        # V2 /equities/earnings-calendar のレスポンス: {"data": [{...}, ...]}
+        announcements = data.get('data', [])
+        print(f"  全発表予定: {len(announcements)} 件取得")
 
     warnings = {}
     for ann in announcements:
@@ -309,13 +314,28 @@ def fetch_earnings_calendar():
         }
         print(f"  ⚠️ {code} ({ann.get('CoName','')}) — 決算予定 {date_str} ({bdays}営業日後)")
 
+    # v3.4.4: JPX公式Excel(数週間先までの予定)で「3営業日前警告」を補完。
+    # J-Quantsは翌営業日分のみだが確度が高いので、同一銘柄は「より近い日」を優先。
+    # JPX取得に失敗しても J-Quants のみで継続する(フォールバック)。
+    try:
+        jpx_warnings = get_jpx_warnings(TRACKED_STOCKS, today, max_bdays=3)
+    except Exception as e:
+        print(f"  ⚠ JPX決算カレンダー取得失敗(J-Quantsのみで継続): {e}")
+        jpx_warnings = {}
+    for code, info in jpx_warnings.items():
+        existing = warnings.get(code)
+        if existing and existing.get('businessDaysUntil', 99) <= info['businessDaysUntil']:
+            continue
+        warnings[code] = info
+        print(f"  ⚠️ {code} ({info.get('companyName', '')}) — 決算予定 {info['date']} ({info['businessDaysUntil']}営業日後) [JPX]")
+
     if not warnings:
         print(f"  ✓ 監視銘柄すべて決算3営業日以内なし")
     return warnings
 
 def main():
     print("=" * 50)
-    print("  松村式Stocksurfing データ取得 (v3.4.3)")
+    print("  松村式Stocksurfing データ取得 (v3.4.4)")
     print(f"  実行時刻: {datetime.now(JST).isoformat()}")
     print("=" * 50)
     print()
