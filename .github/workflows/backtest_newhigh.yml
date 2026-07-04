@@ -1,0 +1,46 @@
+name: Backtest new-high (measurement only)
+
+# 新高値(52週/取得内ATH)戻り率バックテスト。計測専用・本番非変更。手動実行のみ。
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  backtest-newhigh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run new-high backtest
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python backtest_newhigh.py
+
+      - name: Commit report (with retry)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add newhigh_backtest_report.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Add/update new-high backtest report [measurement]"
+          for i in 1 2 3; do
+            if git push; then exit 0; fi
+            git pull --rebase --autostash || true
+            sleep 2
+          done
+          echo "Push failed after 3 attempts"
+          exit 1
