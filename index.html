@@ -177,6 +177,18 @@
       <h2>本日の買い候補</h2>
       <div id="uniCandidates"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
     </div>
+
+    <!-- 検証成績（答え合わせ） -->
+    <div class="card">
+      <h2>検証成績（この戦略の答え合わせ）</h2>
+      <div id="uniVerify"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
+    </div>
+
+    <!-- 格上げ達成状況 -->
+    <div class="card">
+      <h2>正式採用（格上げ）の達成状況</h2>
+      <div id="uniPromo"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
+    </div>
   </section>
 
   <!-- POSITIONS (v3.1) -->
@@ -1755,13 +1767,63 @@ function fmtSg(v){ return v==null?'—':((v>=0?'+':'')+v+'%'); }
    unified_signals.json を読むだけ。選定→買い→売り→株数を1枚で表示。
    ========================================================== */
 let unifiedData = null;
+let unifiedLedger = null;
 
 async function loadUnified(){
   try{
     const res = await fetch('unified_signals.json?_=' + Date.now());
     if(res.ok) unifiedData = await res.json();
   }catch(e){}
+  try{
+    const res2 = await fetch('unified_ledger.json?_=' + Date.now());
+    if(res2.ok) unifiedLedger = await res2.json();
+  }catch(e){}
   renderUnified();
+  renderUnifiedVerify();
+}
+
+function renderUnifiedVerify(){
+  const vBox = document.getElementById('uniVerify');
+  const pBox = document.getElementById('uniPromo');
+  if(!vBox || !pBox) return;
+  const meta = (unifiedLedger && unifiedLedger.meta) || null;
+  if(!meta || !meta.summary){
+    vBox.innerHTML = '<div style="color:var(--sub);font-size:12px">まだ答え合わせデータがありません。買い候補が出た日から仮想トレードを記録し、決済されると成績が貯まります（発注はしません）。</div>';
+    pBox.innerHTML = '<div style="color:var(--sub);font-size:12px">蓄積待ち</div>';
+    return;
+  }
+  const s = meta.summary;
+  const cls = v => v==null?'':(v>=0?'up':'down');
+  const sg = (v,suf='') => v==null?'—':((v>=0?'+':'')+v+suf);
+  if(!s.closed){
+    vBox.innerHTML = `<div class="kv"><span>観測中（オープン）</span><span>${s.open||0}件</span></div>` +
+      '<div style="color:var(--sub);font-size:12px;margin-top:6px">まだ決済まで到達したトレードがありません。決着すると勝率・期待値が出ます。</div>';
+  } else {
+    vBox.innerHTML =
+      `<div class="kv"><span>クローズ件数</span><span>${s.closed}件（オープン${s.open||0}）</span></div>` +
+      `<div class="kv"><span>勝率</span><span class="${cls((s.win_rate||0)-50)}">${s.win_rate??'—'}%</span></div>` +
+      `<div class="kv"><span>期待値（1回平均）</span><span class="${cls(s.expectancy)}">${sg(s.expectancy,'%')}</span></div>` +
+      `<div class="kv"><span>平均利益 / 平均損失</span><span>${sg(s.avg_win,'%')} / ${sg(s.avg_loss,'%')}</span></div>` +
+      `<div class="kv"><span>R倍数</span><span class="${cls((s.r_multiple||0)-1.3)}">${s.r_multiple??'—'}</span></div>` +
+      `<div class="kv"><span>大勝ち率（+8%以上）</span><span>${s.bigwin_pct??'—'}%</span></div>` +
+      `<div class="kv"><span>最大ドローダウン</span><span class="down">${s.max_drawdown??'—'}%</span></div>` +
+      `<div class="kv"><span>平均保有</span><span>${s.avg_hold??'—'}日</span></div>` +
+      `<div style="font-size:10px;color:var(--sub);margin-top:6px">※バックテスト参考値: 勝率61%・期待値+3%/回（上昇相場偏り）。前向き実測がこれに近づくかを見ています。</div>`;
+  }
+  const promo = meta.promotion;
+  if(!promo || !promo.checks){
+    pBox.innerHTML = '<div style="color:var(--sub);font-size:12px">クローズ実績が貯まると判定します。</div>';
+    return;
+  }
+  const badge = promo.all_pass
+    ? '<div style="background:#0e2a16;border:1px solid var(--down);color:var(--down);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700;margin-bottom:10px">🎖 正式採用の判定OK（全基準クリア）— 「検証中」を外すか相談して決めます</div>'
+    : '<div style="background:#1a2540;border:1px solid var(--line);color:var(--sub);border-radius:8px;padding:8px 10px;font-size:12px;margin-bottom:10px">検証継続中（基準未達）。全部クリアで正式採用の判定ができます。</div>';
+  const rows = promo.checks.map(c => {
+    const icon = c.pass ? '<span class="down">✓</span>' : '<span style="color:var(--sub)">…</span>';
+    return `<div class="kv"><span>${icon} ${c.no}. ${c.label}</span><span>${c.actual==null?'—':c.actual} <span style="color:var(--sub)">/ 目標 ${c.target}</span></span></div>`;
+  }).join('');
+  pBox.innerHTML = badge + rows +
+    `<div style="font-size:10px;color:var(--sub);margin-top:6px">※基準 ${promo.criteria_version}（開始前に確定）。集計は現行ロジック版のクローズ済みのみ。</div>`;
 }
 
 function bindUnifiedInputs(){
