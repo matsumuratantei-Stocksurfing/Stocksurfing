@@ -30,16 +30,21 @@ jobs:
           JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
         run: python unified_signals.py
 
-      - name: Commit unified_signals.json (with retry)
+      - name: Verify (append-only forward P&L + promotion)
+        env:
+          JQUANTS_API_KEY: ${{ secrets.JQUANTS_API_KEY }}
+        run: python unified_verify.py
+
+      - name: Commit signals + ledger (with retry)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add unified_signals.json
+          git add unified_signals.json unified_ledger.json
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Auto-update unified_signals.json [unified]"
+          git commit -m "Auto-update unified signals + ledger [unified]"
           for i in 1 2 3; do
             if git push; then exit 0; fi
             git pull --rebase --autostash || true
