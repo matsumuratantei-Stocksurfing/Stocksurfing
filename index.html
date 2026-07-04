@@ -286,8 +286,51 @@
 
   <!-- HELP -->
   <section id="tab-help" class="hide">
+    <!-- v3.6.0: 一本化戦略の使い方（メイン） -->
+    <div class="card" style="border:1px solid var(--accent)">
+      <h2 style="color:var(--accent)">🎯 まずはこれ／一本化戦略の使い方</h2>
+      <p style="font-size:13px;line-height:1.7;color:var(--txt)">
+        毎朝の「今日どうする？」は、この <b>🎯一本化</b> タブだけ見ればOKです。買う銘柄・買う値段・損切り・利確・株数まで、ぜんぶ自動で出ます。
+      </p>
+      <h3 style="font-size:13px;color:var(--accent);margin:12px 0 6px">朝のながれ（数分）</h3>
+      <ol style="padding-left:18px;line-height:1.9;font-size:13px">
+        <li><b>「🎯一本化」タブを開く。</b>まず一番上の<b>地合いバナー</b>を見る。<br>
+          <span style="color:var(--down)">追い風（エントリー可）</span>＝候補が出ます。<span style="color:var(--up)">様子見（地合いOFF）</span>＝<b>今日は新規を見送るのがルール</b>。入らないのが正解の日です。</li>
+        <li><b>「資金設定」に総資金を一度入れる</b>（次回から記憶）。すると各候補の株数が「1回の損失＝総資金の2%」に収まるよう自動計算されます。</li>
+        <li><b>候補カードを見る。</b>上から順に強い（52週高値に近い）並びです。<b>★新高値</b>マーク付きが特に素直。各カードに ①買い目安 ②損切り ③利確 ④トレール ⑤株数 が全部書いてあります。</li>
+        <li><b>「ダッシュ」タブで空気を確認。</b>スコアが同じ方向か、<b>⚠️ねじれ警告</b>が出ていないか。ねじれの日はサイズ半分か見送り。</li>
+        <li><b>9:05以降、ダッシュの「🔄寄り後を取得」。</b>GO/慎重/見送りが出ます。</li>
+        <li><b>発注</b>：「候補あり × 地合い追い風 × 寄り後GO」が揃ったら証券アプリで買う（最終判断はご自身で）。1つでも欠けたら小さく or 見送り。</li>
+      </ol>
+      <h3 style="font-size:13px;color:var(--accent);margin:12px 0 6px">買ったあと</h3>
+      <ol style="padding-left:18px;line-height:1.9;font-size:13px">
+        <li><b>すぐ損切り注文（逆指値）をセット。</b>値段は②の価格。これが一番大事（損切りが勝率を決めます）。</li>
+        <li><b>「💼ポジション」タブに記録</b>（銘柄・株数・買値）。含み損益と3銘柄ルールを自動表示。</li>
+      </ol>
+      <h3 style="font-size:13px;color:var(--accent);margin:12px 0 6px">売り（手仕舞い）</h3>
+      <ol style="padding-left:18px;line-height:1.9;font-size:13px">
+        <li><b>+5%（利確①）で半分売る</b>。この時点で残りの損切りを買値（建値）へ引き上げ＝もう負けません。</li>
+        <li><b>残り半分は「④トレール」で伸ばす</b>（下で説明）。</li>
+        <li>途中で②の損切りに当たったら、迷わず切る。</li>
+      </ol>
+      <div style="margin-top:10px;padding:10px;background:#0e1627;border-radius:8px;font-size:12px;line-height:1.7">
+        <b style="color:var(--accent)">④「トレール」ってなに？</b><br>
+        値上がりに合わせて売る目安を上げていく売り方です。株価が<b>25日移動平均線の上にいる間は持ち続け、終値が25日線を割ったら売る</b>。25日線は株価が上がれば一緒に上がるので、売りの目安も自動でついて上がります。だから上げが続く限り利益を伸ばせて、トレンドが崩れた時だけ手仕舞えます（価格を追いかける＝trail）。
+      </div>
+      <h3 style="font-size:13px;color:var(--accent);margin:12px 0 6px">迷ったときの優先順位</h3>
+      <ul style="padding-left:18px;line-height:1.9;font-size:13px">
+        <li>地合いOFFの日は<b>入らない</b>。「入らない」判断ができるのが強い。</li>
+        <li>候補が複数なら<b>上から（高値に近い順）</b>、★新高値を優先。</li>
+        <li><b>同時に3銘柄まで</b>。1銘柄の株数は自動計算値を超えない。</li>
+        <li>ねじれ警告 or 寄り後「見送り」が出たら、半分 or 見送り。</li>
+      </ul>
+      <div style="margin-top:10px;padding:8px 10px;background:#2a1f0e;border:1px solid var(--warn);border-radius:8px;font-size:12px;color:var(--warn);line-height:1.6">
+        ⚠️ 一本化タブは今は「検証中」です（成績を前向きに実測中）。最初は<b>小さめの株数で慣らし</b>、<b>損切りだけは必ず守る</b>——これだけ徹底すれば大丈夫です。表示は判断の補助で、最終判断はご自身の責任で。
+      </div>
+    </div>
+
     <div class="card">
-      <h2>使い方</h2>
+      <h2>（参考）従来の場判定の使い方</h2>
       <ol style="padding-left:18px;line-height:1.8;font-size:13px">
         <li>朝（日本市場が開く前）にこの画面を開く</li>
         <li>「🔄 自動取得」を押して前日指標を読み込む<br><span style="color:var(--sub);font-size:11px">※取得できない項目は手動で入力</span></li>
