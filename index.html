@@ -77,6 +77,7 @@
 
   <div class="tabs">
     <div class="tab active" data-tab="dash">ダッシュ</div>
+    <div class="tab" data-tab="unified">🎯一本化</div>
     <div class="tab" data-tab="positions">💼ポジション</div>
     <div class="tab" data-tab="verify">🎯答え合わせ</div>
     <div class="tab" data-tab="observe">🔬観測</div>
@@ -145,6 +146,37 @@
       <div class="kv"><span>見送り判断</span><span>スコア±20以内は「様子見」</span></div>
     </div>
 
+  </section>
+
+  <!-- UNIFIED STRATEGY (v3.6.0) -->
+  <section id="tab-unified" class="hide">
+    <div class="card" style="border:1px solid var(--warn);background:#2a1f0e">
+      <div style="font-size:15px;font-weight:700;color:var(--warn)">🎯 一本化戦略（検証中・発注なし）</div>
+      <div id="uniBanner" style="font-size:12px;color:var(--sub);margin-top:6px;line-height:1.6">読み込み中…</div>
+      <div style="font-size:11px;color:var(--sub);margin-top:6px;line-height:1.5">地合い（TOPIX&gt;200日線）が追い風の日だけ、上昇トレンドで新高値/高値圏の銘柄を買い候補にします。損切りは押し安値ベース、+5%で半分利確→残りは25日線でトレール。バックテスト勝率61%・期待値+3%/回。前向き実測と併走中のため、最終判断はご自身で。</div>
+    </div>
+
+    <!-- 資金設定(株数計算) -->
+    <div class="card">
+      <h2>資金設定（株数の自動計算）</h2>
+      <div class="row" style="gap:8px;align-items:end;flex-wrap:wrap">
+        <div style="flex:1;min-width:120px">
+          <label>総資金（円）</label>
+          <input type="number" id="uniCapital" placeholder="例: 1000000" value="1000000">
+        </div>
+        <div style="flex:1;min-width:100px">
+          <label>1トレードのリスク（%）</label>
+          <input type="number" step="0.5" id="uniRisk" value="2">
+        </div>
+      </div>
+      <div class="status" style="margin-top:6px">1回の損切りで失う額 = 総資金 × リスク%。この額を損切り幅で割って株数を出します（＝荒い銘柄は少なく・穏やかな銘柄は多く）。</div>
+    </div>
+
+    <!-- 本日の買い候補 -->
+    <div class="card">
+      <h2>本日の買い候補</h2>
+      <div id="uniCandidates"><div style="color:var(--sub);font-size:12px">読み込み中…</div></div>
+    </div>
   </section>
 
   <!-- POSITIONS (v3.1) -->
@@ -335,7 +367,7 @@
     </div>
   </section>
 
-  <footer>松村式Stocksurfing v3.5.0 · 観測モード(発注なし前向き検証) · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
+  <footer>松村式Stocksurfing v3.6.0 · 一本化戦略(検証中) + 観測モード · データ提供: yfinance + 日経公式 + J-Quants Premium</footer>
 </main>
 
 <script>
@@ -429,6 +461,8 @@ async function init(){
   renderPositions(); // v3.1
   loadVerification(); // v3.1: 答え合わせデータ取得
   loadObservation(); // v3.5.0: 観測モードデータ取得(発注なし・前向き検証)
+  loadUnified(); // v3.6.0: 一本化戦略シグナル取得(発注なし・検証中)
+  bindUnifiedInputs(); // v3.6.0: 資金設定→株数再計算
   // v2.2: 起動時に自動で全指標を取得(ボタンを押す手間を省く)
   try{
     await fetchAll();
@@ -456,7 +490,7 @@ function bindTabs(){
     t.addEventListener('click',()=>{
       document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
       t.classList.add('active');
-      ['dash','positions','verify','observe','history','edit','help'].forEach(id=>{
+      ['dash','unified','positions','verify','observe','history','edit','help'].forEach(id=>{
         document.getElementById('tab-'+id).classList.add('hide');
       });
       document.getElementById('tab-'+t.dataset.tab).classList.remove('hide');
@@ -1715,6 +1749,97 @@ function obsCard(r, showStopDist){
 }
 function fmtPrice(v){ return v==null?'—':Number(v).toLocaleString('ja-JP',{maximumFractionDigits:1})+'円'; }
 function fmtSg(v){ return v==null?'—':((v>=0?'+':'')+v+'%'); }
+
+/* ==========================================================
+   UNIFIED STRATEGY (v3.6.0) — 一本化戦略シグナル（読み取り専用・発注なし）
+   unified_signals.json を読むだけ。選定→買い→売り→株数を1枚で表示。
+   ========================================================== */
+let unifiedData = null;
+
+async function loadUnified(){
+  try{
+    const res = await fetch('unified_signals.json?_=' + Date.now());
+    if(res.ok) unifiedData = await res.json();
+  }catch(e){}
+  renderUnified();
+}
+
+function bindUnifiedInputs(){
+  ['uniCapital','uniRisk'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', renderUnified);
+  });
+}
+
+function renderUnified(){
+  const banner = document.getElementById('uniBanner');
+  const box = document.getElementById('uniCandidates');
+  if(!banner || !box) return;
+
+  if(!unifiedData || !unifiedData.today){
+    banner.innerHTML = 'まだシグナルがありません。夜間ジョブ（平日23:30 JST）で本日の候補が生成されると表示されます。';
+    box.innerHTML = '<div style="color:var(--sub);font-size:12px">生成待ち</div>';
+    return;
+  }
+  const meta = unifiedData.meta || {};
+  const t = unifiedData.today;
+  const regime = t.regime_on;
+  const regClass = regime ? 'down' : 'up';
+  const regTxt = regime ? '追い風（エントリー可）' : '様子見（地合いOFF＝本日は新規見送り推奨）';
+  banner.innerHTML =
+    `基準日 <b style="color:var(--txt)">${t.date}</b> ／ 地合い <b class="${regClass}">${regTxt}</b> ／ 候補 <b style="color:var(--txt)">${t.n_candidates||0}</b> 件` +
+    (meta.generatedAt ? ` <span style="color:var(--sub)">（${new Date(meta.generatedAt).toLocaleString('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}更新）</span>` : '');
+
+  if(!regime){
+    box.innerHTML = '<div style="color:var(--warn);font-size:12px;line-height:1.6">🌀 地合いがOFF（TOPIXが200日線の下）。この戦略は下げ相場では新規を見送るのがルールです。無理せず様子見を推奨します。</div>';
+    return;
+  }
+  const cands = t.candidates || [];
+  if(!cands.length){
+    box.innerHTML = '<div style="color:var(--sub);font-size:12px">本日、条件を満たす買い候補はありません。候補が無い日は「入らない」のも戦略のうちです。</div>';
+    return;
+  }
+
+  const capital = parseFloat((document.getElementById('uniCapital')||{}).value) || 0;
+  const riskPct = parseFloat((document.getElementById('uniRisk')||{}).value) || (meta.risk_pct_default || 2);
+  const riskYen = capital * riskPct / 100;
+
+  box.innerHTML = cands.map(c => {
+    const entry = c.entry_ref, stop = c.structural_stop, target = c.target_half;
+    const span = entry - stop;
+    const shares = (riskYen > 0 && span > 0) ? Math.floor(riskYen / span) : null;
+    const cost = (shares) ? Math.round(shares * entry) : null;
+    const lossAtStop = (shares) ? Math.round(shares * span) : null;
+    const highTag = c.is_new_52w_high
+      ? '<span style="color:var(--up);font-weight:700">★52週新高値</span>'
+      : `<span style="color:var(--sub)">52週高値まで${c.dist_from_52w_high_pct}%</span>`;
+    const sizeBlock = (shares != null)
+      ? `<div style="margin-top:6px;padding:8px;background:#0e1627;border-radius:6px;font-size:12px;line-height:1.7">
+           <div style="color:var(--accent)">💰 株数（リスク${riskPct}%）: <b style="color:var(--txt);font-size:14px">${shares.toLocaleString()}株</b></div>
+           <div style="color:var(--sub)">概算必要資金 ${cost.toLocaleString()}円 ／ 損切りで失う額 約${lossAtStop.toLocaleString()}円</div>
+         </div>`
+      : '<div style="font-size:11px;color:var(--sub);margin-top:6px">総資金を入れると株数が計算されます</div>';
+    return `
+      <div class="stock" style="display:block;border:1px solid var(--accent);background:linear-gradient(180deg,#16223d,#1a2540)">
+        <div class="row" style="gap:6px;flex-wrap:wrap;align-items:baseline">
+          <div class="ticker">${c.ticker}</div>
+          <div class="name2">${c.ticker_name||''}</div>
+          <span style="font-size:10px;color:var(--sub)">${c.group||''}</span>
+          <span style="margin-left:auto;font-size:11px">${highTag}</span>
+        </div>
+        <div style="font-size:12px;color:var(--txt);margin-top:6px;line-height:1.9">
+          <div><span style="color:var(--sub)">① 買い（目安）：</span><b>${fmtYen(entry)}</b> <span style="color:var(--sub)">（寄り付き後に成行/指値。目安は前日終値）</span></div>
+          <div><span style="color:var(--sub)">② 損切り：</span><b class="up">${fmtYen(stop)}</b> <span style="color:var(--sub)">（${c.stop_pct}%・押し安値ベース。必ず逆指値）</span></div>
+          <div><span style="color:var(--sub)">③ 利確①：</span><b class="down">${fmtYen(target)}</b> <span style="color:var(--sub)">（+5%で半分利確）</span></div>
+          <div><span style="color:var(--sub)">④ 残り：</span>25日線（${fmtYen(c.trail_line_sma25)}）割れでトレール手仕舞い、損切りは建値へ引き上げ</div>
+        </div>
+        ${sizeBlock}
+      </div>`;
+  }).join('') +
+  `<div style="font-size:10px;color:var(--sub);margin-top:8px;line-height:1.5">※ ${meta.strategy||''}<br>検証中（前向き実測と併走）。発注は行われません。最終判断はご自身で。</div>`;
+}
+
+function fmtYen(v){ return v==null?'—':Number(v).toLocaleString('ja-JP',{maximumFractionDigits:1})+'円'; }
 
 /* ---------- GO ---------- */
 init();
