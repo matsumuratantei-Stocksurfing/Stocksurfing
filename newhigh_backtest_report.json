@@ -1,0 +1,683 @@
+{
+  "generatedAt": "2026-07-04T10:33:48.141964+09:00",
+  "note": "計測専用・本番非変更。価格は調整済み(AdjC)、権利落ち日除外。取引コスト/スリッページ未考慮。",
+  "hypothesis": "新高値(52週/取得内ATH)または新高値圏での仕掛けに20営業日の戻りエッジがあるか",
+  "params": {
+    "fetchFrom": "2022-01-01",
+    "fetchTo": "2026-07-04",
+    "W52": 250,
+    "M_list": [
+      5,
+      10,
+      20
+    ],
+    "M_primary": 20,
+    "stopHorizon": 20,
+    "takeProfitMain": 5.0,
+    "takeProfitAlt": 4.0,
+    "stopLossPct": -2.0
+  },
+  "universeStatus": [
+    {
+      "group": "個別",
+      "code": "285A",
+      "name": "キオクシア",
+      "days": 374,
+      "earliest": "2024-12-18",
+      "events_all": 174,
+      "events_52w_breakout": 17,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8035",
+      "name": "東京エレクトロン",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 35,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6857",
+      "name": "アドバンテスト",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 37,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6920",
+      "name": "レーザーテック",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 900,
+      "events_52w_breakout": 26,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6146",
+      "name": "ディスコ",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 43,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "4062",
+      "name": "イビデン",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 39,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6981",
+      "name": "村田製作所",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 28,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "5803",
+      "name": "フジクラ",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 58,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "5801",
+      "name": "古河電工",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 34,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "4063",
+      "name": "信越化学",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 31,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "5016",
+      "name": "JX金属",
+      "days": 316,
+      "earliest": "2025-03-19",
+      "events_all": 116,
+      "events_52w_breakout": 6,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "9984",
+      "name": "ソフトバンクG",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 27,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7011",
+      "name": "三菱重工業",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 49,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7012",
+      "name": "川崎重工業",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 30,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7013",
+      "name": "IHI",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 31,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6501",
+      "name": "日立製作所",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 47,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6758",
+      "name": "ソニーG",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 25,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "7203",
+      "name": "トヨタ自動車",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 900,
+      "events_52w_breakout": 20,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "6506",
+      "name": "安川電機",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 900,
+      "events_52w_breakout": 22,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8058",
+      "name": "三菱商事",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 34,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8031",
+      "name": "三井物産",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 50,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8306",
+      "name": "三菱UFJ FG",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 900,
+      "events_52w_breakout": 46,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "8316",
+      "name": "三井住友FG",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 48,
+      "status": "OK"
+    },
+    {
+      "group": "個別",
+      "code": "9107",
+      "name": "川崎汽船",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 22,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "213A",
+      "name": "半導体ETF-A",
+      "days": 481,
+      "earliest": "2024-07-12",
+      "events_all": 281,
+      "events_52w_breakout": 23,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "221A",
+      "name": "半導体ETF-B",
+      "days": 477,
+      "earliest": "2024-07-19",
+      "events_all": 277,
+      "events_52w_breakout": 22,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "200A",
+      "name": "半導体ETF-C",
+      "days": 509,
+      "earliest": "2024-06-04",
+      "events_all": 309,
+      "events_52w_breakout": 22,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "282A",
+      "name": "半導体ETF-D",
+      "days": 393,
+      "earliest": "2024-11-21",
+      "events_all": 193,
+      "events_52w_breakout": 22,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "2243",
+      "name": "半導体ETF-E",
+      "days": 788,
+      "earliest": "2023-04-13",
+      "events_all": 588,
+      "events_52w_breakout": 34,
+      "status": "OK"
+    },
+    {
+      "group": "ETF",
+      "code": "513A",
+      "name": "防衛テックETF",
+      "days": 87,
+      "earliest": "2026-02-26",
+      "status": "データ不足/なし"
+    },
+    {
+      "group": "ETF",
+      "code": "1619",
+      "name": "建設・資材ETF",
+      "days": 1088,
+      "earliest": "2022-01-04",
+      "events_all": 888,
+      "events_52w_breakout": 49,
+      "status": "OK"
+    },
+    {
+      "group": "ベースライン",
+      "code": "1306",
+      "name": "TOPIX ETF(ベースライン)",
+      "days": 1100,
+      "earliest": "2022-01-04",
+      "events_all": 899,
+      "events_52w_breakout": 48,
+      "status": "OK"
+    }
+  ],
+  "totalEvents_all_days": 23507,
+  "pooled": {
+    "52w_breakout(個別+ETF)": {
+      "n": 977,
+      "positive_pct": 65.2,
+      "fwd_mean": 6.211,
+      "fwd_median": 4.332,
+      "maxdd_mean": -7.022,
+      "maxdd_median": -4.867,
+      "rulebook_2_5": {
+        "win": 362,
+        "lose": 603,
+        "even": 12,
+        "winPct_decided": 37.5
+      },
+      "rulebook_2_4": {
+        "win": 408,
+        "lose": 562,
+        "even": 7,
+        "winPct_decided": 42.1
+      },
+      "structural": {
+        "win": 700,
+        "lose": 121,
+        "even": 156,
+        "winPct_decided": 85.3
+      }
+    },
+    "52w_near3(個別+ETF)": {
+      "n": 4454,
+      "positive_pct": 64.9,
+      "fwd_mean": 4.865,
+      "fwd_median": 3.597,
+      "maxdd_mean": -6.386,
+      "maxdd_median": -4.38,
+      "rulebook_2_5": {
+        "win": 1639,
+        "lose": 2701,
+        "even": 114,
+        "winPct_decided": 37.8
+      },
+      "rulebook_2_4": {
+        "win": 1833,
+        "lose": 2550,
+        "even": 71,
+        "winPct_decided": 41.8
+      },
+      "structural": {
+        "win": 2973,
+        "lose": 618,
+        "even": 863,
+        "winPct_decided": 82.8
+      }
+    },
+    "ath_breakout(個別+ETF)": {
+      "n": 801,
+      "positive_pct": 65.1,
+      "fwd_mean": 6.541,
+      "fwd_median": 4.362,
+      "maxdd_mean": -7.406,
+      "maxdd_median": -5.327,
+      "rulebook_2_5": {
+        "win": 290,
+        "lose": 499,
+        "even": 12,
+        "winPct_decided": 36.8
+      },
+      "rulebook_2_4": {
+        "win": 329,
+        "lose": 465,
+        "even": 7,
+        "winPct_decided": 41.4
+      },
+      "structural": {
+        "win": 583,
+        "lose": 102,
+        "even": 116,
+        "winPct_decided": 85.1
+      }
+    },
+    "all_days(個別+ETF)": {
+      "n": 22608,
+      "positive_pct": 62.9,
+      "fwd_mean": 4.815,
+      "fwd_median": 3.138,
+      "maxdd_mean": -6.904,
+      "maxdd_median": -4.728,
+      "rulebook_2_5": {
+        "win": 8383,
+        "lose": 13845,
+        "even": 380,
+        "winPct_decided": 37.7
+      },
+      "rulebook_2_4": {
+        "win": 9344,
+        "lose": 13047,
+        "even": 217,
+        "winPct_decided": 41.7
+      },
+      "structural": {
+        "win": 13824,
+        "lose": 6183,
+        "even": 2601,
+        "winPct_decided": 69.1
+      }
+    },
+    "52w_breakout(個別)": {
+      "n": 805,
+      "positive_pct": 62.7,
+      "fwd_mean": 5.906,
+      "fwd_median": 3.795,
+      "maxdd_mean": -7.415,
+      "maxdd_median": -5.148,
+      "rulebook_2_5": {
+        "win": 293,
+        "lose": 509,
+        "even": 3,
+        "winPct_decided": 36.5
+      },
+      "rulebook_2_4": {
+        "win": 336,
+        "lose": 469,
+        "even": 0,
+        "winPct_decided": 41.7
+      },
+      "structural": {
+        "win": 569,
+        "lose": 108,
+        "even": 128,
+        "winPct_decided": 84.0
+      }
+    },
+    "52w_breakout(ETF)": {
+      "n": 172,
+      "positive_pct": 77.3,
+      "fwd_mean": 7.678,
+      "fwd_median": 6.042,
+      "maxdd_mean": -5.133,
+      "maxdd_median": -4.046,
+      "rulebook_2_5": {
+        "win": 69,
+        "lose": 94,
+        "even": 9,
+        "winPct_decided": 42.3
+      },
+      "rulebook_2_4": {
+        "win": 72,
+        "lose": 93,
+        "even": 7,
+        "winPct_decided": 43.6
+      },
+      "structural": {
+        "win": 131,
+        "lose": 13,
+        "even": 28,
+        "winPct_decided": 91.0
+      }
+    },
+    "all_days(TOPIX)": {
+      "n": 899,
+      "positive_pct": 70.6,
+      "fwd_mean": 1.748,
+      "fwd_median": 1.997,
+      "maxdd_mean": -3.267,
+      "maxdd_median": -2.009,
+      "rulebook_2_5": {
+        "win": 246,
+        "lose": 444,
+        "even": 209,
+        "winPct_decided": 35.7
+      },
+      "rulebook_2_4": {
+        "win": 339,
+        "lose": 431,
+        "even": 129,
+        "winPct_decided": 44.0
+      },
+      "structural": {
+        "win": 297,
+        "lose": 174,
+        "even": 428,
+        "winPct_decided": 63.1
+      }
+    }
+  },
+  "proximityBands_allDays": [
+    {
+      "band": "新高値引け(<=0%)",
+      "n": 1401,
+      "positive_pct": 66.0,
+      "fwd_mean": 6.039,
+      "fwd_median": 4.075,
+      "maxdd_mean": -7.324,
+      "maxdd_median": -5.123,
+      "rulebook_2_5": {
+        "win": 497,
+        "lose": 885,
+        "even": 19,
+        "winPct_decided": 36.0
+      },
+      "rulebook_2_4": {
+        "win": 557,
+        "lose": 832,
+        "even": 12,
+        "winPct_decided": 40.1
+      },
+      "structural": {
+        "win": 1010,
+        "lose": 121,
+        "even": 270,
+        "winPct_decided": 89.3
+      }
+    },
+    {
+      "band": "[0,1)",
+      "n": 792,
+      "positive_pct": 63.2,
+      "fwd_mean": 3.873,
+      "fwd_median": 3.211,
+      "maxdd_mean": -6.128,
+      "maxdd_median": -4.401,
+      "rulebook_2_5": {
+        "win": 282,
+        "lose": 481,
+        "even": 29,
+        "winPct_decided": 37.0
+      },
+      "rulebook_2_4": {
+        "win": 335,
+        "lose": 445,
+        "even": 12,
+        "winPct_decided": 42.9
+      },
+      "structural": {
+        "win": 498,
+        "lose": 112,
+        "even": 182,
+        "winPct_decided": 81.6
+      }
+    },
+    {
+      "band": "[1,3)",
+      "n": 2261,
+      "positive_pct": 64.9,
+      "fwd_mean": 4.501,
+      "fwd_median": 3.427,
+      "maxdd_mean": -5.908,
+      "maxdd_median": -3.988,
+      "rulebook_2_5": {
+        "win": 860,
+        "lose": 1335,
+        "even": 66,
+        "winPct_decided": 39.2
+      },
+      "rulebook_2_4": {
+        "win": 941,
+        "lose": 1273,
+        "even": 47,
+        "winPct_decided": 42.5
+      },
+      "structural": {
+        "win": 1465,
+        "lose": 385,
+        "even": 411,
+        "winPct_decided": 79.2
+      }
+    },
+    {
+      "band": "[3,5)",
+      "n": 2241,
+      "positive_pct": 65.4,
+      "fwd_mean": 5.068,
+      "fwd_median": 2.888,
+      "maxdd_mean": -6.003,
+      "maxdd_median": -3.921,
+      "rulebook_2_5": {
+        "win": 818,
+        "lose": 1348,
+        "even": 75,
+        "winPct_decided": 37.8
+      },
+      "rulebook_2_4": {
+        "win": 908,
+        "lose": 1277,
+        "even": 56,
+        "winPct_decided": 41.6
+      },
+      "structural": {
+        "win": 1418,
+        "lose": 489,
+        "even": 334,
+        "winPct_decided": 74.4
+      }
+    },
+    {
+      "band": "[5,∞)",
+      "n": 15913,
+      "positive_pct": 61.9,
+      "fwd_mean": 4.764,
+      "fwd_median": 3.046,
+      "maxdd_mean": -7.179,
+      "maxdd_median": -4.98,
+      "rulebook_2_5": {
+        "win": 5926,
+        "lose": 9796,
+        "even": 191,
+        "winPct_decided": 37.7
+      },
+      "rulebook_2_4": {
+        "win": 6603,
+        "lose": 9220,
+        "even": 90,
+        "winPct_decided": 41.7
+      },
+      "structural": {
+        "win": 9433,
+        "lose": 5076,
+        "even": 1404,
+        "winPct_decided": 65.0
+      }
+    }
+  ],
+  "horizonSensitivity_positive": {
+    "52w_breakout": {
+      "positive_M5": 55.2,
+      "positive_M10": 60.5,
+      "positive_M20": 65.2
+    },
+    "all_days": {
+      "positive_M5": 56.4,
+      "positive_M10": 59.6,
+      "positive_M20": 62.9
+    }
+  },
+  "verdict": [
+    "(1) 新高値ブレイクの優位性(20営業日): ブレイク positive=65.2% / fwd平均=6.211% (n=977) vs 全日 positive=62.9% / fwd平均=4.815% → positive差=2.3pt, fwd差=1.4pt",
+    "(2) 市場ベースライン比: TOPIX(全日) positive=70.6% / fwd平均=1.748% → 新高値ブレイクの対TOPIX超過 fwd=4.5pt",
+    "(3) 松村式ルール(損切-2%/利確+5%)の決着勝率: 新高値ブレイク=37.5% (勝362/負603/未決着12) vs 全日=37.7% → 全日と大差なし/劣位",
+    "(4) 新高値圏[0-3%以内]近接: positive=64.9% / fwd平均=4.865% / ルール勝率=37.8% (n=4454) → ブレイク瞬間でなく“高値近接”でも取れるか",
+    "(5) 高値からの距離×成績(全日): 新高値引け(<=0%):pos66.0%(fwd6.039,n1401) / [0,1):pos63.2%(fwd3.873,n792) / [1,3):pos64.9%(fwd4.501,n2261) / [3,5):pos65.4%(fwd5.068,n2241) / [5,∞):pos61.9%(fwd4.764,n15913) → 高値に近い帯ほど良ければ“新高値目線”は有効",
+    "(6) 取得内ATH(≈上場来)ブレイク: positive=65.1% / fwd平均=6.541% / ルール勝率=36.8% (n=801)",
+    "(7) 実装可否(暫定): 新高値目線にエッジの芽あり→観測モードで前向き検証に進める価値あり。 本標本は上昇相場に偏り・コスト未考慮のため楽観バイアス前提で解釈。"
+  ]
+}
