@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - データ取得スクリプト (v3.4)
+松村式Stocksurfing - データ取得スクリプト (v3.4.3)
 yfinance + Nikkei公式 + J-Quants V2(決算カレンダー) を統合
+
+v3.4.3 (2026-07-04):
+- 各指標に asOf (データの日付) を記録し、日付ズレ/staleデータ混入を検出 (dataQuality)
+- 日経VI: Nikkei公式のURL構造変更(?idx= が一覧ページ化し「現値」が消失)に対応。
+  個別指数プロフィールページ (/nkave/index/profile?idx=nk225vi) から取得する。
 """
 import json
 import sys
@@ -63,7 +68,13 @@ def fetch_yfinance_one(symbol, retries=2):
             else:
                 open_p = float(latest['Open'])
                 chg_pct = ((close - open_p) / open_p) * 100 if open_p != 0 else None
-            return {'price': round(close, 4), 'chgPct': round(chg_pct, 4) if chg_pct is not None else None}
+            try:
+                as_of = hist.index[-1].strftime('%Y-%m-%d')
+            except Exception:
+                as_of = None
+            return {'price': round(close, 4),
+                    'chgPct': round(chg_pct, 4) if chg_pct is not None else None,
+                    'asOf': as_of}
         except Exception:
             if attempt < retries:
                 time.sleep(1.5)
@@ -79,6 +90,63 @@ def fetch_with_options(symbols):
     return None, None
 
 # ---------- 日経VI(現物) ----------
+def scrape_nkvi_profile():
+    """日経公式の個別指数プロフィールページから日経VIを取得。
+
+    2026-07確認: 従来の ?idx=nk225vi は指数値一覧ページになり「現値」の文言が消えたため、
+    プロフィールページ(サーバーサイドレンダリング)を一次ソースにする。
+    ページ冒頭に「日経平均ボラティリティー・インデックス / 34.11 / +37.87% +9.37 2026.07.03(15:50)」
+    の形で現値・前日比%・前日比・データ日付が載っている。
+    """
+    url = 'https://indexes.nikkei.co.jp/nkave/index/profile?idx=nk225vi'
+    try:
+        r = requests.get(url, headers={
+            'User-Agent': UA_DESKTOP,
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'ja,en;q=0.9',
+        }, timeout=15)
+        if r.status_code != 200:
+            return None
+        r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, 'html.parser')
+        text = soup.get_text('\n', strip=True)
+        m = re.search(
+            r'ボラティリティー・インデックス[\s\S]{0,160}?'
+            r'(?<![0-9,.])([0-9]{1,2}\.[0-9]{2})(?![0-9])[\n\s]+'
+            r'([+\-−▲]?\s*[0-9]+\.[0-9]+)\s*%[\n\s]*'
+            r'([+\-−▲]?\s*[0-9]+\.[0-9]+)[\n\s]*'
+            r'(20[0-9]{2})\.([0-1][0-9])\.([0-3][0-9])',
+            text)
+        if not m:
+            return None
+        price = float(m.group(1))
+        if not (5 < price < 100):
+            return None
+
+        def _signed(s):
+            return float(s.replace('▲', '-').replace('−', '-').replace('+', '').replace(' ', ''))
+
+        chg_pct = None
+        try:
+            chg_pct = _signed(m.group(2))
+        except ValueError:
+            pass
+        # 前日比(絶対値)との整合チェック: ズレが大きければ絶対値から再計算
+        try:
+            abs_change = _signed(m.group(3))
+            if chg_pct is not None and price - abs_change > 0:
+                expected = abs_change / (price - abs_change) * 100
+                if abs(expected - chg_pct) > 1.0:
+                    chg_pct = expected
+        except ValueError:
+            pass
+        as_of = f"{m.group(4)}-{m.group(5)}-{m.group(6)}"
+        return {'price': round(price, 4),
+                'chgPct': round(chg_pct, 4) if chg_pct is not None else None,
+                'asOf': as_of}
+    except Exception:
+        return None
+
 def scrape_nkvi_nikkei_official():
     url = 'https://indexes.nikkei.co.jp/nkave/index?idx=nk225vi'
     try:
@@ -133,12 +201,48 @@ def fetch_nkvi_multisource():
     if r and r['price'] > 0:
         print(f"      ✓ yfinance: 成功")
         return r
+    r = scrape_nkvi_profile()
+    if r and r.get('price'):
+        print(f"      ✓ Nikkei公式(プロフィール): 成功 (price={r['price']}, chg={r.get('chgPct')}, asOf={r.get('asOf')})")
+        return r
     r = scrape_nkvi_nikkei_official()
     if r and r.get('price'):
-        print(f"      ✓ Nikkei公式: 成功 (price={r['price']}, chg={r.get('chgPct')})")
+        print(f"      ✓ Nikkei公式(旧一覧): 成功 (price={r['price']}, chg={r.get('chgPct')})")
         return r
     print(f"      ✗ 日経VI 取得失敗")
     return None
+
+# ---------- データ品質 (日付整合) チェック ----------
+# 米国市場グループ: 同じ営業日のデータで揃っているべき指標
+US_GROUP = ['NDX', 'SPX', 'SOX', 'DJI', 'TNX', 'VIX']
+
+def assess_data_quality(indicators, now_jst):
+    """各指標の asOf (データ日付) を集約し、staleデータ混入を検出する。
+
+    判定ルール(参考情報。スコア計算には一切影響しない):
+    - 米国指数グループ内で最新日付より古い指標 → stale
+    - fetchedAt から5暦日超過去のデータ → stale (連休を考慮した緩めの閾値)
+    ※ 市場が違えば日付が異なるのは正常(例: 米休場日は米指数のみ1日古い)。
+      その場合 usRefDate と dates を見れば「どの日付のデータで判定したか」が分かる。
+    """
+    dates = {k: (v.get('asOf') if isinstance(v, dict) else None) for k, v in indicators.items()}
+    stale = set()
+    us_dates = [d for k, d in dates.items() if k in US_GROUP and d]
+    us_ref = max(us_dates) if us_dates else None
+    for k, d in dates.items():
+        if not d:
+            continue
+        try:
+            dt = datetime.strptime(d, '%Y-%m-%d').date()
+        except ValueError:
+            continue
+        if (now_jst.date() - dt).days > 5:
+            stale.add(k)
+            continue
+        if k in US_GROUP and us_ref and d < us_ref:
+            stale.add(k)
+    return {'dates': dates, 'staleKeys': sorted(stale), 'usRefDate': us_ref}
+
 
 # ---------- 決算カレンダー (J-Quants V2) ----------
 def is_business_day(d):
@@ -211,7 +315,7 @@ def fetch_earnings_calendar():
 
 def main():
     print("=" * 50)
-    print("  松村式Stocksurfing データ取得 (v3.4)")
+    print("  松村式Stocksurfing データ取得 (v3.4.3)")
     print(f"  実行時刻: {datetime.now(JST).isoformat()}")
     print("=" * 50)
     print()
@@ -247,11 +351,19 @@ def main():
     # 決算カレンダー (J-Quants V2)
     earnings_warnings = fetch_earnings_calendar()
 
+    # データ品質 (日付整合) チェック
+    now_jst = datetime.now(JST)
+    data_quality = assess_data_quality(indicators, now_jst)
+    if data_quality['staleKeys']:
+        print()
+        print(f"  ⏳ 日付ズレ/staleの疑い: {', '.join(data_quality['staleKeys'])} (基準日 {data_quality['usRefDate']})")
+
     output = {
-        'fetchedAt': datetime.now(JST).isoformat(),
+        'fetchedAt': now_jst.isoformat(),
         'indicators': indicators,
         'referenceData': reference,
         'earningsWarnings': earnings_warnings,
+        'dataQuality': data_quality,
         'success': len(indicators),
         'total': len(SYMBOL_OPTIONS),
     }

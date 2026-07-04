@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - 通知メール送信 (v3.4)
+松村式Stocksurfing - 通知メール送信 (v3.4.3)
 決算警告セクション・昨日の振り返りを含む HTML メール。
 銘柄・指標・スコア計算は common.py を参照(重複排除)。
+v3.4.3: データ日付ズレ警告(dataQuality)を朝メールに追加。
 """
 import os
 import sys
@@ -142,6 +143,15 @@ def build_morning_email(data, jst_now):
     if twist:
         twist_html = f'<p style="background:#3a2410;padding:8px;border-radius:6px;color:#f7b955">⚠️ <b>指標がねじれています</b>（不一致{twist}件）。サイズを半分にするのが安全です。</p>'
 
+    # v3.4.3: データ日付ズレ警告 (fetch_data.py の dataQuality を参照)
+    dq = data.get('dataQuality') or {}
+    stale_keys = dq.get('staleKeys') or []
+    stale_html = ''
+    if stale_keys:
+        dq_dates = dq.get('dates') or {}
+        names = '、'.join(f"{NAME_MAP.get(k, k)}({dq_dates.get(k) or '?'})" for k in stale_keys)
+        stale_html = f'<p style="background:#3a2410;padding:8px;border-radius:6px;color:#f7b955">⏳ <b>一部指標が古い日付のデータです</b>: {names}。休場等の影響の可能性があるため、スコアは参考程度に。</p>'
+
     earnings_html = build_earnings_warnings_html(earnings_warnings)
     recap = get_yesterdays_recap(jst_now)
     recap_html = build_recap_html(recap)
@@ -183,6 +193,7 @@ def build_morning_email(data, jst_now):
 </div>
 {gap_html}
 {twist_html}
+{stale_html}
 {earnings_html}
 {picks_html}
 {indicators_table}
