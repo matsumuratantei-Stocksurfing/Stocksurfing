@@ -1,10 +1,10 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-07-04T01:02:35.641797+09:00",
+    "last_detect_run": "2026-07-07T02:17:43.885469+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-07-04T01:03:13.365827+09:00",
-    "days_elapsed": 1,
+    "last_close_run": "2026-07-07T02:18:21.643355+09:00",
+    "days_elapsed": 4,
     "summary": {
       "logic_version": "po-v1",
       "closed": 0,
@@ -37,7 +37,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 1,
+          "actual": 4,
           "pass": false
         },
         {
@@ -80,7 +80,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 1
+      "days_elapsed": 4
     },
     "criteria": {
       "min_observation_days": 90,
