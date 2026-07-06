@@ -1,13 +1,13 @@
 {
   "meta": {
     "observation_start": "2026-07-04",
-    "last_run": "2026-07-04T11:20:41.504169+09:00",
+    "last_run": "2026-07-07T02:23:02.611819+09:00",
     "logic_version": "unified-v1",
-    "days_elapsed": 0,
+    "days_elapsed": 3,
     "summary": {
       "logic_version": "unified-v1",
       "closed": 0,
-      "open": 2,
+      "open": 5,
       "win_rate": null,
       "expectancy": null,
       "avg_win": null,
@@ -31,7 +31,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 0,
+          "actual": 3,
           "pass": false
         },
         {
@@ -64,7 +64,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 0
+      "days_elapsed": 3
     },
     "criteria": {
       "min_observation_days": 90,
@@ -102,6 +102,51 @@
       "entry": 3326.0,
       "structural_stop": 3116.4,
       "target_half": 3492.3,
+      "is_new_52w_high": false,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-06_8316",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-07T02:23:02.612067+09:00",
+      "ticker": "8316",
+      "ticker_name": "三井住友FG",
+      "group": "個別",
+      "entry_date": "2026-07-06",
+      "entry": 6800.0,
+      "structural_stop": 6161.3,
+      "target_half": 7140.0,
+      "is_new_52w_high": true,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-06_8306",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-07T02:23:02.612067+09:00",
+      "ticker": "8306",
+      "ticker_name": "三菱UFJ FG",
+      "group": "個別",
+      "entry_date": "2026-07-06",
+      "entry": 3370.0,
+      "structural_stop": 3116.4,
+      "target_half": 3538.5,
+      "is_new_52w_high": false,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-06_1619",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-07T02:23:02.612067+09:00",
+      "ticker": "1619",
+      "ticker_name": "建設・資材ETF",
+      "group": "ETF",
+      "entry_date": "2026-07-06",
+      "entry": 51820.0,
+      "structural_stop": 46961.6,
+      "target_half": 54411.0,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
       "status": "open"

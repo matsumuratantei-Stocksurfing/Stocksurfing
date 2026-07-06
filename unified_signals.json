@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-04T11:20:02.193903+09:00",
+    "generatedAt": "2026-07-07T02:22:14.001275+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,41 +12,57 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-03",
+    "date": "2026-07-06",
     "regime_on": true,
-    "n_candidates": 2,
+    "n_candidates": 3,
     "candidates": [
       {
         "ticker": "8316",
         "ticker_name": "三井住友FG",
         "group": "個別",
-        "entry_ref": 6672.0,
-        "date": "2026-07-03",
+        "entry_ref": 6800.0,
+        "date": "2026-07-06",
         "structural_stop": 6161.3,
-        "stop_pct": -7.65,
-        "target_half": 7005.6,
+        "stop_pct": -9.39,
+        "target_half": 7140.0,
         "target_pct": 5.0,
-        "trail_line_sma25": 6343.5,
-        "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 0.91,
-        "atr20": 181.0,
-        "sma200": 5201.0
+        "trail_line_sma25": 6381.1,
+        "is_new_52w_high": true,
+        "dist_from_52w_high_pct": -1.0,
+        "atr20": 180.1,
+        "sma200": 5214.5
       },
       {
         "ticker": "8306",
         "ticker_name": "三菱UFJ FG",
         "group": "個別",
-        "entry_ref": 3326.0,
-        "date": "2026-07-03",
+        "entry_ref": 3370.0,
+        "date": "2026-07-06",
         "structural_stop": 3116.4,
-        "stop_pct": -6.3,
-        "target_half": 3492.3,
+        "stop_pct": -7.53,
+        "target_half": 3538.5,
         "target_pct": 5.0,
-        "trail_line_sma25": 3216.1,
+        "trail_line_sma25": 3230.0,
         "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 2.0,
-        "atr20": 87.5,
-        "sma200": 2701.4
+        "dist_from_52w_high_pct": 0.71,
+        "atr20": 87.0,
+        "sma200": 2706.9
+      },
+      {
+        "ticker": "1619",
+        "ticker_name": "建設・資材ETF",
+        "group": "ETF",
+        "entry_ref": 51820.0,
+        "date": "2026-07-06",
+        "structural_stop": 46961.6,
+        "stop_pct": -9.38,
+        "target_half": 54411.0,
+        "target_pct": 5.0,
+        "trail_line_sma25": 49474.8,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.48,
+        "atr20": 1162.0,
+        "sma200": 45032.9
       }
     ]
   },
@@ -57,6 +73,15 @@
       "tickers": [
         "8316",
         "8306"
+      ]
+    },
+    {
+      "date": "2026-07-06",
+      "regime_on": true,
+      "tickers": [
+        "8316",
+        "8306",
+        "1619"
       ]
     }
   ]
