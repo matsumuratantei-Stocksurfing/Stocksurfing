@@ -1,15 +1,15 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-07-07T02:17:43.885469+09:00",
+    "last_detect_run": "2026-07-08T01:43:14.127370+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-07-07T02:18:21.643355+09:00",
-    "days_elapsed": 4,
+    "last_close_run": "2026-07-08T01:43:59.037457+09:00",
+    "days_elapsed": 5,
     "summary": {
       "logic_version": "po-v1",
       "closed": 0,
-      "open": 0,
-      "total_records_all_versions": 0,
+      "open": 2,
+      "total_records_all_versions": 2,
       "win_rate": null,
       "avg_return": null,
       "expectancy": null,
@@ -37,7 +37,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 4,
+          "actual": 5,
           "pass": false
         },
         {
@@ -80,7 +80,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 4
+      "days_elapsed": 5
     },
     "criteria": {
       "min_observation_days": 90,
@@ -91,5 +91,98 @@
       "weak_regime_ev_floor": -1.0
     }
   },
-  "records": []
+  "records": [
+    {
+      "record_id": "2026-07-07_8306",
+      "logic_version": "po-v1",
+      "detected_at": "2026-07-08T01:43:14.127370+09:00",
+      "ticker": "8306",
+      "ticker_name": "三菱UFJ FG",
+      "group": "個別",
+      "detection_price": 3446.0,
+      "hypothetical_entry": {
+        "price": 3446.0,
+        "basis": "PO押し目イベント発火日の調整済み終値(検出ロジックの定義)"
+      },
+      "structural_stop": 3116.4,
+      "detection_context": {
+        "market_condition": {
+          "score": 23.1,
+          "label": "追い風",
+          "weak": false,
+          "fetchedAt": "2026-07-07T13:17:03.616849+09:00"
+        },
+        "volume_snapshot": {
+          "volume": 53306500.0,
+          "date": "2026-07-07"
+        },
+        "signal_params": {
+          "logic_version": "po-v1",
+          "po": true,
+          "gate": true,
+          "pullback_pct": 2.05,
+          "band": "[2,5)",
+          "level": ">SMA25",
+          "slope25": 3.048,
+          "pivot_high": 3518.0,
+          "swing_low": 3180.0,
+          "sma5": 3339.0,
+          "sma25": 3245.96,
+          "sma75": 2986.54,
+          "sma200": 2712.73
+        }
+      },
+      "baseline_ref": {
+        "detect_date": "2026-07-07",
+        "entry": 3446.0
+      },
+      "status": "open"
+    },
+    {
+      "record_id": "2026-07-07_8316",
+      "logic_version": "po-v1",
+      "detected_at": "2026-07-08T01:43:14.127370+09:00",
+      "ticker": "8316",
+      "ticker_name": "三井住友FG",
+      "group": "個別",
+      "detection_price": 6812.0,
+      "hypothetical_entry": {
+        "price": 6812.0,
+        "basis": "PO押し目イベント発火日の調整済み終値(検出ロジックの定義)"
+      },
+      "structural_stop": 6161.26,
+      "detection_context": {
+        "market_condition": {
+          "score": 23.1,
+          "label": "追い風",
+          "weak": false,
+          "fetchedAt": "2026-07-07T13:17:03.616849+09:00"
+        },
+        "volume_snapshot": {
+          "volume": 15527100.0,
+          "date": "2026-07-07"
+        },
+        "signal_params": {
+          "logic_version": "po-v1",
+          "po": true,
+          "gate": true,
+          "pullback_pct": 2.27,
+          "band": "[2,5)",
+          "level": ">SMA25",
+          "slope25": 3.616,
+          "pivot_high": 6970.0,
+          "swing_low": 6287.0,
+          "sma5": 6658.0,
+          "sma25": 6415.52,
+          "sma75": 5852.57,
+          "sma200": 5228.15
+        }
+      },
+      "baseline_ref": {
+        "detect_date": "2026-07-07",
+        "entry": 6812.0
+      },
+      "status": "open"
+    }
+  ]
 }
