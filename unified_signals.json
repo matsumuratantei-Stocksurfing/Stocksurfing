@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-07T02:22:14.001275+09:00",
+    "generatedAt": "2026-07-08T01:56:59.583493+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,57 +12,41 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-06",
+    "date": "2026-07-07",
     "regime_on": true,
-    "n_candidates": 3,
+    "n_candidates": 2,
     "candidates": [
-      {
-        "ticker": "8316",
-        "ticker_name": "三井住友FG",
-        "group": "個別",
-        "entry_ref": 6800.0,
-        "date": "2026-07-06",
-        "structural_stop": 6161.3,
-        "stop_pct": -9.39,
-        "target_half": 7140.0,
-        "target_pct": 5.0,
-        "trail_line_sma25": 6381.1,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -1.0,
-        "atr20": 180.1,
-        "sma200": 5214.5
-      },
       {
         "ticker": "8306",
         "ticker_name": "三菱UFJ FG",
         "group": "個別",
-        "entry_ref": 3370.0,
-        "date": "2026-07-06",
+        "entry_ref": 3446.0,
+        "date": "2026-07-07",
         "structural_stop": 3116.4,
-        "stop_pct": -7.53,
-        "target_half": 3538.5,
+        "stop_pct": -9.56,
+        "target_half": 3618.3,
         "target_pct": 5.0,
-        "trail_line_sma25": 3230.0,
-        "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 0.71,
-        "atr20": 87.0,
-        "sma200": 2706.9
+        "trail_line_sma25": 3246.0,
+        "is_new_52w_high": true,
+        "dist_from_52w_high_pct": -1.53,
+        "atr20": 90.4,
+        "sma200": 2712.7
       },
       {
-        "ticker": "1619",
-        "ticker_name": "建設・資材ETF",
-        "group": "ETF",
-        "entry_ref": 51820.0,
-        "date": "2026-07-06",
-        "structural_stop": 46961.6,
-        "stop_pct": -9.38,
-        "target_half": 54411.0,
+        "ticker": "8316",
+        "ticker_name": "三井住友FG",
+        "group": "個別",
+        "entry_ref": 6812.0,
+        "date": "2026-07-07",
+        "structural_stop": 6161.3,
+        "stop_pct": -9.55,
+        "target_half": 7152.6,
         "target_pct": 5.0,
-        "trail_line_sma25": 49474.8,
-        "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 2.48,
-        "atr20": 1162.0,
-        "sma200": 45032.9
+        "trail_line_sma25": 6415.5,
+        "is_new_52w_high": true,
+        "dist_from_52w_high_pct": 0.04,
+        "atr20": 181.1,
+        "sma200": 5228.2
       }
     ]
   },
@@ -82,6 +66,14 @@
         "8316",
         "8306",
         "1619"
+      ]
+    },
+    {
+      "date": "2026-07-07",
+      "regime_on": true,
+      "tickers": [
+        "8306",
+        "8316"
       ]
     }
   ]
