@@ -1,21 +1,21 @@
 {
   "meta": {
     "observation_start": "2026-07-04",
-    "last_run": "2026-07-08T01:57:38.595245+09:00",
+    "last_run": "2026-07-09T01:16:32.950028+09:00",
     "logic_version": "unified-v1",
-    "days_elapsed": 4,
+    "days_elapsed": 5,
     "summary": {
       "logic_version": "unified-v1",
-      "closed": 0,
-      "open": 7,
-      "win_rate": null,
-      "expectancy": null,
+      "closed": 1,
+      "open": 8,
+      "win_rate": 0.0,
+      "expectancy": -4.13,
       "avg_win": null,
-      "avg_loss": null,
+      "avg_loss": -4.13,
       "r_multiple": null,
-      "bigwin_pct": null,
-      "max_drawdown": null,
-      "avg_hold": null
+      "bigwin_pct": 0.0,
+      "max_drawdown": -4.1,
+      "avg_hold": 2
     },
     "promotion": {
       "criteria_version": "unified-V1",
@@ -31,28 +31,28 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 4,
+          "actual": 5,
           "pass": false
         },
         {
           "no": 2,
           "label": "クローズ済み>=30件",
           "target": 30,
-          "actual": 0,
+          "actual": 1,
           "pass": false
         },
         {
           "no": 3,
           "label": "勝率>=55%",
           "target": 55.0,
-          "actual": null,
+          "actual": 0.0,
           "pass": false
         },
         {
           "no": 4,
           "label": "期待値>0",
           "target": ">0.0",
-          "actual": null,
+          "actual": -4.13,
           "pass": false
         },
         {
@@ -64,7 +64,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 4
+      "days_elapsed": 5
     },
     "criteria": {
       "min_observation_days": 90,
@@ -149,7 +149,12 @@
       "target_half": 54411.0,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-09T01:16:37.510568+09:00",
+      "exit_date": "2026-07-08",
+      "exit_reason": "trail",
+      "net_return_pct": -4.13,
+      "holding_days": 2
     },
     {
       "trade_id": "2026-07-07_8306",
@@ -178,6 +183,36 @@
       "structural_stop": 6161.3,
       "target_half": 7152.6,
       "is_new_52w_high": true,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-08_8316",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-09T01:16:32.950318+09:00",
+      "ticker": "8316",
+      "ticker_name": "三井住友FG",
+      "group": "個別",
+      "entry_date": "2026-07-08",
+      "entry": 6811.0,
+      "structural_stop": 6161.3,
+      "target_half": 7151.6,
+      "is_new_52w_high": false,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-08_8306",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-09T01:16:32.950318+09:00",
+      "ticker": "8306",
+      "ticker_name": "三菱UFJ FG",
+      "group": "個別",
+      "entry_date": "2026-07-08",
+      "entry": 3433.0,
+      "structural_stop": 3116.4,
+      "target_half": 3604.7,
+      "is_new_52w_high": false,
       "regime_on_at_entry": true,
       "status": "open"
     }
