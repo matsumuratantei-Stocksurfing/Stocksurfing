@@ -1,13 +1,13 @@
 {
   "meta": {
     "observation_start": "2026-07-04",
-    "last_run": "2026-07-09T01:16:32.950028+09:00",
+    "last_run": "2026-07-10T02:03:49.750623+09:00",
     "logic_version": "unified-v1",
-    "days_elapsed": 5,
+    "days_elapsed": 6,
     "summary": {
       "logic_version": "unified-v1",
       "closed": 1,
-      "open": 8,
+      "open": 10,
       "win_rate": 0.0,
       "expectancy": -4.13,
       "avg_win": null,
@@ -31,7 +31,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 5,
+          "actual": 6,
           "pass": false
         },
         {
@@ -64,7 +64,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 5
+      "days_elapsed": 6
     },
     "criteria": {
       "min_observation_days": 90,
@@ -212,6 +212,36 @@
       "entry": 3433.0,
       "structural_stop": 3116.4,
       "target_half": 3604.7,
+      "is_new_52w_high": false,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-09_8316",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-10T02:03:49.750925+09:00",
+      "ticker": "8316",
+      "ticker_name": "三井住友FG",
+      "group": "個別",
+      "entry_date": "2026-07-09",
+      "entry": 6816.0,
+      "structural_stop": 6161.3,
+      "target_half": 7156.8,
+      "is_new_52w_high": false,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-07-09_8306",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-07-10T02:03:49.750925+09:00",
+      "ticker": "8306",
+      "ticker_name": "三菱UFJ FG",
+      "group": "個別",
+      "entry_date": "2026-07-09",
+      "entry": 3414.0,
+      "structural_stop": 3116.4,
+      "target_half": 3584.7,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
       "status": "open"
