@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-10T02:03:10.673309+09:00",
+    "generatedAt": "2026-07-11T01:37:31.519736+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,41 +12,41 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-09",
+    "date": "2026-07-10",
     "regime_on": true,
     "n_candidates": 2,
     "candidates": [
       {
-        "ticker": "8316",
-        "ticker_name": "三井住友FG",
-        "group": "個別",
-        "entry_ref": 6816.0,
-        "date": "2026-07-09",
-        "structural_stop": 6161.3,
-        "stop_pct": -9.61,
-        "target_half": 7156.8,
-        "target_pct": 5.0,
-        "trail_line_sma25": 6469.5,
-        "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 2.21,
-        "atr20": 175.2,
-        "sma200": 5255.5
-      },
-      {
         "ticker": "8306",
         "ticker_name": "三菱UFJ FG",
         "group": "個別",
-        "entry_ref": 3414.0,
-        "date": "2026-07-09",
+        "entry_ref": 3461.0,
+        "date": "2026-07-10",
         "structural_stop": 3116.4,
-        "stop_pct": -8.72,
-        "target_half": 3584.7,
+        "stop_pct": -9.96,
+        "target_half": 3634.1,
         "target_pct": 5.0,
-        "trail_line_sma25": 3267.6,
+        "trail_line_sma25": 3277.3,
         "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 2.96,
-        "atr20": 84.8,
-        "sma200": 2724.0
+        "dist_from_52w_high_pct": 1.62,
+        "atr20": 84.4,
+        "sma200": 2729.9
+      },
+      {
+        "ticker": "8316",
+        "ticker_name": "三井住友FG",
+        "group": "個別",
+        "entry_ref": 6814.0,
+        "date": "2026-07-10",
+        "structural_stop": 6161.3,
+        "stop_pct": -9.58,
+        "target_half": 7154.7,
+        "target_pct": 5.0,
+        "trail_line_sma25": 6492.9,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.24,
+        "atr20": 170.8,
+        "sma200": 5269.2
       }
     ]
   },
@@ -90,6 +90,14 @@
       "tickers": [
         "8316",
         "8306"
+      ]
+    },
+    {
+      "date": "2026-07-10",
+      "regime_on": true,
+      "tickers": [
+        "8306",
+        "8316"
       ]
     }
   ]
