@@ -8641,7 +8641,7 @@
   },
   {
     "date": "2026-07-14",
-    "verifiedAt": "2026-07-14T23:01:42.269722+09:00",
+    "verifiedAt": "2026-07-15T00:15:57.816366+09:00",
     "weightsVersion": "baseline-2026-06-22",
     "morningScore": -26.4,
     "morningFetchedAt": "2026-07-14T12:34:28.870950+09:00",
@@ -8683,9 +8683,9 @@
     ],
     "actualIndices": {
       "N225": {
-        "open": 67002.9375,
-        "close": 67743.5,
-        "chgPct": 1.1052687055698118
+        "open": 68410.6328125,
+        "close": 67242.7265625,
+        "chgPct": -1.7071998927432812
       },
       "TOPX": null
     },
@@ -8812,7 +8812,7 @@
       }
     },
     "metrics": {
-      "n225_direction_correct": false,
+      "n225_direction_correct": true,
       "avg_pick_return": 1.9127,
       "avg_all_return": 1.2581,
       "picks_outperformed": true
