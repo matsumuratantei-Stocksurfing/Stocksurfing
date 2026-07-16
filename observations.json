@@ -1,15 +1,15 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-07-16T00:55:24.042851+09:00",
+    "last_detect_run": "2026-07-17T00:50:50.658013+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-07-16T00:56:02.251101+09:00",
-    "days_elapsed": 13,
+    "last_close_run": "2026-07-17T00:51:37.750655+09:00",
+    "days_elapsed": 14,
     "summary": {
       "logic_version": "po-v1",
       "closed": 2,
-      "open": 0,
-      "total_records_all_versions": 2,
+      "open": 1,
+      "total_records_all_versions": 3,
       "win_rate": 100.0,
       "avg_return": 2.204,
       "expectancy": 2.204,
@@ -42,7 +42,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 13,
+          "actual": 14,
           "pass": false
         },
         {
@@ -85,7 +85,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 13
+      "days_elapsed": 14
     },
     "criteria": {
       "min_observation_days": 90,
@@ -212,6 +212,52 @@
         "excess_vs_dumb": 0.66,
         "excess_vs_topix": 5.561
       }
+    },
+    {
+      "record_id": "2026-07-16_8306",
+      "logic_version": "po-v1",
+      "detected_at": "2026-07-17T00:50:50.658013+09:00",
+      "ticker": "8306",
+      "ticker_name": "三菱UFJ FG",
+      "group": "個別",
+      "detection_price": 3629.0,
+      "hypothetical_entry": {
+        "price": 3629.0,
+        "basis": "PO押し目イベント発火日の調整済み終値(検出ロジックの定義)"
+      },
+      "structural_stop": 3228.12,
+      "detection_context": {
+        "market_condition": {
+          "score": -11.8,
+          "label": "中立",
+          "weak": true,
+          "fetchedAt": "2026-07-16T12:37:40.473804+09:00"
+        },
+        "volume_snapshot": {
+          "volume": 38374000.0,
+          "date": "2026-07-16"
+        },
+        "signal_params": {
+          "logic_version": "po-v1",
+          "po": true,
+          "gate": true,
+          "pullback_pct": 2.79,
+          "band": "[2,5)",
+          "level": ">SMA25",
+          "slope25": 4.561,
+          "pivot_high": 3733.0,
+          "swing_low": 3294.0,
+          "sma5": 3585.6,
+          "sma25": 3349.08,
+          "sma75": 3066.81,
+          "sma200": 2756.56
+        }
+      },
+      "baseline_ref": {
+        "detect_date": "2026-07-16",
+        "entry": 3629.0
+      },
+      "status": "open"
     }
   ]
 }
