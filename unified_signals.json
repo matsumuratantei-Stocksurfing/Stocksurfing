@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-16T01:05:27.880491+09:00",
+    "generatedAt": "2026-07-17T00:59:10.729723+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,41 +12,41 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-15",
+    "date": "2026-07-16",
     "regime_on": true,
     "n_candidates": 2,
     "candidates": [
       {
-        "ticker": "8306",
-        "ticker_name": "三菱UFJ FG",
-        "group": "個別",
-        "entry_ref": 3697.0,
-        "date": "2026-07-15",
-        "structural_stop": 3189.9,
-        "stop_pct": -13.72,
-        "target_half": 3881.9,
-        "target_pct": 5.0,
-        "trail_line_sma25": 3329.6,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -2.69,
-        "atr20": 85.9,
-        "sma200": 2749.8
-      },
-      {
         "ticker": "8316",
         "ticker_name": "三井住友FG",
         "group": "個別",
-        "entry_ref": 7121.0,
-        "date": "2026-07-15",
-        "structural_stop": 6339.6,
-        "stop_pct": -10.97,
-        "target_half": 7477.1,
+        "entry_ref": 7030.0,
+        "date": "2026-07-16",
+        "structural_stop": 6451.3,
+        "stop_pct": -8.23,
+        "target_half": 7381.5,
         "target_pct": 5.0,
-        "trail_line_sma25": 6592.8,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -1.31,
-        "atr20": 165.7,
-        "sma200": 5313.1
+        "trail_line_sma25": 6625.9,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 1.5,
+        "atr20": 157.6,
+        "sma200": 5327.9
+      },
+      {
+        "ticker": "8306",
+        "ticker_name": "三菱UFJ FG",
+        "group": "個別",
+        "entry_ref": 3629.0,
+        "date": "2026-07-16",
+        "structural_stop": 3228.1,
+        "stop_pct": -11.05,
+        "target_half": 3810.5,
+        "target_pct": 5.0,
+        "trail_line_sma25": 3349.1,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.79,
+        "atr20": 83.4,
+        "sma200": 2756.6
       }
     ]
   },
@@ -122,6 +122,14 @@
       "tickers": [
         "8306",
         "8316"
+      ]
+    },
+    {
+      "date": "2026-07-16",
+      "regime_on": true,
+      "tickers": [
+        "8316",
+        "8306"
       ]
     }
   ]
