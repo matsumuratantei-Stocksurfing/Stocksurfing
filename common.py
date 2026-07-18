@@ -1,17 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - 共通定義モジュール (v3.4)
+松村式Stocksurfing - 共通定義モジュール (v3.4.5)
 
 これまで fetch_data.py / verify_predictions.py / fetch_am.py / send_email.py に
 コピペ重複していた銘柄リスト・指標重み・スコア計算ロジックを一元化する。
 定義のドリフト(特に銘柄リストのズレ)を防ぎ、重み変更を1か所で完結させるのが狙い。
 
 DEFAULT_STOCKS は HTML(index.html) の DEFAULT_STOCKS と同期させること。
+
+v3.4.5 (2026-07-18):
+- 東証営業日ヘルパー (tse_last_trading_day / tse_is_trading_day) を追加。
+  J-Quants 取引カレンダーを一次ソースにし、失敗時は土日除外ロジックで代替。
+- 日経公式プロフィールページのスクレイパー (scrape_nikkei_index_snapshot) を追加。
+  yfinance ^N225 の「最新確定足が翌朝まで反映されない」問題(2026-07確認)の補正用。
 """
 import os
 import json
 import math
+from datetime import datetime, timedelta
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -73,6 +80,7 @@ NAME_MAP = {
     'N225F': '日経先物', 'TOPX': 'TOPIX', 'NDX': 'ナスダック100', 'SPX': 'S&P500',
     'SOX': 'SOX半導体', 'DJI': 'NYダウ', 'USDJPY': 'ドル円', 'EURJPY': 'ユーロ円',
     'TNX': '米10年金利', 'WTI': 'WTI原油', 'VIX': 'VIX恐怖指数', 'NKVI': '日経VI',
+    'N225_CASH': '日経平均現物(前日終値)', 'SOX_PROXY': '東京エレクトロン現物',
 }
 
 
@@ -174,3 +182,118 @@ def stars_for(stock, market_score, indicators):
     if combined >= -8:
         return 2
     return 1
+
+
+# ---------- 東証営業日ヘルパー (v3.4.5) ----------
+def tse_last_trading_day(before_date):
+    """before_date より前の直近の東証営業日を返す (datetime.date)。
+
+    J-Quants 取引カレンダー(HolDiv '1'/'2'=立会あり)を一次ソースにし、
+    API失敗時は「土日のみ除外」の簡易ロジックにフォールバックする。
+    (簡易ロジックは祝日を営業日扱いするため、7/20海の日等では1日ズレる点に注意)
+    """
+    try:
+        from jquants_client import get_market_calendar
+        frm = (before_date - timedelta(days=21)).strftime('%Y-%m-%d')
+        to = (before_date - timedelta(days=1)).strftime('%Y-%m-%d')
+        cal = get_market_calendar(frm, to)
+        if cal:
+            days = [r.get('Date') for r in (cal.get('data') or [])
+                    if r.get('HolDiv') in ('1', '2') and r.get('Date')]
+            if days:
+                return datetime.strptime(max(days), '%Y-%m-%d').date()
+    except Exception:
+        pass
+    d = before_date - timedelta(days=1)
+    while d.weekday() >= 5:
+        d -= timedelta(days=1)
+    return d
+
+
+def tse_is_trading_day(date):
+    """date が東証営業日かどうか。カレンダー取得失敗時は「平日=True」で代替。"""
+    try:
+        from jquants_client import get_market_calendar
+        ds = date.strftime('%Y-%m-%d')
+        cal = get_market_calendar(ds, ds)
+        if cal:
+            rows = cal.get('data') or []
+            if rows:
+                return rows[0].get('HolDiv') in ('1', '2')
+    except Exception:
+        pass
+    return date.weekday() < 5
+
+
+# ---------- 日経公式プロフィールページ スクレイパー (v3.4.5) ----------
+_UA_DESKTOP = ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+               '(KHTML, like Gecko) Chrome/120.0 Safari/537.36')
+
+
+def scrape_nikkei_index_snapshot(idx='nk225', label='日経平均株価',
+                                 lo=20000, hi=150000):
+    """日経公式の個別指数プロフィールページから現値/前日比/日付を取得する。
+
+    ページ形式(2026-07確認、日経VI v3.4.3 と同じSSRページ):
+      「日経平均株価 / 64,141.12 / -4.03% -2,694.42 2026.07.17(15:45)」
+    戻り値: {'price','chgPct','chgAbs','asOf'} または None。
+    ※ 場中に呼ぶと asOf が当日になり price はライブ値になる。
+       その場合は price - chgAbs で前日終値を逆算できる。
+    """
+    import re
+    try:
+        import requests
+        from bs4 import BeautifulSoup
+        url = f'https://indexes.nikkei.co.jp/nkave/index/profile?idx={idx}'
+        r = requests.get(url, headers={
+            'User-Agent': _UA_DESKTOP,
+            'Accept': 'text/html,application/xhtml+xml',
+            'Accept-Language': 'ja,en;q=0.9',
+        }, timeout=15)
+        if r.status_code != 200:
+            return None
+        r.encoding = r.apparent_encoding
+        soup = BeautifulSoup(r.text, 'html.parser')
+        text = soup.get_text('\n', strip=True)
+        num = r'[0-9]{1,3}(?:,[0-9]{3})*(?:\.[0-9]+)?'
+        m = re.search(
+            re.escape(label)
+            + r'[\s\S]{0,200}?'
+            + r'(?<![0-9,.])(' + num + r')(?![0-9])[\n\s]+'
+            + r'([+\-−▲]?\s*' + num + r')\s*%[\n\s]*'
+            + r'([+\-−▲]?\s*' + num + r')[\n\s]*'
+            + r'(20[0-9]{2})\.([0-1][0-9])\.([0-3][0-9])',
+            text)
+        if not m:
+            return None
+
+        def _f(s):
+            s = (s.replace('▲', '-').replace('−', '-').replace('+', '')
+                 .replace(',', '').replace(' ', ''))
+            return float(s)
+
+        price = _f(m.group(1))
+        if not (lo < price < hi):
+            return None
+        chg_pct = None
+        chg_abs = None
+        try:
+            chg_pct = _f(m.group(2))
+        except ValueError:
+            pass
+        try:
+            chg_abs = _f(m.group(3))
+        except ValueError:
+            pass
+        # %と絶対値の整合チェック: 大きくズレていたら絶対値から再計算
+        if chg_pct is not None and chg_abs is not None and price - chg_abs > 0:
+            expected = chg_abs / (price - chg_abs) * 100
+            if abs(expected - chg_pct) > 1.0:
+                chg_pct = expected
+        as_of = f"{m.group(4)}-{m.group(5)}-{m.group(6)}"
+        return {'price': round(price, 4),
+                'chgPct': round(chg_pct, 4) if chg_pct is not None else None,
+                'chgAbs': round(chg_abs, 4) if chg_abs is not None else None,
+                'asOf': as_of}
+    except Exception:
+        return None

@@ -1,4 +1,4 @@
-"""寄り後値取得スクリプト (v3.1.1, 2026-05-17)
+"""寄り後値取得スクリプト (v3.4.5, 2026-07-18)
 
 GitHub Actions から 9:10 / 9:20 / 9:30 JST に呼び出される。
 日経平均 / 東京エレクトロン / ドル円の寄り値・現在値・前日終値を yfinance
@@ -6,6 +6,10 @@ GitHub Actions から 9:10 / 9:20 / 9:30 JST に呼び出される。
 
 クライアント側 (index.html) は postopen.json を読むだけになるため、
 CORS プロキシに依存しない堅牢な寄り後判定が実現できる。
+
+v3.4.5: 前日終値の取り方を「日足の後ろから2本目」から
+「当日より前の最後の日足」に変更。yfinance の日足反映が遅れている時に
+2営業日前の終値を前日終値として掴んでしまう問題(前日比%のズレ)の対策。
 """
 
 import json
@@ -40,12 +44,17 @@ def fetch_open_price(symbol: str) -> dict | None:
         open_price = float(intraday['Open'].iloc[0])
         current_price = float(intraday['Close'].iloc[-1])
 
-        # 前日終値 (5d daily から末尾2本目を取る)
+        # 前日終値 (v3.4.5: 「当日より前の最後の日足」を日付で選ぶ。
+        # iloc[-2] 固定だと日足反映の遅延時に2営業日前を掴むため)
         prev_close = None
         try:
-            daily = ticker.history(period='5d', interval='1d')
-            if daily is not None and not daily.empty and len(daily) >= 2:
-                prev_close = float(daily['Close'].iloc[-2])
+            daily = ticker.history(period='10d', interval='1d')
+            if daily is not None and not daily.empty:
+                today_jst = datetime.now(JST).date()
+                mask = [d.date() < today_jst for d in daily.index]
+                prior = daily[mask]
+                if not prior.empty:
+                    prev_close = float(prior['Close'].iloc[-1])
         except Exception as e:
             print(f"[WARN] {symbol}: prev_close fetch failed: {e}", file=sys.stderr)
 

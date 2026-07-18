@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - 答え合わせスクリプト (v3.4)
+松村式Stocksurfing - 答え合わせスクリプト (v3.4.5)
 夜23:00 JST に GitHub Actions から起動。
 data.json (朝の予測) と当日の実勢終値を比較し、
 verification_log.json に追記する。
 
 個別株終値は J-Quants V2 → yfinance フォールバックの二段構え。
+
+v3.4.5 (2026-07-18):
+- 【重要】指数実勢の「日付検証」を追加。yfinance ^N225 は当日の確定足が
+  夜になっても反映されないことがあり(2026-07確認)、末尾行をそのまま使うと
+  『前日の値動き』を当日実勢として記録してしまっていた(的中率の汚染)。
+  対策: trade_date と一致する行だけを採用し、無ければ日経公式ページで補完。
+- TOPIX実勢を J-Quants公式指数(/indices/bars/daily/topix)から取得。
+  (^TPX/^TOPX は取得不能になり、これまで常に欠落していた)
+- 祝日スキップを追加: J-Quants取引カレンダーで trade_date が休場日なら
+  答え合わせをスキップ(海の日等の祝日にゴミデータが混入するのを防ぐ)。
 """
 import json
 import sys
@@ -19,8 +29,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import (
     DEFAULT_STOCKS, INDICATORS,
     _num, _clean, calc_score, stock_score, stars_for, WEIGHTS_VERSION,
+    tse_is_trading_day, scrape_nikkei_index_snapshot,
 )
-from jquants_client import get_daily_quote
+from jquants_client import get_daily_quote, get_topix_daily
 
 JST = timezone(timedelta(hours=9))
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -74,27 +85,65 @@ def fetch_close_yfinance(code, suffix='.T'):
         return None
 
 
-def fetch_index_close_yfinance(symbol):
-    """日経・TOPIX等の指数終値"""
+def fetch_index_close_yfinance(symbol, trade_date_str):
+    """日経・TOPIX等の指数終値 (v3.4.5: trade_date と一致する日足のみ採用)。
+
+    yfinance の指数は最新確定足の反映が遅れることがあるため、
+    末尾行を鵜呑みにせず、該当日の行が存在する時だけ返す。
+    """
     try:
         ticker = yf.Ticker(symbol)
-        hist = ticker.history(period='2d', interval='1d')
-        if hist.empty:
+        hist = ticker.history(period='10d', interval='1d')
+        if hist is None or hist.empty:
             return None
-        latest = hist.iloc[-1]
-        close = _num(latest['Close'])
-        open_p = _num(latest['Open'])
-        if close is None or open_p is None:
-            return None
-        return {'open': open_p, 'close': close,
-                'chgPct': ((close - open_p) / open_p) * 100 if open_p != 0 else 0}
+        for ts in reversed(hist.index):
+            if ts.strftime('%Y-%m-%d') == trade_date_str:
+                row = hist.loc[ts]
+                close = _num(row['Close'])
+                open_p = _num(row['Open'])
+                if close is None or open_p is None:
+                    return None
+                return {'open': open_p, 'close': close,
+                        'chgPct': ((close - open_p) / open_p) * 100 if open_p != 0 else 0}
+        return None
     except Exception:
         return None
 
 
+def fetch_n225_actual(trade_date_str):
+    """当日の日経平均実勢。yfinance(日付検証つき) → 日経公式ページの二段構え。
+
+    フォールバック時の chgPct は前日終値比(close-to-close)になる点に注意
+    (方向性判定にはむしろ適した定義)。
+    """
+    r = fetch_index_close_yfinance('^N225', trade_date_str)
+    if r:
+        return r, 'yfinance'
+    snap = scrape_nikkei_index_snapshot('nk225', '日経平均株価', 20000, 150000)
+    if snap and snap.get('asOf') == trade_date_str:
+        return ({'open': None, 'close': snap['price'],
+                 'chgPct': snap.get('chgPct')}, 'Nikkei公式(前日終値比)')
+    return None, None
+
+
+def fetch_topix_actual(trade_date_str):
+    """当日のTOPIX実勢。J-Quants公式指数 → yfinance(日付検証つき)の二段構え。"""
+    data = get_topix_daily(trade_date_str, trade_date_str)
+    rows = (data or {}).get('data') or []
+    if rows:
+        q = rows[0]
+        o = _num(q.get('O'))
+        c = _num(q.get('C'))
+        if c is not None:
+            return {'open': o, 'close': c,
+                    'chgPct': ((c - o) / o) * 100 if o else None}
+    return (fetch_index_close_yfinance('^TPX', trade_date_str)
+            or fetch_index_close_yfinance('^TOPX', trade_date_str))
+
+
 def main():
     print("=" * 50)
-    print("  松村式Stocksurfing - 答え合わせ (v3.4)")
+    print("  松村式Stocksurfing - 答え合わせ (v3.4.5)")
     print(f"  実行時刻: {datetime.now(JST).isoformat()}")
     print("=" * 50)
 
@@ -126,6 +175,11 @@ def main():
     if trade_date.weekday() >= 5:
         print(f"\n[SKIP] {today} は土日(市場休場)のため答え合わせを行いません。")
         sys.exit(0)
+    # v3.4.5: 祝日(海の日等)もスキップ。J-Quants取引カレンダーで判定し、
+    # カレンダー取得失敗時は平日=営業日として従来通り続行する。
+    if not tse_is_trading_day(trade_date):
+        print(f"\n[SKIP] {today} は東証休場日(祝日等)のため答え合わせを行いません。")
+        sys.exit(0)
 
     print(f"\n[朝の予測] (取引日 {today} / weights={WEIGHTS_VERSION or 'default'})")
     print(f"  日時: {fetched_at}")
@@ -141,13 +195,17 @@ def main():
 
     # 2. 当日の実勢取得
     print(f"\n[実勢データ取得]")
-    print(f"  指数 (yfinance):")
-    n225 = fetch_index_close_yfinance('^N225')
-    topix = fetch_index_close_yfinance('^TPX') or fetch_index_close_yfinance('^TOPX')
+    print(f"  指数 (日付検証つき):")
+    n225, n225_src = fetch_n225_actual(today)
+    topix = fetch_topix_actual(today)
     if n225:
-        print(f"    日経225: {n225['close']:.2f} ({n225['chgPct']:+.2f}%)")
+        chg_s = f"{n225['chgPct']:+.2f}%" if n225.get('chgPct') is not None else "N/A"
+        print(f"    日経225: {n225['close']:.2f} ({chg_s}) [{n225_src}]")
+    else:
+        print(f"    日経225: {today} の確定値が取得できず (実勢は記録しない)")
     if topix:
-        print(f"    TOPIX  : {topix['close']:.2f} ({topix['chgPct']:+.2f}%)")
+        chg_s = f"{topix['chgPct']:+.2f}%" if topix.get('chgPct') is not None else "N/A"
+        print(f"    TOPIX  : {topix['close']:.2f} ({chg_s})")
 
     print(f"  個別銘柄 (J-Quants V2 → yfinanceフォールバック):")
     stock_results = {}
@@ -164,7 +222,7 @@ def main():
 
     # 指数の方向性チェック
     n225_dir_correct = None
-    if morning_score is not None and n225:
+    if morning_score is not None and n225 and n225.get('chgPct') is not None:
         predicted_up = morning_score > 0
         actual_up = n225['chgPct'] > 0
         n225_dir_correct = (predicted_up == actual_up) or (abs(morning_score) < 20 and abs(n225['chgPct']) < 0.3)

@@ -1,10 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - 通知メール送信 (v3.4.3)
+松村式Stocksurfing - 通知メール送信 (v3.4.5)
 決算警告セクション・昨日の振り返りを含む HTML メール。
 銘柄・指標・スコア計算は common.py を参照(重複排除)。
 v3.4.3: データ日付ズレ警告(dataQuality)を朝メールに追加。
+v3.4.5: 窓開け予想のガードを追加。N225_CASH(日経平均前日終値)の日付が
+        期待営業日とズレている時(staleKeys 入り)は、誤った窓予想を出す代わりに
+        「非表示」の注意書きを出す。2026-07 に yfinance ^N225 の1営業日遅れで
+        窓予想が方向逆転して配信された事故の再発防止。
 """
 import os
 import sys
@@ -115,9 +119,14 @@ def build_morning_email(data, jst_now):
     indicators = data.get('indicators', {})
     reference = data.get('referenceData', {})
     earnings_warnings = data.get('earningsWarnings', {})
+    dq = data.get('dataQuality') or {}
+    stale_keys = dq.get('staleKeys') or []
+
     score = calc_score(indicators)
     verdict = verdict_text(score)
-    gap = calc_gap(indicators, reference)
+    # v3.4.5: 前日終値(N225_CASH)の日付が検証できない時は誤った窓予想を出さない
+    n225_cash_stale = 'N225_CASH' in stale_keys
+    gap = None if n225_cash_stale else calc_gap(indicators, reference)
     twist = detect_twist(indicators)
 
     picks = []
@@ -138,17 +147,18 @@ def build_morning_email(data, jst_now):
         sign = '+' if gap['gap'] >= 0 else ''
         color = '#ff5766' if gap['gap'] >= 0 else '#2ecc71'
         gap_html = f'<p>🪟 <b>本日の窓開け予想</b>: <span style="color:{color};font-weight:bold">{sign}{gap["gap"]:.0f}円 ({sign}{gap["gapPct"]:.2f}%)</span></p>'
+    elif n225_cash_stale:
+        gap_html = '<p>🪟 <b>本日の窓開け予想</b>: <span style="color:#f7b955">前日終値データが確認できないため非表示（データ遅延の可能性）</span></p>'
 
     twist_html = ''
     if twist:
         twist_html = f'<p style="background:#3a2410;padding:8px;border-radius:6px;color:#f7b955">⚠️ <b>指標がねじれています</b>（不一致{twist}件）。サイズを半分にするのが安全です。</p>'
 
     # v3.4.3: データ日付ズレ警告 (fetch_data.py の dataQuality を参照)
-    dq = data.get('dataQuality') or {}
-    stale_keys = dq.get('staleKeys') or []
+    # v3.4.5: referenceData の日付 (refDates) も表示対象に含める
     stale_html = ''
     if stale_keys:
-        dq_dates = dq.get('dates') or {}
+        dq_dates = {**(dq.get('dates') or {}), **(dq.get('refDates') or {})}
         names = '、'.join(f"{NAME_MAP.get(k, k)}({dq_dates.get(k) or '?'})" for k in stale_keys)
         stale_html = f'<p style="background:#3a2410;padding:8px;border-radius:6px;color:#f7b955">⏳ <b>一部指標が古い日付のデータです</b>: {names}。休場等の影響の可能性があるため、スコアは参考程度に。</p>'
 

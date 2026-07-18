@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-松村式Stocksurfing - データ取得スクリプト (v3.4.3)
-yfinance + Nikkei公式 + J-Quants V2(決算カレンダー) を統合
+松村式Stocksurfing - データ取得スクリプト (v3.4.5)
+yfinance + Nikkei公式 + J-Quants V2(決算カレンダー・TOPIX指数・取引カレンダー) を統合
 
 v3.4.3 (2026-07-04):
 - 各指標に asOf (データの日付) を記録し、日付ズレ/staleデータ混入を検出 (dataQuality)
@@ -11,6 +11,17 @@ v3.4.3 (2026-07-04):
 v3.4.4 (2026-07-04):
 - 決算警告に JPX公式Excel (jpx_earnings.py) を統合し「3営業日前警告」を復活。
   J-Quants V2 (翌営業日分のみ・確度高) を優先し、JPXで先の予定を補完する。
+v3.4.5 (2026-07-18):
+- 【重要】N225_CASH(窓開け計算の基準となる日経平均前日終値)の1営業日遅れを修正。
+  yfinance ^N225 は前日の確定日足が翌朝になっても反映されないことがある(2026-07に
+  7/14,7/17,7/18朝の3回連続で確認。窓開け予想が最大3倍過大/方向逆転していた)。
+  対策: 日付フィルタ + J-Quants取引カレンダーで期待営業日を検証し、
+  ズレていれば日経公式プロフィールページ(idx=nk225)で補正する。
+- 【重要】TOPX を J-Quants公式TOPIX指数(/indices/bars/daily/topix)を一次ソースに変更。
+  Yahoo の ^TPX/^TOPX が取得不能になり、フォールバックの 1306.T が2026-04-01の
+  1:10分割で「TOPIX=407.9」のような桁違い表示になっていた。
+- dataQuality に referenceData の日付検証(refDates/jpExpectedDate)を追加。
+  N225_CASH が期待営業日とズレたら staleKeys 入りし、メール側で窓予想を非表示にする。
 """
 import json
 import sys
@@ -25,8 +36,8 @@ from bs4 import BeautifulSoup
 
 # 同一ディレクトリの共通モジュール / J-Quants V2 クライアントをimport
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from common import TRACKED_STOCKS
-from jquants_client import get_earnings_calendar
+from common import TRACKED_STOCKS, tse_last_trading_day, scrape_nikkei_index_snapshot
+from jquants_client import get_earnings_calendar, get_topix_daily
 from jpx_earnings import get_jpx_warnings
 
 JST = timezone(timedelta(hours=9))
@@ -91,6 +102,106 @@ def fetch_with_options(symbols):
         r = fetch_yfinance_one(sym)
         if r and r['price'] > 0:
             return r, sym
+    return None, None
+
+def fetch_yf_prev_close(symbol, today, retries=2):
+    """yfinanceで『today より前の最後の確定日足』を取得する (v3.4.5)。
+
+    ^N225 は当日途中足が混ざったり、最新確定足が翌朝まで欠けることがあるため、
+    末尾行を鵜呑みにせず日付でフィルタして「前日終値」の意味を保証する。
+    """
+    for attempt in range(retries + 1):
+        try:
+            hist = yf.Ticker(symbol).history(period='10d', interval='1d')
+            if hist is None or hist.empty:
+                raise ValueError('empty history')
+            mask = [d.date() < today for d in hist.index]
+            prior = hist[mask]
+            if prior.empty:
+                return None
+            close = float(prior['Close'].iloc[-1])
+            chg = None
+            if len(prior) >= 2:
+                pc = float(prior['Close'].iloc[-2])
+                if pc:
+                    chg = (close - pc) / pc * 100
+            return {'price': round(close, 4),
+                    'chgPct': round(chg, 4) if chg is not None else None,
+                    'asOf': prior.index[-1].strftime('%Y-%m-%d')}
+        except Exception:
+            if attempt < retries:
+                time.sleep(1.5)
+                continue
+            return None
+    return None
+
+# ---------- TOPIX (J-Quants公式指数) ----------
+def fetch_topix_jquants():
+    """J-Quants V2 /indices/bars/daily/topix から直近のTOPIX公式終値と前日比を返す。
+
+    v3.4.5: Yahoo ^TPX/^TOPX 取得不能・1306.T分割問題の恒久対策。
+    朝7:30時点では前営業日の確定値(夕方更新)が返る。
+    """
+    today = datetime.now(JST).date()
+    frm = (today - timedelta(days=14)).strftime('%Y-%m-%d')
+    data = get_topix_daily(frm, today.strftime('%Y-%m-%d'))
+    rows = [r for r in ((data or {}).get('data') or []) if r.get('C') is not None]
+    if not rows:
+        return None
+    rows.sort(key=lambda r: r.get('Date', ''))
+    last = rows[-1]
+    try:
+        close = float(last['C'])
+    except (TypeError, ValueError):
+        return None
+    if close <= 0:
+        return None
+    chg = None
+    if len(rows) >= 2:
+        try:
+            prev = float(rows[-2]['C'])
+            if prev:
+                chg = (close - prev) / prev * 100
+        except (TypeError, ValueError):
+            pass
+    return {'price': round(close, 4),
+            'chgPct': round(chg, 4) if chg is not None else None,
+            'asOf': last.get('Date')}
+
+# ---------- 日経平均 前日終値 (多段ソース) ----------
+def resolve_n225_cash(now_jst, expected):
+    """『直近の東証営業日(expected)の日経平均終値』をなるべく確実に取る (v3.4.5)。
+
+    1) yfinance ^N225 の確定足(当日を除いた最後の足)
+    2) 日付が expected と合わなければ日経公式プロフィールページで補正
+       - ページが前営業日の確定値なら、そのまま採用
+       - 場中(当日値)なら『現値 - 前日比』で前日終値を逆算
+    3) それでもダメなら stale な yfinance 値を返す(dataQuality で警告される)
+    戻り値: (result_dict or None, source_str or None)
+    """
+    today = now_jst.date()
+    exp_s = expected.strftime('%Y-%m-%d')
+    today_s = today.strftime('%Y-%m-%d')
+
+    yf_prev = fetch_yf_prev_close('^N225', today)
+    if yf_prev and yf_prev.get('asOf') == exp_s:
+        return yf_prev, 'yfinance'
+
+    snap = scrape_nikkei_index_snapshot('nk225', '日経平均株価', 20000, 150000)
+    if snap:
+        if snap.get('asOf') == exp_s:
+            return ({'price': snap['price'],
+                     'chgPct': snap.get('chgPct'),
+                     'asOf': snap['asOf']}, 'Nikkei公式')
+        if snap.get('asOf') == today_s and snap.get('chgAbs') is not None:
+            prev = snap['price'] - snap['chgAbs']
+            if prev > 0:
+                return ({'price': round(prev, 4),
+                         'chgPct': None,
+                         'asOf': exp_s}, 'Nikkei公式(前日比から逆算)')
+
+    if yf_prev:
+        return yf_prev, 'yfinance(stale)'
     return None, None
 
 # ---------- 日経VI(現物) ----------
@@ -335,14 +446,27 @@ def fetch_earnings_calendar():
 
 def main():
     print("=" * 50)
-    print("  松村式Stocksurfing データ取得 (v3.4.4)")
+    print("  松村式Stocksurfing データ取得 (v3.4.5)")
     print(f"  実行時刻: {datetime.now(JST).isoformat()}")
     print("=" * 50)
     print()
 
+    now_jst = datetime.now(JST)
+
     indicators = {}
     print("[指標取得]")
     for key, symbols in SYMBOL_OPTIONS.items():
+        # v3.4.5: TOPX は J-Quants公式指数を一次ソースにする
+        # (Yahoo ^TPX/^TOPX は取得不能になり、1306.T は2026-04の1:10分割で
+        #  ETF価格がTOPIX実数と桁違いになるため)
+        if key == 'TOPX':
+            r = fetch_topix_jquants()
+            if r:
+                chg_s = f"{r['chgPct']:+.2f}%" if r['chgPct'] is not None else "N/A"
+                print(f"  {key:8s} ✓ OK -> J-Quants公式TOPIX price={r['price']:>12.2f} {chg_s} asOf={r.get('asOf')}")
+                indicators[key] = r
+                continue
+            print(f"  {key:8s} ⚠ J-Quants TOPIX失敗 → yfinanceフォールバック")
         candidates = ', '.join(symbols)
         print(f"  {key:8s} 候補: {candidates}")
         result, used = fetch_with_options(symbols)
@@ -360,7 +484,22 @@ def main():
     reference = {}
     print()
     print("[参照データ]")
+    expected_jp_day = tse_last_trading_day(now_jst.date())
+    exp_s = expected_jp_day.strftime('%Y-%m-%d')
+    print(f"  直近の東証営業日(期待日付): {exp_s}")
+
+    # N225_CASH: 窓開け計算の基準になる前日終値。日付検証 + 多段ソース (v3.4.5)
+    n225_cash, n225_src = resolve_n225_cash(now_jst, expected_jp_day)
+    if n225_cash:
+        reference['N225_CASH'] = n225_cash
+        flag = '' if n225_cash.get('asOf') == exp_s else ' ⚠stale'
+        print(f"  N225_CASH  OK -> {n225_src:20s} price={n225_cash['price']:>12.2f} asOf={n225_cash.get('asOf')}{flag}")
+    else:
+        print(f"  N225_CASH  FAIL")
+
     for key, symbols in REFERENCE_OPTIONS.items():
+        if key == 'N225_CASH':
+            continue
         result, used = fetch_with_options(symbols)
         if result:
             reference[key] = result
@@ -372,11 +511,16 @@ def main():
     earnings_warnings = fetch_earnings_calendar()
 
     # データ品質 (日付整合) チェック
-    now_jst = datetime.now(JST)
     data_quality = assess_data_quality(indicators, now_jst)
+    # v3.4.5: 参照データ(窓開け計算の基準)の日付も検証・記録する
+    ref_dates = {k: (v.get('asOf') if isinstance(v, dict) else None) for k, v in reference.items()}
+    data_quality['refDates'] = ref_dates
+    data_quality['jpExpectedDate'] = exp_s
+    if 'N225_CASH' not in reference or ref_dates.get('N225_CASH') != exp_s:
+        data_quality['staleKeys'] = sorted(set(data_quality['staleKeys']) | {'N225_CASH'})
     if data_quality['staleKeys']:
         print()
-        print(f"  ⏳ 日付ズレ/staleの疑い: {', '.join(data_quality['staleKeys'])} (基準日 {data_quality['usRefDate']})")
+        print(f"  ⏳ 日付ズレ/staleの疑い: {', '.join(data_quality['staleKeys'])} (米基準日 {data_quality['usRefDate']} / 東証期待日 {exp_s})")
 
     output = {
         'fetchedAt': now_jst.isoformat(),
