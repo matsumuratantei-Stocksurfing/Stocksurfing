@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-07-18T07:31:15.736598+09:00",
+  "fetchedAt": "2026-07-18T10:42:51.439406+09:00",
   "indicators": {
     "N225F": {
       "price": 65100.0,
@@ -7,8 +7,8 @@
       "asOf": "2026-07-17"
     },
     "TOPX": {
-      "price": 407.9,
-      "chgPct": -2.8115,
+      "price": 3919.21,
+      "chgPct": -2.7199,
       "asOf": "2026-07-17"
     },
     "NDX": {
@@ -64,9 +64,9 @@
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 66835.5391,
-      "chgPct": -2.7868,
-      "asOf": "2026-07-16"
+      "price": 64141.1211,
+      "chgPct": -4.0314,
+      "asOf": "2026-07-17"
     },
     "SOX_PROXY": {
       "price": 65100.0,
@@ -91,7 +91,12 @@
       "NKVI": "2026-07-17"
     },
     "staleKeys": [],
-    "usRefDate": "2026-07-17"
+    "usRefDate": "2026-07-17",
+    "refDates": {
+      "N225_CASH": "2026-07-17",
+      "SOX_PROXY": "2026-07-17"
+    },
+    "jpExpectedDate": "2026-07-17"
   },
   "success": 12,
   "total": 12
