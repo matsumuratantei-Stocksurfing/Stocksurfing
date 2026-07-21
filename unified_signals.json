@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-21T01:09:55.794131+09:00",
+    "generatedAt": "2026-07-22T01:04:30.905232+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,10 +12,27 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-17",
+    "date": "2026-07-21",
     "regime_on": true,
-    "n_candidates": 0,
-    "candidates": []
+    "n_candidates": 1,
+    "candidates": [
+      {
+        "ticker": "8316",
+        "ticker_name": "三井住友FG",
+        "group": "個別",
+        "entry_ref": 6951.0,
+        "date": "2026-07-21",
+        "structural_stop": 6444.5,
+        "stop_pct": -7.29,
+        "target_half": 7298.6,
+        "target_pct": 5.0,
+        "trail_line_sma25": 6655.8,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.61,
+        "atr20": 170.1,
+        "sma200": 5354.6
+      }
+    ]
   },
   "history": [
     {
@@ -103,6 +120,13 @@
       "date": "2026-07-17",
       "regime_on": true,
       "tickers": []
+    },
+    {
+      "date": "2026-07-21",
+      "regime_on": true,
+      "tickers": [
+        "8316"
+      ]
     }
   ]
 }
