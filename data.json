@@ -1,118 +1,126 @@
 {
-  "fetchedAt": "2026-07-23T12:44:41.137318+09:00",
+  "fetchedAt": "2026-07-24T07:30:48.837079+09:00",
   "indicators": {
     "N225F": {
-      "price": 66425.0,
-      "chgPct": -1.2047,
-      "asOf": "2026-07-22"
+      "price": 65315.0,
+      "chgPct": -1.7081,
+      "asOf": "2026-07-23"
     },
     "TOPX": {
-      "price": 4033.13,
-      "chgPct": 0.4528,
-      "asOf": "2026-07-22"
+      "price": 4053.88,
+      "chgPct": 0.5145,
+      "asOf": "2026-07-23"
     },
     "NDX": {
-      "price": 28998.0996,
-      "chgPct": -0.5388,
-      "asOf": "2026-07-22"
+      "price": 28454.8086,
+      "chgPct": -1.8735,
+      "asOf": "2026-07-23"
     },
     "SPX": {
-      "price": 7498.96,
-      "chgPct": -0.1364,
-      "asOf": "2026-07-22"
+      "price": 7408.2998,
+      "chgPct": -1.209,
+      "asOf": "2026-07-23"
     },
     "SOX": {
-      "price": 12410.665,
-      "chgPct": 0.4411,
-      "asOf": "2026-07-22"
+      "price": 12343.8369,
+      "chgPct": -0.5385,
+      "asOf": "2026-07-23"
     },
     "DJI": {
-      "price": 52218.5781,
-      "chgPct": -0.0116,
-      "asOf": "2026-07-22"
+      "price": 51711.6484,
+      "chgPct": -0.9708,
+      "asOf": "2026-07-23"
     },
     "USDJPY": {
-      "price": 163.038,
-      "chgPct": -0.0907,
+      "price": 163.847,
+      "chgPct": 0.4051,
       "asOf": "2026-07-23"
     },
     "EURJPY": {
-      "price": 186.358,
-      "chgPct": 0.1564,
+      "price": 186.405,
+      "chgPct": 0.1817,
       "asOf": "2026-07-23"
     },
     "TNX": {
-      "price": 4.657,
-      "chgPct": 0.6266,
-      "asOf": "2026-07-22"
+      "price": 4.703,
+      "chgPct": 0.9878,
+      "asOf": "2026-07-23"
     },
     "WTI": {
-      "price": 88.45,
-      "chgPct": 4.1691,
-      "asOf": "2026-07-22"
+      "price": 92.2,
+      "chgPct": 6.1845,
+      "asOf": "2026-07-23"
     },
     "VIX": {
-      "price": 16.64,
-      "chgPct": -2.4047,
-      "asOf": "2026-07-22"
+      "price": 18.7,
+      "chgPct": 12.3798,
+      "asOf": "2026-07-23"
     },
     "NKVI": {
-      "price": 37.7,
-      "chgPct": 15.68,
+      "price": 34.82,
+      "chgPct": 6.84,
       "asOf": "2026-07-23"
     }
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 66115.6016,
-      "chgPct": -0.176,
-      "asOf": "2026-07-22"
+      "price": 66422.6,
+      "chgPct": 0.46,
+      "asOf": "2026-07-23"
     },
     "SOX_PROXY": {
-      "price": 66260.0,
-      "chgPct": 0.4548,
+      "price": 65950.0,
+      "chgPct": -0.0152,
       "asOf": "2026-07-23"
     }
   },
   "earningsWarnings": {
-    "6146": {
-      "date": "2026-07-23",
+    "4063": {
+      "date": "2026-07-24",
       "businessDaysUntil": 0,
       "fiscalYear": "3月31日",
       "fiscalPeriod": "第１四半期",
-      "companyName": "ディスコ"
+      "companyName": "信越化学工業"
     },
-    "4063": {
-      "date": "2026-07-24",
-      "businessDaysUntil": 1,
+    "6501": {
+      "date": "2026-07-29",
+      "businessDaysUntil": 3,
       "fiscalYear": "",
       "fiscalPeriod": "",
-      "companyName": "信越化学工業",
+      "companyName": "日立製作所",
+      "source": "JPX"
+    },
+    "6857": {
+      "date": "2026-07-29",
+      "businessDaysUntil": 3,
+      "fiscalYear": "",
+      "fiscalPeriod": "",
+      "companyName": "アドバンテスト",
       "source": "JPX"
     }
   },
   "dataQuality": {
     "dates": {
-      "N225F": "2026-07-22",
-      "TOPX": "2026-07-22",
-      "NDX": "2026-07-22",
-      "SPX": "2026-07-22",
-      "SOX": "2026-07-22",
-      "DJI": "2026-07-22",
+      "N225F": "2026-07-23",
+      "TOPX": "2026-07-23",
+      "NDX": "2026-07-23",
+      "SPX": "2026-07-23",
+      "SOX": "2026-07-23",
+      "DJI": "2026-07-23",
       "USDJPY": "2026-07-23",
       "EURJPY": "2026-07-23",
-      "TNX": "2026-07-22",
-      "WTI": "2026-07-22",
-      "VIX": "2026-07-22",
+      "TNX": "2026-07-23",
+      "WTI": "2026-07-23",
+      "VIX": "2026-07-23",
       "NKVI": "2026-07-23"
     },
     "staleKeys": [],
-    "usRefDate": "2026-07-22",
+    "usRefDate": "2026-07-23",
     "refDates": {
-      "N225_CASH": "2026-07-22",
+      "N225_CASH": "2026-07-23",
       "SOX_PROXY": "2026-07-23"
     },
-    "jpExpectedDate": "2026-07-22"
+    "jpExpectedDate": "2026-07-23"
   },
   "success": 12,
   "total": 12
