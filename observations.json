@@ -1,35 +1,39 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-07-23T00:54:03.269817+09:00",
+    "last_detect_run": "2026-07-24T01:04:37.484230+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-07-23T00:54:46.220953+09:00",
-    "days_elapsed": 20,
+    "last_close_run": "2026-07-24T01:05:24.364116+09:00",
+    "days_elapsed": 21,
     "summary": {
       "logic_version": "po-v1",
-      "closed": 3,
-      "open": 1,
+      "closed": 4,
+      "open": 0,
       "total_records_all_versions": 4,
       "win_rate": 100.0,
-      "avg_return": 3.533,
-      "expectancy": 3.533,
-      "avg_win": 3.533,
+      "avg_return": 3.366,
+      "expectancy": 3.366,
+      "avg_win": 3.366,
       "avg_loss": null,
       "r_multiple": null,
-      "excess_vs_dumb": 0.32,
-      "excess_vs_topix": 4.681,
+      "excess_vs_dumb": 0.123,
+      "excess_vs_topix": 4.084,
       "max_drawdown": 0.0,
       "regime_breakdown": {
         "追い風": {
           "n": 2,
           "expectancy": 2.204
         },
+        "中立": {
+          "n": 1,
+          "expectancy": 2.866
+        },
         "強い逆風": {
           "n": 1,
           "expectancy": 6.19
         }
       },
-      "weak_regime_expectancy": 6.19
+      "weak_regime_expectancy": 4.528
     },
     "promotion": {
       "criteria_version": "V1",
@@ -46,21 +50,21 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 20,
+          "actual": 21,
           "pass": false
         },
         {
           "no": 2,
           "label": "クローズ済み>=30件",
           "target": 30,
-          "actual": 3,
+          "actual": 4,
           "pass": false
         },
         {
           "no": 3,
           "label": "期待値>0",
           "target": ">0.0",
-          "actual": 3.533,
+          "actual": 3.366,
           "pass": true
         },
         {
@@ -68,8 +72,8 @@
           "label": "baseline比超過>0(dumb/TOPIX両方)",
           "target": ">0.0(両方)",
           "actual": {
-            "dumb": 0.32,
-            "topix": 4.681
+            "dumb": 0.123,
+            "topix": 4.084
           },
           "pass": true
         },
@@ -84,12 +88,12 @@
           "no": 6,
           "label": "弱地合でEVが大幅マイナスでない",
           "target": ">=-1.0",
-          "actual": 6.19,
+          "actual": 4.528,
           "pass": true
         }
       ],
       "all_pass": false,
-      "days_elapsed": 20
+      "days_elapsed": 21
     },
     "criteria": {
       "min_observation_days": 90,
@@ -261,7 +265,19 @@
         "detect_date": "2026-07-16",
         "entry": 3629.0
       },
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-24T01:05:27.070945+09:00",
+      "exit_price": 3733.0,
+      "exit_reason": "target_recovery",
+      "return_pct": 2.866,
+      "holding_days": 4,
+      "exit_date": "2026-07-23",
+      "baseline": {
+        "dumb_return_pct": 3.334,
+        "topix_return_pct": 0.572,
+        "excess_vs_dumb": -0.468,
+        "excess_vs_topix": 2.294
+      }
     },
     {
       "record_id": "2026-07-17_8316",
