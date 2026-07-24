@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-24T01:09:30.433499+09:00",
+    "generatedAt": "2026-07-25T00:57:23.571695+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,7 +12,7 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-23",
+    "date": "2026-07-24",
     "regime_on": true,
     "n_candidates": 2,
     "candidates": [
@@ -20,33 +20,33 @@
         "ticker": "8306",
         "ticker_name": "三菱UFJ FG",
         "group": "個別",
-        "entry_ref": 3750.0,
-        "date": "2026-07-23",
-        "structural_stop": 3313.4,
-        "stop_pct": -11.64,
-        "target_half": 3937.5,
+        "entry_ref": 3754.0,
+        "date": "2026-07-24",
+        "structural_stop": 3341.8,
+        "stop_pct": -10.98,
+        "target_half": 3941.7,
         "target_pct": 5.0,
-        "trail_line_sma25": 3411.8,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -0.46,
-        "atr20": 93.8,
-        "sma200": 2781.7
+        "trail_line_sma25": 3427.0,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 0.64,
+        "atr20": 95.2,
+        "sma200": 2788.5
       },
       {
         "ticker": "8316",
         "ticker_name": "三井住友FG",
         "group": "個別",
-        "entry_ref": 7167.0,
-        "date": "2026-07-23",
+        "entry_ref": 7161.0,
+        "date": "2026-07-24",
         "structural_stop": 6444.5,
-        "stop_pct": -10.08,
-        "target_half": 7525.4,
+        "stop_pct": -10.01,
+        "target_half": 7519.1,
         "target_pct": 5.0,
-        "trail_line_sma25": 6711.0,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -0.28,
-        "atr20": 172.2,
-        "sma200": 5383.7
+        "trail_line_sma25": 6728.3,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 0.71,
+        "atr20": 173.0,
+        "sma200": 5398.3
       }
     ]
   },
@@ -154,6 +154,14 @@
     },
     {
       "date": "2026-07-23",
+      "regime_on": true,
+      "tickers": [
+        "8306",
+        "8316"
+      ]
+    },
+    {
+      "date": "2026-07-24",
       "regime_on": true,
       "tickers": [
         "8306",
