@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-07-28T01:39:12.584685+09:00",
+    "generatedAt": "2026-07-29T01:19:33.278800+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,43 +12,10 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-07-27",
+    "date": "2026-07-28",
     "regime_on": true,
-    "n_candidates": 2,
-    "candidates": [
-      {
-        "ticker": "8306",
-        "ticker_name": "三菱UFJ FG",
-        "group": "個別",
-        "entry_ref": 3799.0,
-        "date": "2026-07-27",
-        "structural_stop": 3342.8,
-        "stop_pct": -12.01,
-        "target_half": 3989.0,
-        "target_pct": 5.0,
-        "trail_line_sma25": 3447.8,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -0.56,
-        "atr20": 94.9,
-        "sma200": 2795.8
-      },
-      {
-        "ticker": "8316",
-        "ticker_name": "三井住友FG",
-        "group": "個別",
-        "entry_ref": 7214.0,
-        "date": "2026-07-27",
-        "structural_stop": 6444.5,
-        "stop_pct": -10.67,
-        "target_half": 7574.7,
-        "target_pct": 5.0,
-        "trail_line_sma25": 6757.6,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -0.03,
-        "atr20": 174.3,
-        "sma200": 5413.8
-      }
-    ]
+    "n_candidates": 0,
+    "candidates": []
   },
   "history": [
     {
@@ -175,6 +142,11 @@
         "8306",
         "8316"
       ]
+    },
+    {
+      "date": "2026-07-28",
+      "regime_on": true,
+      "tickers": []
     }
   ]
 }
