@@ -1,21 +1,21 @@
 {
   "meta": {
     "observation_start": "2026-07-04",
-    "last_run": "2026-07-29T01:20:20.873196+09:00",
+    "last_run": "2026-07-30T01:04:17.040579+09:00",
     "logic_version": "unified-v1",
-    "days_elapsed": 25,
+    "days_elapsed": 26,
     "summary": {
       "logic_version": "unified-v1",
-      "closed": 7,
-      "open": 23,
-      "win_rate": 85.7,
-      "expectancy": 1.553,
+      "closed": 14,
+      "open": 16,
+      "win_rate": 92.9,
+      "expectancy": 2.026,
       "avg_win": 2.5,
       "avg_loss": -4.13,
       "r_multiple": 0.61,
       "bigwin_pct": 0.0,
       "max_drawdown": -4.1,
-      "avg_hold": 6
+      "avg_hold": 9.286
     },
     "promotion": {
       "criteria_version": "unified-V1",
@@ -31,28 +31,28 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 25,
+          "actual": 26,
           "pass": false
         },
         {
           "no": 2,
           "label": "クローズ済み>=30件",
           "target": 30,
-          "actual": 7,
+          "actual": 14,
           "pass": false
         },
         {
           "no": 3,
           "label": "勝率>=55%",
           "target": 55.0,
-          "actual": 85.7,
+          "actual": 92.9,
           "pass": true
         },
         {
           "no": 4,
           "label": "期待値>0",
           "target": ">0.0",
-          "actual": 1.553,
+          "actual": 2.026,
           "pass": true
         },
         {
@@ -64,7 +64,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 25
+      "days_elapsed": 26
     },
     "criteria": {
       "min_observation_days": 90,
@@ -124,7 +124,12 @@
       "target_half": 7140.0,
       "is_new_52w_high": true,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 16
     },
     {
       "trade_id": "2026-07-06_8306",
@@ -194,7 +199,12 @@
       "target_half": 7152.6,
       "is_new_52w_high": true,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 15
     },
     {
       "trade_id": "2026-07-08_8316",
@@ -209,7 +219,12 @@
       "target_half": 7151.6,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 14
     },
     {
       "trade_id": "2026-07-08_8306",
@@ -244,7 +259,12 @@
       "target_half": 7156.8,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 13
     },
     {
       "trade_id": "2026-07-09_8306",
@@ -299,7 +319,12 @@
       "target_half": 7154.7,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 12
     },
     {
       "trade_id": "2026-07-13_8306",
@@ -349,7 +374,12 @@
       "target_half": 3780.0,
       "is_new_52w_high": true,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 10
     },
     {
       "trade_id": "2026-07-14_8316",
@@ -424,7 +454,12 @@
       "target_half": 3810.5,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-07-30T01:04:19.405291+09:00",
+      "exit_date": "2026-07-29",
+      "exit_reason": "stop_after_half",
+      "net_return_pct": 2.5,
+      "holding_days": 8
     },
     {
       "trade_id": "2026-07-21_8316",
