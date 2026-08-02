@@ -1,10 +1,10 @@
 {
-  "fetchedAt": "2026-08-02T07:30:48.958466+09:00",
+  "fetchedAt": "2026-08-03T07:30:40.561241+09:00",
   "indicators": {
     "N225F": {
-      "price": 63330.0,
-      "chgPct": -0.6822,
-      "asOf": "2026-07-31"
+      "price": 63370.0,
+      "chgPct": 0.0632,
+      "asOf": "2026-08-02"
     },
     "TOPX": {
       "price": 4003.3,
@@ -32,14 +32,14 @@
       "asOf": "2026-07-31"
     },
     "USDJPY": {
-      "price": 157.4,
-      "chgPct": -1.7374,
-      "asOf": "2026-08-01"
+      "price": 157.301,
+      "chgPct": -1.7992,
+      "asOf": "2026-08-02"
     },
     "EURJPY": {
-      "price": 181.491,
-      "chgPct": -3.0776,
-      "asOf": "2026-07-31"
+      "price": 181.656,
+      "chgPct": -1.5841,
+      "asOf": "2026-08-02"
     },
     "TNX": {
       "price": 4.745,
@@ -47,9 +47,9 @@
       "asOf": "2026-07-31"
     },
     "WTI": {
-      "price": 84.67,
-      "chgPct": 1.292,
-      "asOf": "2026-07-31"
+      "price": 80.56,
+      "chgPct": -4.8541,
+      "asOf": "2026-08-02"
     },
     "VIX": {
       "price": 15.99,
@@ -77,21 +77,21 @@
   "earningsWarnings": {
     "8058": {
       "date": "2026-08-03",
-      "businessDaysUntil": 1,
+      "businessDaysUntil": 0,
       "fiscalYear": "3月31日",
       "fiscalPeriod": "第１四半期",
       "companyName": "三菱商事"
     },
     "8306": {
       "date": "2026-08-03",
-      "businessDaysUntil": 1,
+      "businessDaysUntil": 0,
       "fiscalYear": "3月31日",
       "fiscalPeriod": "第１四半期",
       "companyName": "三菱ＵＦＪフィナンシャル・グループ"
     },
     "4062": {
       "date": "2026-08-04",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "イビデン",
@@ -99,7 +99,7 @@
     },
     "7011": {
       "date": "2026-08-04",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "三菱重工業",
@@ -107,7 +107,7 @@
     },
     "7203": {
       "date": "2026-08-04",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "トヨタ自動車",
@@ -115,7 +115,7 @@
     },
     "8031": {
       "date": "2026-08-04",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "三井物産",
@@ -123,7 +123,7 @@
     },
     "9107": {
       "date": "2026-08-04",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "川崎汽船",
@@ -131,25 +131,57 @@
     },
     "7013": {
       "date": "2026-08-05",
-      "businessDaysUntil": 3,
+      "businessDaysUntil": 2,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "ＩＨＩ",
+      "source": "JPX"
+    },
+    "5016": {
+      "date": "2026-08-06",
+      "businessDaysUntil": 3,
+      "fiscalYear": "",
+      "fiscalPeriod": "",
+      "companyName": "ＪＸ金属",
+      "source": "JPX"
+    },
+    "5801": {
+      "date": "2026-08-06",
+      "businessDaysUntil": 3,
+      "fiscalYear": "",
+      "fiscalPeriod": "",
+      "companyName": "古河電気工業",
+      "source": "JPX"
+    },
+    "6920": {
+      "date": "2026-08-06",
+      "businessDaysUntil": 3,
+      "fiscalYear": "",
+      "fiscalPeriod": "",
+      "companyName": "レーザーテック",
+      "source": "JPX"
+    },
+    "9984": {
+      "date": "2026-08-06",
+      "businessDaysUntil": 3,
+      "fiscalYear": "",
+      "fiscalPeriod": "",
+      "companyName": "ソフトバンクグループ",
       "source": "JPX"
     }
   },
   "dataQuality": {
     "dates": {
-      "N225F": "2026-07-31",
+      "N225F": "2026-08-02",
       "TOPX": "2026-07-31",
       "NDX": "2026-07-31",
       "SPX": "2026-07-31",
       "SOX": "2026-07-31",
       "DJI": "2026-07-31",
-      "USDJPY": "2026-08-01",
-      "EURJPY": "2026-07-31",
+      "USDJPY": "2026-08-02",
+      "EURJPY": "2026-08-02",
       "TNX": "2026-07-31",
-      "WTI": "2026-07-31",
+      "WTI": "2026-08-02",
       "VIX": "2026-07-31",
       "NKVI": "2026-07-31"
     },
