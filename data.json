@@ -1,122 +1,112 @@
 {
-  "fetchedAt": "2026-08-05T12:32:53.752887+09:00",
+  "fetchedAt": "2026-08-06T07:30:54.594240+09:00",
   "indicators": {
     "N225F": {
-      "price": 65945.0,
-      "chgPct": 3.9322,
-      "asOf": "2026-08-04"
+      "price": 65880.0,
+      "chgPct": 0.5571,
+      "asOf": "2026-08-05"
     },
     "TOPX": {
-      "price": 3961.78,
-      "chgPct": 0.0442,
-      "asOf": "2026-08-04"
+      "price": 4046.17,
+      "chgPct": 2.1301,
+      "asOf": "2026-08-05"
     },
     "NDX": {
-      "price": 29733.1602,
-      "chgPct": 3.3234,
-      "asOf": "2026-08-04"
+      "price": 29487.791,
+      "chgPct": -0.8252,
+      "asOf": "2026-08-05"
     },
     "SPX": {
-      "price": 7736.52,
-      "chgPct": 1.7896,
-      "asOf": "2026-08-04"
+      "price": 7723.5498,
+      "chgPct": -0.1676,
+      "asOf": "2026-08-05"
     },
     "SOX": {
-      "price": 12179.2627,
-      "chgPct": 6.552,
-      "asOf": "2026-08-04"
+      "price": 12008.8828,
+      "chgPct": -1.3989,
+      "asOf": "2026-08-05"
     },
     "DJI": {
-      "price": 54085.8789,
-      "chgPct": 1.7065,
-      "asOf": "2026-08-04"
+      "price": 54349.1211,
+      "chgPct": 0.4867,
+      "asOf": "2026-08-05"
     },
     "USDJPY": {
-      "price": 157.471,
-      "chgPct": -0.0368,
+      "price": 157.696,
+      "chgPct": 0.106,
       "asOf": "2026-08-05"
     },
     "EURJPY": {
-      "price": 181.659,
-      "chgPct": 0.2096,
+      "price": 182.198,
+      "chgPct": 0.5069,
       "asOf": "2026-08-05"
     },
     "TNX": {
-      "price": 4.627,
-      "chgPct": -1.2591,
-      "asOf": "2026-08-04"
+      "price": 4.617,
+      "chgPct": -0.2161,
+      "asOf": "2026-08-05"
     },
     "WTI": {
-      "price": 74.61,
-      "chgPct": -7.1322,
-      "asOf": "2026-08-04"
+      "price": 75.12,
+      "chgPct": -0.8579,
+      "asOf": "2026-08-05"
     },
     "VIX": {
-      "price": 16.5,
-      "chgPct": 4.0353,
-      "asOf": "2026-08-04"
+      "price": 15.81,
+      "chgPct": -4.1818,
+      "asOf": "2026-08-05"
     },
     "NKVI": {
-      "price": 32.58,
-      "chgPct": -4.93,
+      "price": 33.07,
+      "chgPct": -3.5,
       "asOf": "2026-08-05"
     }
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 63957.5312,
-      "chgPct": 0.3178,
-      "asOf": "2026-08-04"
+      "price": 66300.44,
+      "chgPct": 3.66,
+      "asOf": "2026-08-05"
     },
     "SOX_PROXY": {
-      "price": 58880.0,
-      "chgPct": 3.8448,
+      "price": 58550.0,
+      "chgPct": 3.2628,
       "asOf": "2026-08-05"
     }
   },
   "earningsWarnings": {
-    "7013": {
-      "date": "2026-08-05",
+    "5801": {
+      "date": "2026-08-06",
       "businessDaysUntil": 0,
       "fiscalYear": "3月31日",
       "fiscalPeriod": "第１四半期",
-      "companyName": "ＩＨＩ"
+      "companyName": "古河電気工業"
     },
     "5016": {
       "date": "2026-08-06",
-      "businessDaysUntil": 1,
-      "fiscalYear": "",
-      "fiscalPeriod": "",
-      "companyName": "ＪＸ金属",
-      "source": "JPX"
+      "businessDaysUntil": 0,
+      "fiscalYear": "3月31日",
+      "fiscalPeriod": "第１四半期",
+      "companyName": "ＪＸ金属"
     },
-    "5801": {
+    "9984": {
       "date": "2026-08-06",
-      "businessDaysUntil": 1,
-      "fiscalYear": "",
-      "fiscalPeriod": "",
-      "companyName": "古河電気工業",
-      "source": "JPX"
+      "businessDaysUntil": 0,
+      "fiscalYear": "3月31日",
+      "fiscalPeriod": "第１四半期",
+      "companyName": "ソフトバンクグループ"
     },
     "6920": {
       "date": "2026-08-06",
-      "businessDaysUntil": 1,
+      "businessDaysUntil": 0,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "レーザーテック",
       "source": "JPX"
     },
-    "9984": {
-      "date": "2026-08-06",
-      "businessDaysUntil": 1,
-      "fiscalYear": "",
-      "fiscalPeriod": "",
-      "companyName": "ソフトバンクグループ",
-      "source": "JPX"
-    },
     "5803": {
       "date": "2026-08-07",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "フジクラ",
@@ -124,7 +114,7 @@
     },
     "7012": {
       "date": "2026-08-07",
-      "businessDaysUntil": 2,
+      "businessDaysUntil": 1,
       "fiscalYear": "",
       "fiscalPeriod": "",
       "companyName": "川崎重工業",
@@ -133,26 +123,26 @@
   },
   "dataQuality": {
     "dates": {
-      "N225F": "2026-08-04",
-      "TOPX": "2026-08-04",
-      "NDX": "2026-08-04",
-      "SPX": "2026-08-04",
-      "SOX": "2026-08-04",
-      "DJI": "2026-08-04",
+      "N225F": "2026-08-05",
+      "TOPX": "2026-08-05",
+      "NDX": "2026-08-05",
+      "SPX": "2026-08-05",
+      "SOX": "2026-08-05",
+      "DJI": "2026-08-05",
       "USDJPY": "2026-08-05",
       "EURJPY": "2026-08-05",
-      "TNX": "2026-08-04",
-      "WTI": "2026-08-04",
-      "VIX": "2026-08-04",
+      "TNX": "2026-08-05",
+      "WTI": "2026-08-05",
+      "VIX": "2026-08-05",
       "NKVI": "2026-08-05"
     },
     "staleKeys": [],
-    "usRefDate": "2026-08-04",
+    "usRefDate": "2026-08-05",
     "refDates": {
-      "N225_CASH": "2026-08-04",
+      "N225_CASH": "2026-08-05",
       "SOX_PROXY": "2026-08-05"
     },
-    "jpExpectedDate": "2026-08-04"
+    "jpExpectedDate": "2026-08-05"
   },
   "success": 12,
   "total": 12
