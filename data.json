@@ -1,117 +1,102 @@
 {
-  "fetchedAt": "2026-08-07T12:14:35.935045+09:00",
+  "fetchedAt": "2026-08-08T07:30:43.272186+09:00",
   "indicators": {
     "N225F": {
-      "price": 65195.0,
-      "chgPct": NaN,
+      "price": 66340.0,
+      "chgPct": 1.0356,
       "asOf": "2026-08-07"
     },
     "TOPX": {
-      "price": 4055.85,
-      "chgPct": 0.2392,
-      "asOf": "2026-08-06"
+      "price": 4074.93,
+      "chgPct": 0.4704,
+      "asOf": "2026-08-07"
     },
     "NDX": {
-      "price": 29373.334,
-      "chgPct": -0.3881,
-      "asOf": "2026-08-06"
+      "price": 29722.3027,
+      "chgPct": 1.1881,
+      "asOf": "2026-08-07"
     },
     "SPX": {
-      "price": 7709.96,
-      "chgPct": -0.176,
-      "asOf": "2026-08-06"
+      "price": 7757.6401,
+      "chgPct": 0.6184,
+      "asOf": "2026-08-07"
     },
     "SOX": {
-      "price": 12048.6934,
-      "chgPct": 0.3315,
-      "asOf": "2026-08-06"
+      "price": 12356.7871,
+      "chgPct": 2.5571,
+      "asOf": "2026-08-07"
     },
     "DJI": {
-      "price": 53885.1016,
-      "chgPct": -0.8538,
-      "asOf": "2026-08-06"
+      "price": 54036.9297,
+      "chgPct": 0.2818,
+      "asOf": "2026-08-07"
     },
     "USDJPY": {
-      "price": 158.405,
-      "chgPct": 0.5108,
+      "price": 157.745,
+      "chgPct": 0.092,
       "asOf": "2026-08-07"
     },
     "EURJPY": {
-      "price": 182.506,
-      "chgPct": 0.2004,
+      "price": 182.378,
+      "chgPct": 0.1301,
       "asOf": "2026-08-07"
     },
     "TNX": {
-      "price": 4.67,
-      "chgPct": 1.1479,
-      "asOf": "2026-08-06"
+      "price": 4.66,
+      "chgPct": -0.2141,
+      "asOf": "2026-08-07"
     },
     "WTI": {
-      "price": 77.92,
-      "chgPct": 3.5895,
-      "asOf": "2026-08-06"
+      "price": 77.08,
+      "chgPct": -0.2717,
+      "asOf": "2026-08-07"
     },
     "VIX": {
-      "price": 15.15,
-      "chgPct": -4.1746,
-      "asOf": "2026-08-06"
+      "price": 14.9,
+      "chgPct": -1.6502,
+      "asOf": "2026-08-07"
     },
     "NKVI": {
-      "price": 31.23,
-      "chgPct": 4.87,
+      "price": 29.88,
+      "chgPct": 0.34,
       "asOf": "2026-08-07"
     }
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 65683.2578,
-      "chgPct": -0.9309,
-      "asOf": "2026-08-06"
+      "price": 65606.71,
+      "chgPct": -0.12,
+      "asOf": "2026-08-07"
     },
     "SOX_PROXY": {
-      "price": 54230.0,
-      "chgPct": -1.9881,
+      "price": 54500.0,
+      "chgPct": -1.5001,
       "asOf": "2026-08-07"
     }
   },
-  "earningsWarnings": {
-    "7012": {
-      "date": "2026-08-07",
-      "businessDaysUntil": 0,
-      "fiscalYear": "3月31日",
-      "fiscalPeriod": "第１四半期",
-      "companyName": "川崎重工業"
-    },
-    "5803": {
-      "date": "2026-08-07",
-      "businessDaysUntil": 0,
-      "fiscalYear": "3月31日",
-      "fiscalPeriod": "第１四半期",
-      "companyName": "フジクラ"
-    }
-  },
+  "earningsWarnings": {},
   "dataQuality": {
     "dates": {
       "N225F": "2026-08-07",
-      "TOPX": "2026-08-06",
-      "NDX": "2026-08-06",
-      "SPX": "2026-08-06",
-      "SOX": "2026-08-06",
-      "DJI": "2026-08-06",
+      "TOPX": "2026-08-07",
+      "NDX": "2026-08-07",
+      "SPX": "2026-08-07",
+      "SOX": "2026-08-07",
+      "DJI": "2026-08-07",
       "USDJPY": "2026-08-07",
       "EURJPY": "2026-08-07",
-      "TNX": "2026-08-06",
-      "WTI": "2026-08-06",
-      "VIX": "2026-08-06",
+      "TNX": "2026-08-07",
+      "WTI": "2026-08-07",
+      "VIX": "2026-08-07",
       "NKVI": "2026-08-07"
     },
     "staleKeys": [],
-    "usRefDate": "2026-08-06",
+    "usRefDate": "2026-08-07",
     "refDates": {
-      "N225_CASH": "2026-08-06",
+      "N225_CASH": "2026-08-07",
       "SOX_PROXY": "2026-08-07"
     },
-    "jpExpectedDate": "2026-08-06"
+    "jpExpectedDate": "2026-08-07"
   },
   "success": 12,
   "total": 12
