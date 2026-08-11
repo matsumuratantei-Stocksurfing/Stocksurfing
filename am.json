@@ -1,296 +1,128 @@
 {
-  "generatedAt": "2026-08-10T13:42:46.351671+09:00",
-  "date": "2026-08-10",
-  "success": 24,
+  "generatedAt": "2026-08-11T13:23:41.763404+09:00",
+  "date": "2026-08-11",
+  "success": 0,
   "total": 24,
   "items": [
     {
-      "code": "8035",
-      "name": "東京エレクトロン",
-      "ok": true,
-      "morningClose": 56390.0,
-      "morningOpen": 55800.0,
-      "morningHigh": 56760.0,
-      "morningLow": 55600.0,
-      "label": "堅調・許容範囲",
-      "cls": "sub",
-      "note": "前場 +1.1% / 値幅2.1% / 引け位置68%"
-    },
-    {
-      "code": "6981",
-      "name": "村田製作所",
-      "ok": true,
-      "morningClose": 7211.0,
-      "morningOpen": 7273.0,
-      "morningHigh": 7473.0,
-      "morningLow": 7208.0,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -0.9% / 値幅3.6% / 引け位置1%"
-    },
-    {
-      "code": "5016",
-      "name": "JX金属",
-      "ok": true,
-      "morningClose": 3869.0,
-      "morningOpen": 3892.0,
-      "morningHigh": 3959.0,
-      "morningLow": 3816.0,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -0.6% / 値幅3.7% / 引け位置37%"
-    },
-    {
-      "code": "9984",
-      "name": "ソフトバンクG",
-      "ok": true,
-      "morningClose": 5523.0,
-      "morningOpen": 5491.0,
-      "morningHigh": 5569.0,
-      "morningLow": 5388.0,
-      "label": "堅調・許容範囲",
-      "cls": "sub",
-      "note": "前場 +0.6% / 値幅3.3% / 引け位置75%"
-    },
-    {
-      "code": "7011",
-      "name": "三菱重工業",
-      "ok": true,
-      "morningClose": 4019.0,
-      "morningOpen": 4062.0,
-      "morningHigh": 4069.0,
-      "morningLow": 3933.0,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -1.1% / 値幅3.3% / 引け位置63%"
-    },
-    {
-      "code": "7012",
-      "name": "川崎重工業",
-      "ok": true,
-      "morningClose": 2692.5,
-      "morningOpen": 2750.0,
-      "morningHigh": 2777.5,
-      "morningLow": 2654.0,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -2.1% / 値幅4.5% / 引け位置31%"
-    },
-    {
-      "code": "7013",
-      "name": "IHI",
-      "ok": true,
-      "morningClose": 2759.0,
-      "morningOpen": 2764.0,
-      "morningHigh": 2776.5,
-      "morningLow": 2697.0,
-      "label": "前場もみ合い→方向待ち",
-      "cls": "sub",
-      "note": "前場 -0.2% / 値幅2.9% / 引け位置78%"
-    },
-    {
-      "code": "7203",
-      "name": "トヨタ自動車",
-      "ok": true,
-      "morningClose": 2976.0,
-      "morningOpen": 2989.5,
-      "morningHigh": 2989.5,
-      "morningLow": 2939.5,
-      "label": "前場もみ合い→方向待ち",
-      "cls": "sub",
-      "note": "前場 -0.5% / 値幅1.7% / 引け位置73%"
-    },
-    {
-      "code": "8058",
-      "name": "三菱商事",
-      "ok": true,
-      "morningClose": 4860.0,
-      "morningOpen": 4812.0,
-      "morningHigh": 4865.0,
-      "morningLow": 4772.0,
-      "label": "堅調・許容範囲",
-      "cls": "sub",
-      "note": "前場 +1.0% / 値幅1.9% / 引け位置95%"
-    },
-    {
-      "code": "8031",
-      "name": "三井物産",
-      "ok": true,
-      "morningClose": 4908.0,
-      "morningOpen": 4912.0,
-      "morningHigh": 4922.0,
-      "morningLow": 4834.0,
-      "label": "前場もみ合い→方向待ち",
-      "cls": "sub",
-      "note": "前場 -0.1% / 値幅1.8% / 引け位置84%"
-    },
-    {
-      "code": "8306",
-      "name": "三菱UFJ FG",
-      "ok": true,
-      "morningClose": 3507.0,
-      "morningOpen": 3550.0,
-      "morningHigh": 3551.0,
-      "morningLow": 3479.0,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -1.2% / 値幅2.0% / 引け位置39%"
-    },
-    {
-      "code": "8316",
-      "name": "三井住友FG",
-      "ok": true,
-      "morningClose": 6670.0,
-      "morningOpen": 6751.0,
-      "morningHigh": 6764.0,
-      "morningLow": 6595.0,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -1.2% / 値幅2.5% / 引け位置44%"
-    },
-    {
-      "code": "9107",
-      "name": "川崎汽船",
-      "ok": true,
-      "morningClose": 2864.0,
-      "morningOpen": 2884.5,
-      "morningHigh": 2898.0,
-      "morningLow": 2842.5,
-      "label": "やや軟調・様子見",
-      "cls": "sub",
-      "note": "前場 -0.7% / 値幅1.9% / 引け位置39%"
-    },
-    {
       "code": "285A",
       "name": "キオクシア",
-      "ok": true,
-      "morningClose": 47980.0,
-      "morningOpen": 46500.0,
-      "morningHigh": 48940.0,
-      "morningLow": 46300.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +3.2% / 値幅5.7% / 引け位置64%"
+      "ok": false
+    },
+    {
+      "code": "8035",
+      "name": "東京エレクトロン",
+      "ok": false
     },
     {
       "code": "6857",
       "name": "アドバンテスト",
-      "ok": true,
-      "morningClose": 33840.0,
-      "morningOpen": 32890.0,
-      "morningHigh": 33990.0,
-      "morningLow": 32710.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +2.9% / 値幅3.9% / 引け位置88%"
+      "ok": false
     },
     {
       "code": "6920",
       "name": "レーザーテック",
-      "ok": true,
-      "morningClose": 39300.0,
-      "morningOpen": 38160.0,
-      "morningHigh": 39430.0,
-      "morningLow": 37740.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +3.0% / 値幅4.4% / 引け位置92%"
+      "ok": false
     },
     {
       "code": "6146",
       "name": "ディスコ",
-      "ok": true,
-      "morningClose": 62740.0,
-      "morningOpen": 60020.0,
-      "morningHigh": 62990.0,
-      "morningLow": 60020.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +4.5% / 値幅4.9% / 引け位置92%"
+      "ok": false
     },
     {
       "code": "4062",
       "name": "イビデン",
-      "ok": true,
-      "morningClose": 20235.0,
-      "morningOpen": 19020.0,
-      "morningHigh": 21070.0,
-      "morningLow": 18895.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +6.4% / 値幅11.4% / 引け位置62%"
+      "ok": false
+    },
+    {
+      "code": "6981",
+      "name": "村田製作所",
+      "ok": false
     },
     {
       "code": "5803",
       "name": "フジクラ",
-      "ok": true,
-      "morningClose": 5680.0,
-      "morningOpen": 5210.0,
-      "morningHigh": 5730.0,
-      "morningLow": 5122.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +9.0% / 値幅11.7% / 引け位置92%"
+      "ok": false
     },
     {
       "code": "5801",
       "name": "古河電工",
-      "ok": true,
-      "morningClose": 4040.0,
-      "morningOpen": 3926.0,
-      "morningHigh": 4251.0,
-      "morningLow": 3907.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +2.9% / 値幅8.8% / 引け位置39%"
+      "ok": false
     },
     {
       "code": "4063",
       "name": "信越化学",
-      "ok": true,
-      "morningClose": 6309.0,
-      "morningOpen": 6224.0,
-      "morningHigh": 6327.0,
-      "morningLow": 6197.0,
-      "label": "買われすぎ気味⚠ 後場は追わない",
-      "cls": "down",
-      "note": "前場 +1.4% / 値幅2.1% / 引け位置86%"
+      "ok": false
+    },
+    {
+      "code": "5016",
+      "name": "JX金属",
+      "ok": false
+    },
+    {
+      "code": "9984",
+      "name": "ソフトバンクG",
+      "ok": false
+    },
+    {
+      "code": "7011",
+      "name": "三菱重工業",
+      "ok": false
+    },
+    {
+      "code": "7012",
+      "name": "川崎重工業",
+      "ok": false
+    },
+    {
+      "code": "7013",
+      "name": "IHI",
+      "ok": false
     },
     {
       "code": "6501",
       "name": "日立製作所",
-      "ok": true,
-      "morningClose": 5658.0,
-      "morningOpen": 5590.0,
-      "morningHigh": 5689.0,
-      "morningLow": 5575.0,
-      "label": "高値圏・飛び乗り注意",
-      "cls": "down",
-      "note": "前場 +1.2% / 値幅2.0% / 引け位置73%"
+      "ok": false
     },
     {
       "code": "6758",
       "name": "ソニーG",
-      "ok": true,
-      "morningClose": 3765.0,
-      "morningOpen": 3707.0,
-      "morningHigh": 3801.0,
-      "morningLow": 3650.0,
-      "label": "高値圏・飛び乗り注意",
-      "cls": "down",
-      "note": "前場 +1.6% / 値幅4.1% / 引け位置76%"
+      "ok": false
+    },
+    {
+      "code": "7203",
+      "name": "トヨタ自動車",
+      "ok": false
     },
     {
       "code": "6506",
       "name": "安川電機",
-      "ok": true,
-      "morningClose": 5371.0,
-      "morningOpen": 5285.0,
-      "morningHigh": 5422.0,
-      "morningLow": 5275.0,
-      "label": "高値圏・飛び乗り注意",
-      "cls": "down",
-      "note": "前場 +1.6% / 値幅2.8% / 引け位置65%"
+      "ok": false
+    },
+    {
+      "code": "8058",
+      "name": "三菱商事",
+      "ok": false
+    },
+    {
+      "code": "8031",
+      "name": "三井物産",
+      "ok": false
+    },
+    {
+      "code": "8306",
+      "name": "三菱UFJ FG",
+      "ok": false
+    },
+    {
+      "code": "8316",
+      "name": "三井住友FG",
+      "ok": false
+    },
+    {
+      "code": "9107",
+      "name": "川崎汽船",
+      "ok": false
     }
   ]
 }
