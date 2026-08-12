@@ -1,15 +1,15 @@
 {
-  "updated_at": "2026-08-12T11:44:47.176677+09:00",
-  "updated_jst": "2026-08-12 11:44:47 JST",
+  "updated_at": "2026-08-12T12:02:59.594137+09:00",
+  "updated_jst": "2026-08-12 12:02:59 JST",
   "data": {
     "TSE_OPEN": {
       "name": "日経平均",
       "symbol": "^N225",
       "value": {
-        "price": 67034.5,
+        "price": 67040.1797,
         "open": 66994.0469,
         "prev_close": 66970.2188,
-        "chgPct": 0.096
+        "chgPct": 0.1045
       }
     },
     "SOX_PROXY": {
