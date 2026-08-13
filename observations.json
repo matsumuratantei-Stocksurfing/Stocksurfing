@@ -1,15 +1,15 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-08-13T00:18:19.791727+09:00",
+    "last_detect_run": "2026-08-14T00:25:42.174486+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-08-13T00:18:58.993889+09:00",
-    "days_elapsed": 41,
+    "last_close_run": "2026-08-14T00:26:25.490332+09:00",
+    "days_elapsed": 42,
     "summary": {
       "logic_version": "po-v1",
       "closed": 5,
-      "open": 1,
-      "total_records_all_versions": 6,
+      "open": 2,
+      "total_records_all_versions": 7,
       "win_rate": 80.0,
       "avg_return": 1.281,
       "expectancy": 1.281,
@@ -50,7 +50,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 41,
+          "actual": 42,
           "pass": false
         },
         {
@@ -93,7 +93,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 41
+      "days_elapsed": 42
     },
     "criteria": {
       "min_observation_days": 90,
@@ -440,6 +440,52 @@
         "excess_vs_dumb": -2.445,
         "excess_vs_topix": -6.794
       }
+    },
+    {
+      "record_id": "2026-08-13_6857",
+      "logic_version": "po-v1",
+      "detected_at": "2026-08-14T00:25:42.174486+09:00",
+      "ticker": "6857",
+      "ticker_name": "アドバンテスト",
+      "group": "個別",
+      "detection_price": 35940.0,
+      "hypothetical_entry": {
+        "price": 35940.0,
+        "basis": "PO押し目イベント発火日の調整済み終値(検出ロジックの定義)"
+      },
+      "structural_stop": 26832.399999999998,
+      "detection_context": {
+        "market_condition": {
+          "score": 20.0,
+          "label": "追い風",
+          "weak": false,
+          "fetchedAt": "2026-08-13T11:47:13.598647+09:00"
+        },
+        "volume_snapshot": {
+          "volume": 8063200.0,
+          "date": "2026-08-13"
+        },
+        "signal_params": {
+          "logic_version": "po-v1",
+          "po": true,
+          "gate": true,
+          "pullback_pct": 2.97,
+          "band": "[2,5)",
+          "level": ">SMA25",
+          "slope25": 1.881,
+          "pivot_high": 37040.0,
+          "swing_low": 27380.0,
+          "sma5": 33974.0,
+          "sma25": 30331.6,
+          "sma75": 29189.8,
+          "sma200": 25027.03
+        }
+      },
+      "baseline_ref": {
+        "detect_date": "2026-08-13",
+        "entry": 35940.0
+      },
+      "status": "open"
     }
   ]
 }
