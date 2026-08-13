@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-08-13T11:47:33.130912+09:00",
-  "updated_jst": "2026-08-13 11:47:33 JST",
+  "updated_at": "2026-08-13T12:05:52.848982+09:00",
+  "updated_jst": "2026-08-13 12:05:52 JST",
   "data": {
     "TSE_OPEN": {
       "name": "日経平均",
@@ -16,20 +16,20 @@
       "name": "東京エレクトロン",
       "symbol": "8035.T",
       "value": {
-        "price": 60390.0,
+        "price": 60400.0,
         "open": 59380.0,
         "prev_close": 58230.0,
-        "chgPct": 3.7094
+        "chgPct": 3.7266
       }
     },
     "USDJPY_OPEN": {
       "name": "ドル円",
       "symbol": "USDJPY=X",
       "value": {
-        "price": 159.446,
+        "price": 159.409,
         "open": 159.379,
         "prev_close": 159.265,
-        "chgPct": 0.1136
+        "chgPct": 0.0904
       }
     }
   },
