@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-08-13T00:30:11.507682+09:00",
+    "generatedAt": "2026-08-14T00:31:36.745729+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,10 +12,59 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-08-12",
+    "date": "2026-08-13",
     "regime_on": true,
-    "n_candidates": 0,
-    "candidates": []
+    "n_candidates": 3,
+    "candidates": [
+      {
+        "ticker": "6857",
+        "ticker_name": "アドバンテスト",
+        "group": "個別",
+        "entry_ref": 35940.0,
+        "date": "2026-08-13",
+        "structural_stop": 26832.4,
+        "stop_pct": -25.34,
+        "target_half": 37737.0,
+        "target_pct": 5.0,
+        "trail_line_sma25": 30331.6,
+        "is_new_52w_high": true,
+        "dist_from_52w_high_pct": 0.0,
+        "atr20": 2551.5,
+        "sma200": 25027.0
+      },
+      {
+        "ticker": "9107",
+        "ticker_name": "川崎汽船",
+        "group": "個別",
+        "entry_ref": 2903.5,
+        "date": "2026-08-13",
+        "structural_stop": 2631.3,
+        "stop_pct": -9.37,
+        "target_half": 3048.7,
+        "target_pct": 5.0,
+        "trail_line_sma25": 2759.1,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.06,
+        "atr20": 70.6,
+        "sma200": 2437.1
+      },
+      {
+        "ticker": "8306",
+        "ticker_name": "三菱UFJ FG",
+        "group": "個別",
+        "entry_ref": 3709.0,
+        "date": "2026-08-13",
+        "structural_stop": 3357.5,
+        "stop_pct": -9.48,
+        "target_half": 3894.5,
+        "target_pct": 5.0,
+        "trail_line_sma25": 3589.8,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.73,
+        "atr20": 112.8,
+        "sma200": 2871.9
+      }
+    ]
   },
   "history": [
     {
@@ -194,6 +243,15 @@
       "date": "2026-08-12",
       "regime_on": true,
       "tickers": []
+    },
+    {
+      "date": "2026-08-13",
+      "regime_on": true,
+      "tickers": [
+        "6857",
+        "9107",
+        "8306"
+      ]
     }
   ]
 }
