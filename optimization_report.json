@@ -1,13 +1,13 @@
 {
-  "evaluatedAt": "2026-08-13T23:49:52.155411+09:00",
-  "days": 68,
+  "evaluatedAt": "2026-08-14T23:01:23.464903+09:00",
+  "days": 69,
   "minDays": 40,
   "margin": 0.05,
   "baselineVersion": "baseline-2026-06-22",
-  "baselineInSample": 0.6324,
-  "baselineOos": 0.6324,
-  "candidateInSample": 0.6471,
-  "candidateOos": 0.6324,
+  "baselineInSample": 0.6232,
+  "baselineOos": 0.6232,
+  "candidateInSample": 0.6232,
+  "candidateOos": 0.6232,
   "candidateWeights": {
     "N225F": 3.0,
     "TOPX": 1.4,
@@ -18,7 +18,7 @@
     "USDJPY": 1.5,
     "EURJPY": 0.8,
     "TNX": 0.8,
-    "WTI": 0.6,
+    "WTI": 1.2,
     "VIX": 0.8,
     "NKVI": 1.0
   },
