@@ -1,28 +1,28 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-08-14T00:25:42.174486+09:00",
+    "last_detect_run": "2026-08-15T00:10:29.208979+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-08-14T00:26:25.490332+09:00",
-    "days_elapsed": 42,
+    "last_close_run": "2026-08-15T00:11:09.506643+09:00",
+    "days_elapsed": 43,
     "summary": {
       "logic_version": "po-v1",
-      "closed": 5,
-      "open": 2,
+      "closed": 6,
+      "open": 1,
       "total_records_all_versions": 7,
-      "win_rate": 80.0,
-      "avg_return": 1.281,
-      "expectancy": 1.281,
-      "avg_win": 3.366,
+      "win_rate": 83.3,
+      "avg_return": 1.578,
+      "expectancy": 1.578,
+      "avg_win": 3.305,
       "avg_loss": 7.06,
-      "r_multiple": 0.48,
-      "excess_vs_dumb": -0.391,
-      "excess_vs_topix": 1.908,
+      "r_multiple": 0.47,
+      "excess_vs_dumb": -0.247,
+      "excess_vs_topix": 2.009,
       "max_drawdown": -7.06,
       "regime_breakdown": {
         "追い風": {
-          "n": 2,
-          "expectancy": 2.204
+          "n": 3,
+          "expectancy": 2.49
         },
         "中立": {
           "n": 2,
@@ -50,21 +50,21 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 42,
+          "actual": 43,
           "pass": false
         },
         {
           "no": 2,
           "label": "クローズ済み>=30件",
           "target": 30,
-          "actual": 5,
+          "actual": 6,
           "pass": false
         },
         {
           "no": 3,
           "label": "期待値>0",
           "target": ">0.0",
-          "actual": 1.281,
+          "actual": 1.578,
           "pass": true
         },
         {
@@ -72,8 +72,8 @@
           "label": "baseline比超過>0(dumb/TOPIX両方)",
           "target": ">0.0(両方)",
           "actual": {
-            "dumb": -0.391,
-            "topix": 1.908
+            "dumb": -0.247,
+            "topix": 2.009
           },
           "pass": false
         },
@@ -81,7 +81,7 @@
           "no": 5,
           "label": "R倍数>=1.5",
           "target": 1.5,
-          "actual": 0.48,
+          "actual": 0.47,
           "pass": false
         },
         {
@@ -93,7 +93,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 42
+      "days_elapsed": 43
     },
     "criteria": {
       "min_observation_days": 90,
@@ -485,7 +485,19 @@
         "detect_date": "2026-08-13",
         "entry": 35940.0
       },
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-08-15T00:11:13.104699+09:00",
+      "exit_price": 37040.0,
+      "exit_reason": "target_recovery",
+      "return_pct": 3.061,
+      "holding_days": 1,
+      "exit_date": "2026-08-14",
+      "baseline": {
+        "dumb_return_pct": 2.588,
+        "topix_return_pct": 0.551,
+        "excess_vs_dumb": 0.473,
+        "excess_vs_topix": 2.51
+      }
     }
   ]
 }
