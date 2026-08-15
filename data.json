@@ -1,9 +1,9 @@
 {
-  "fetchedAt": "2026-08-15T07:30:48.433768+09:00",
+  "fetchedAt": "2026-08-16T07:30:44.811373+09:00",
   "indicators": {
     "N225F": {
-      "price": 68740.0,
-      "chgPct": -0.6647,
+      "price": 68735.0,
+      "chgPct": -0.672,
       "asOf": "2026-08-14"
     },
     "TOPX": {
@@ -33,7 +33,7 @@
     },
     "USDJPY": {
       "price": 159.305,
-      "chgPct": -0.0144,
+      "chgPct": -0.0759,
       "asOf": "2026-08-15"
     },
     "EURJPY": {
@@ -64,8 +64,13 @@
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 68713.8,
-      "chgPct": 0.59,
+      "price": 68713.7969,
+      "chgPct": 0.5932,
+      "asOf": "2026-08-14"
+    },
+    "SOX_PROXY": {
+      "price": 59130.0,
+      "chgPct": -0.5717,
       "asOf": "2026-08-14"
     }
   },
@@ -88,7 +93,8 @@
     "staleKeys": [],
     "usRefDate": "2026-08-14",
     "refDates": {
-      "N225_CASH": "2026-08-14"
+      "N225_CASH": "2026-08-14",
+      "SOX_PROXY": "2026-08-14"
     },
     "jpExpectedDate": "2026-08-14"
   },
