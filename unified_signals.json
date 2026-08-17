@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-08-15T00:23:14.871519+09:00",
+    "generatedAt": "2026-08-17T23:55:17.102128+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,7 +12,7 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-08-14",
+    "date": "2026-08-17",
     "regime_on": true,
     "n_candidates": 2,
     "candidates": [
@@ -20,33 +20,33 @@
         "ticker": "9107",
         "ticker_name": "川崎汽船",
         "group": "個別",
-        "entry_ref": 3030.0,
-        "date": "2026-08-14",
+        "entry_ref": 3072.0,
+        "date": "2026-08-17",
         "structural_stop": 2631.3,
-        "stop_pct": -13.16,
-        "target_half": 3181.5,
+        "stop_pct": -14.35,
+        "target_half": 3225.6,
         "target_pct": 5.0,
-        "trail_line_sma25": 2778.3,
+        "trail_line_sma25": 2798.0,
         "is_new_52w_high": true,
-        "dist_from_52w_high_pct": -2.21,
-        "atr20": 76.6,
-        "sma200": 2441.7
+        "dist_from_52w_high_pct": -0.42,
+        "atr20": 78.7,
+        "sma200": 2446.4
       },
       {
         "ticker": "6857",
         "ticker_name": "アドバンテスト",
         "group": "個別",
-        "entry_ref": 36870.0,
-        "date": "2026-08-14",
+        "entry_ref": 37780.0,
+        "date": "2026-08-17",
         "structural_stop": 29478.4,
-        "stop_pct": -20.05,
-        "target_half": 38713.5,
+        "stop_pct": -21.97,
+        "target_half": 39669.0,
         "target_pct": 5.0,
-        "trail_line_sma25": 30704.6,
-        "is_new_52w_high": true,
-        "dist_from_52w_high_pct": 0.46,
-        "atr20": 2600.0,
-        "sma200": 25127.0
+        "trail_line_sma25": 31049.4,
+        "is_new_52w_high": false,
+        "dist_from_52w_high_pct": 2.45,
+        "atr20": 2563.0,
+        "sma200": 25228.4
       }
     ]
   },
@@ -239,6 +239,14 @@
     },
     {
       "date": "2026-08-14",
+      "regime_on": true,
+      "tickers": [
+        "9107",
+        "6857"
+      ]
+    },
+    {
+      "date": "2026-08-17",
       "regime_on": true,
       "tickers": [
         "9107",
