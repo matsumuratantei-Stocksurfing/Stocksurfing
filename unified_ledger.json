@@ -1,21 +1,21 @@
 {
   "meta": {
     "observation_start": "2026-07-04",
-    "last_run": "2026-08-19T00:04:00.735059+09:00",
+    "last_run": "2026-08-20T00:04:04.585915+09:00",
     "logic_version": "unified-v1",
-    "days_elapsed": 46,
+    "days_elapsed": 47,
     "summary": {
       "logic_version": "unified-v1",
-      "closed": 31,
+      "closed": 32,
       "open": 8,
-      "win_rate": 51.6,
-      "expectancy": -1.506,
+      "win_rate": 50.0,
+      "expectancy": -1.639,
       "avg_win": 2.728,
-      "avg_loss": -6.022,
+      "avg_loss": -6.006,
       "r_multiple": 0.45,
       "bigwin_pct": 0.0,
-      "max_drawdown": -81.2,
-      "avg_hold": 9.161
+      "max_drawdown": -84.5,
+      "avg_hold": 9
     },
     "promotion": {
       "criteria_version": "unified-V1",
@@ -31,28 +31,28 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 46,
+          "actual": 47,
           "pass": false
         },
         {
           "no": 2,
           "label": "クローズ済み>=30件",
           "target": 30,
-          "actual": 31,
+          "actual": 32,
           "pass": true
         },
         {
           "no": 3,
           "label": "勝率>=55%",
           "target": 55.0,
-          "actual": 51.6,
+          "actual": 50.0,
           "pass": false
         },
         {
           "no": 4,
           "label": "期待値>0",
           "target": ">0.0",
-          "actual": -1.506,
+          "actual": -1.639,
           "pass": false
         },
         {
@@ -64,7 +64,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 46
+      "days_elapsed": 47
     },
     "criteria": {
       "min_observation_days": 90,
@@ -739,7 +739,12 @@
       "target_half": 3894.5,
       "is_new_52w_high": false,
       "regime_on_at_entry": true,
-      "status": "open"
+      "status": "closed",
+      "closed_at": "2026-08-20T00:04:08.951578+09:00",
+      "exit_date": "2026-08-19",
+      "exit_reason": "trail",
+      "net_return_pct": -5.77,
+      "holding_days": 4
     },
     {
       "trade_id": "2026-08-14_9107",
@@ -812,6 +817,21 @@
       "entry": 3141.0,
       "structural_stop": 2631.3,
       "target_half": 3298.1,
+      "is_new_52w_high": true,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-08-19_9107",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-08-20T00:04:04.586496+09:00",
+      "ticker": "9107",
+      "ticker_name": "川崎汽船",
+      "group": "個別",
+      "entry_date": "2026-08-19",
+      "entry": 3157.0,
+      "structural_stop": 2631.3,
+      "target_half": 3314.9,
       "is_new_52w_high": true,
       "regime_on_at_entry": true,
       "status": "open"
