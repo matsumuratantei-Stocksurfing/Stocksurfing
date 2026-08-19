@@ -1,9 +1,9 @@
 {
-  "fetchedAt": "2026-08-19T09:20:37.347717+09:00",
+  "fetchedAt": "2026-08-19T10:52:51.214407+09:00",
   "indicators": {
     "N225F": {
-      "price": 65730.0,
-      "chgPct": -4.8632,
+      "price": 66045.0,
+      "chgPct": -4.4073,
       "asOf": "2026-08-18"
     },
     "TOPX": {
@@ -32,13 +32,13 @@
       "asOf": "2026-08-18"
     },
     "USDJPY": {
-      "price": 159.433,
-      "chgPct": 0.0584,
+      "price": 159.478,
+      "chgPct": 0.0866,
       "asOf": "2026-08-19"
     },
     "EURJPY": {
-      "price": 184.64,
-      "chgPct": 0.0591,
+      "price": 184.604,
+      "chgPct": 0.0396,
       "asOf": "2026-08-19"
     },
     "TNX": {
@@ -47,8 +47,8 @@
       "asOf": "2026-08-18"
     },
     "WTI": {
-      "price": 84.43,
-      "chgPct": -0.0828,
+      "price": 84.86,
+      "chgPct": 0.426,
       "asOf": "2026-08-18"
     },
     "VIX": {
@@ -57,21 +57,21 @@
       "asOf": "2026-08-18"
     },
     "NKVI": {
-      "price": 35.12,
-      "chgPct": 15.11,
+      "price": 35.7,
+      "chgPct": 17.01,
       "asOf": "2026-08-19"
     }
   },
   "referenceData": {
     "N225_CASH": {
-      "price": 67460.73,
-      "chgPct": null,
+      "price": 67460.7266,
+      "chgPct": -2.5419,
       "asOf": "2026-08-18"
     },
     "SOX_PROXY": {
-      "price": 56380.0,
-      "chgPct": -6.1741,
-      "asOf": "2026-08-18"
+      "price": 55240.0,
+      "chgPct": -2.022,
+      "asOf": "2026-08-19"
     }
   },
   "earningsWarnings": {},
@@ -94,7 +94,7 @@
     "usRefDate": "2026-08-18",
     "refDates": {
       "N225_CASH": "2026-08-18",
-      "SOX_PROXY": "2026-08-18"
+      "SOX_PROXY": "2026-08-19"
     },
     "jpExpectedDate": "2026-08-18"
   },
