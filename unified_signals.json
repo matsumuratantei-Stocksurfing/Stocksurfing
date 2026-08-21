@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-08-21T00:06:38.144913+09:00",
+    "generatedAt": "2026-08-22T00:05:10.037221+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,7 +12,7 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-08-20",
+    "date": "2026-08-21",
     "regime_on": true,
     "n_candidates": 1,
     "candidates": [
@@ -20,17 +20,17 @@
         "ticker": "9107",
         "ticker_name": "川崎汽船",
         "group": "個別",
-        "entry_ref": 3174.0,
-        "date": "2026-08-20",
-        "structural_stop": 2631.3,
-        "stop_pct": -17.1,
-        "target_half": 3332.7,
+        "entry_ref": 3405.0,
+        "date": "2026-08-21",
+        "structural_stop": 2744.0,
+        "stop_pct": -19.41,
+        "target_half": 3575.2,
         "target_pct": 5.0,
-        "trail_line_sma25": 2868.0,
-        "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 1.12,
-        "atr20": 82.0,
-        "sma200": 2461.8
+        "trail_line_sma25": 2897.2,
+        "is_new_52w_high": true,
+        "dist_from_52w_high_pct": -6.07,
+        "atr20": 91.4,
+        "sma200": 2468.1
       }
     ]
   },
@@ -253,6 +253,13 @@
     },
     {
       "date": "2026-08-20",
+      "regime_on": true,
+      "tickers": [
+        "9107"
+      ]
+    },
+    {
+      "date": "2026-08-21",
       "regime_on": true,
       "tickers": [
         "9107"

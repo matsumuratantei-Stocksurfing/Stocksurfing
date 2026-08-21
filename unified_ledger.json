@@ -1,13 +1,13 @@
 {
   "meta": {
     "observation_start": "2026-07-04",
-    "last_run": "2026-08-21T00:07:18.478253+09:00",
+    "last_run": "2026-08-22T00:05:58.776423+09:00",
     "logic_version": "unified-v1",
-    "days_elapsed": 48,
+    "days_elapsed": 49,
     "summary": {
       "logic_version": "unified-v1",
       "closed": 32,
-      "open": 9,
+      "open": 10,
       "win_rate": 50.0,
       "expectancy": -1.639,
       "avg_win": 2.728,
@@ -31,7 +31,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 48,
+          "actual": 49,
           "pass": false
         },
         {
@@ -64,7 +64,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 48
+      "days_elapsed": 49
     },
     "criteria": {
       "min_observation_days": 90,
@@ -848,6 +848,21 @@
       "structural_stop": 2631.3,
       "target_half": 3332.7,
       "is_new_52w_high": false,
+      "regime_on_at_entry": true,
+      "status": "open"
+    },
+    {
+      "trade_id": "2026-08-21_9107",
+      "logic_version": "unified-v1",
+      "opened_at": "2026-08-22T00:05:58.777008+09:00",
+      "ticker": "9107",
+      "ticker_name": "川崎汽船",
+      "group": "個別",
+      "entry_date": "2026-08-21",
+      "entry": 3405.0,
+      "structural_stop": 2744.0,
+      "target_half": 3575.2,
+      "is_new_52w_high": true,
       "regime_on_at_entry": true,
       "status": "open"
     }
