@@ -1,15 +1,15 @@
 {
   "meta": {
     "observation_start": "2026-07-03",
-    "last_detect_run": "2026-08-25T00:04:45.955725+09:00",
+    "last_detect_run": "2026-08-26T00:09:25.028239+09:00",
     "logic_version": "po-v1",
-    "last_close_run": "2026-08-25T00:05:25.468239+09:00",
-    "days_elapsed": 53,
+    "last_close_run": "2026-08-26T00:10:12.340975+09:00",
+    "days_elapsed": 54,
     "summary": {
       "logic_version": "po-v1",
       "closed": 6,
-      "open": 2,
-      "total_records_all_versions": 8,
+      "open": 3,
+      "total_records_all_versions": 9,
       "win_rate": 83.3,
       "avg_return": 1.578,
       "expectancy": 1.578,
@@ -50,7 +50,7 @@
           "no": 1,
           "label": "観測期間>=90暦日",
           "target": 90,
-          "actual": 53,
+          "actual": 54,
           "pass": false
         },
         {
@@ -93,7 +93,7 @@
         }
       ],
       "all_pass": false,
-      "days_elapsed": 53
+      "days_elapsed": 54
     },
     "criteria": {
       "min_observation_days": 90,
@@ -542,6 +542,52 @@
       "baseline_ref": {
         "detect_date": "2026-08-17",
         "entry": 37780.0
+      },
+      "status": "open"
+    },
+    {
+      "record_id": "2026-08-25_9107",
+      "logic_version": "po-v1",
+      "detected_at": "2026-08-26T00:09:25.028239+09:00",
+      "ticker": "9107",
+      "ticker_name": "川崎汽船",
+      "group": "個別",
+      "detection_price": 3421.0,
+      "hypothetical_entry": {
+        "price": 3421.0,
+        "basis": "PO押し目イベント発火日の調整済み終値(検出ロジックの定義)"
+      },
+      "structural_stop": 2811.13,
+      "detection_context": {
+        "market_condition": {
+          "score": -21.4,
+          "label": "向かい風",
+          "weak": true,
+          "fetchedAt": "2026-08-25T10:52:20.584009+09:00"
+        },
+        "volume_snapshot": {
+          "volume": 9938000.0,
+          "date": "2026-08-25"
+        },
+        "signal_params": {
+          "logic_version": "po-v1",
+          "po": true,
+          "gate": true,
+          "pullback_pct": 4.73,
+          "band": "[2,5)",
+          "level": ">SMA25",
+          "slope25": 8.204,
+          "pivot_high": 3591.0,
+          "swing_low": 2868.5,
+          "sma5": 3324.4,
+          "sma25": 2957.92,
+          "sma75": 2690.78,
+          "sma200": 2480.51
+        }
+      },
+      "baseline_ref": {
+        "detect_date": "2026-08-25",
+        "entry": 3421.0
       },
       "status": "open"
     }
