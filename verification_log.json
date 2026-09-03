@@ -15244,7 +15244,7 @@
   },
   {
     "date": "2026-09-03",
-    "verifiedAt": "2026-09-03T23:01:07.988304+09:00",
+    "verifiedAt": "2026-09-04T02:22:54.914175+09:00",
     "weightsVersion": "baseline-2026-06-22",
     "morningScore": -7.3,
     "morningFetchedAt": "2026-09-03T13:34:10.763646+09:00",
@@ -15265,9 +15265,9 @@
     "predictedPicks": [],
     "actualIndices": {
       "N225": {
-        "open": 64724.80859375,
-        "close": 64214.48046875,
-        "chgPct": -0.7884582992019518
+        "open": null,
+        "close": 64214.48,
+        "chgPct": -0.17
       },
       "TOPX": {
         "open": 4109.67,
