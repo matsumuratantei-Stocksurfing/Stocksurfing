@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-09-08T03:49:48.571925+09:00",
+    "generatedAt": "2026-09-09T03:01:55.518852+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,27 +12,10 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-09-07",
+    "date": "2026-09-08",
     "regime_on": true,
-    "n_candidates": 1,
-    "candidates": [
-      {
-        "ticker": "8306",
-        "ticker_name": "三菱UFJ FG",
-        "group": "個別",
-        "entry_ref": 3711.0,
-        "date": "2026-09-07",
-        "structural_stop": 3402.6,
-        "stop_pct": -8.31,
-        "target_half": 3896.6,
-        "target_pct": 5.0,
-        "trail_line_sma25": 3606.6,
-        "is_new_52w_high": false,
-        "dist_from_52w_high_pct": 2.68,
-        "atr20": 88.2,
-        "sma200": 2984.8
-      }
-    ]
+    "n_candidates": 0,
+    "candidates": []
   },
   "history": [
     {
@@ -333,6 +316,11 @@
       "tickers": [
         "8306"
       ]
+    },
+    {
+      "date": "2026-09-08",
+      "regime_on": true,
+      "tickers": []
     }
   ]
 }
