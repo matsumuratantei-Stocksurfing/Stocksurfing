@@ -1,13 +1,13 @@
 {
-  "evaluatedAt": "2026-09-15T23:01:29.746549+09:00",
+  "evaluatedAt": "2026-09-16T02:49:56.695213+09:00",
   "days": 91,
   "minDays": 40,
   "margin": 0.05,
   "baselineVersion": "baseline-2026-06-22",
-  "baselineInSample": 0.6264,
-  "baselineOos": 0.6484,
-  "candidateInSample": 0.6374,
-  "candidateOos": 0.6484,
+  "baselineInSample": 0.6374,
+  "baselineOos": 0.6593,
+  "candidateInSample": 0.6484,
+  "candidateOos": 0.6593,
   "candidateWeights": {
     "N225F": 3.0,
     "TOPX": 1.4,
