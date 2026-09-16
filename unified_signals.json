@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-09-16T03:25:26.625503+09:00",
+    "generatedAt": "2026-09-17T03:21:57.140726+09:00",
     "logic_version": "unified-v1",
     "strategy": "松村式一本化v1: 地合い(TOPIX>200MA)×上昇トレンド新高値/3%以内×構造損切り×+5%半利確→SMA25トレール",
     "risk_pct_default": 2.0,
@@ -12,7 +12,7 @@
     "note": "検証中(前向き実測と併走)。発注は行われません。エントリーは寄り後、目安は直近終値。"
   },
   "today": {
-    "date": "2026-09-15",
+    "date": "2026-09-16",
     "regime_on": true,
     "n_candidates": 0,
     "candidates": []
@@ -346,6 +346,11 @@
     },
     {
       "date": "2026-09-15",
+      "regime_on": true,
+      "tickers": []
+    },
+    {
+      "date": "2026-09-16",
       "regime_on": true,
       "tickers": []
     }
