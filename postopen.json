@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-09-21T14:11:10.762087+09:00",
-  "updated_jst": "2026-09-21 14:11:10 JST",
+  "updated_at": "2026-09-22T09:20:54.428441+09:00",
+  "updated_jst": "2026-09-22 09:20:54 JST",
   "data": {
     "TSE_OPEN": {
       "name": "日経平均",
@@ -26,10 +26,10 @@
       "name": "ドル円",
       "symbol": "USDJPY=X",
       "value": {
-        "price": 157.03,
-        "open": 157.06,
-        "prev_close": 156.129,
-        "chgPct": 0.5771
+        "price": 157.363,
+        "open": 157.301,
+        "prev_close": 157.046,
+        "chgPct": 0.2019
       }
     }
   },
